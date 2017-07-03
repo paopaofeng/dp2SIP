@@ -3,6 +3,15 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+# dp2-specific files
+
+
+*.doc
+*.docx
+*.zip
+
 # User-specific files
 *.suo
 *.user
