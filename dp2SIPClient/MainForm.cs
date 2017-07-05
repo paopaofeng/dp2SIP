@@ -1,7 +1,9 @@
-﻿using System;
+﻿using DigitalPlatform;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,23 +18,37 @@ namespace dp2SIPClient
     public partial class MainForm : Form
     {
         private TcpClient _client;
-
         private NetworkStream _networkStream;
-        private StreamReader _streamReader;
-        private StreamWriter _streamWriter;
-
-        private Thread _recvThread;   // 接收信息线程
-        //private Thread _sendThread;   // 发送信息线程
-        private Thread _serverThread;// 服务线程
 
         public MainForm()
         {
             InitializeComponent();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
+        #region 连接 SIP2 Server
 
+        // 连接
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            //_serverThread = new Thread(new ThreadStart(Connection));
+            //_serverThread.Start();
+            this.Connection();
+        }
+
+        // 停止
+        private void btnDown_Click(object sender, EventArgs e)
+        {
+            this.SetCtrlState(true);
+
+            //todo
+            string exitMsg = "exit";  // 要退出时，发送 exit 信息给服务器
+            this.SendData(exitMsg);
+
+            // 刷新界面
+            this.PrinteInfo("客户端关闭");
+
+            //释放资源
+            this.CloseSocket();
         }
 
         private void Connection()
@@ -50,131 +66,57 @@ namespace dp2SIPClient
                 return;
             }
 
-            this.SetText("客户端成功连接上服务器");
-
-            SetCtrlState(false);
-
+            // 保存到一个变量上，方便使用
             _networkStream = _client.GetStream();
-            _streamReader = new StreamReader(_networkStream);
-            _streamWriter = new StreamWriter(_networkStream);
 
-            // 创建接收信息线程，并启动
-            _recvThread = new Thread(new ThreadStart(RecvData));
-            _recvThread.Start();
+            //界面设置
+            this.PrinteInfo("客户端成功连接上服务器");
+            SetCtrlState(false);
         }
 
-        // 接收数据
-        private void RecvData()
+        // 关闭连接
+        public void CloseSocket()
         {
-            string s = _streamReader.ReadLine();
-            if (s == null)
-                return;
-
-            // 如果没接到服务器退出的消息，则继续接收信息
-            while (s !=null && !s.Equals("exit"))
+            if (_client != null)
             {
-                this.SetText("收到信息:" + s);
-                s = _streamReader.ReadLine();
-            }
+                try
+                {
+                    this._networkStream.Close();
+                }
+                catch { }
 
+                try
+                {
+                    this._client.Close();
+                }
+                catch { }
 
-            // 收到服务器退出的消息，
-            this.SetText("服务器关闭");
-            this.SetText("客户端关闭");
-
-            // 设置按钮状态
-            this.SetCtrlState(true);
-
-            //释放资源
-            ReleaseResouce();
-        }
-
-        // 释放资源
-        private void ReleaseResouce()
-        {
-            _networkStream.Close();
-            _streamReader.Close();
-            _streamWriter.Close();
-
-            //_sendThread.Abort();
-            _recvThread.Abort();
-            _serverThread.Abort();
-
-            _client.Close();
-        }
-
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            _serverThread = new Thread(new ThreadStart(Connection));
-            _serverThread.Start();
-        }
-
-        private void btnDown_Click(object sender, EventArgs e)
-        {
-            this.SetCtrlState(true);
-            //this.btnConnect.Enabled = true;  // 按了停止之后，“连接”按钮可以用，“发送”不能用
-            //this.btnDown.Enabled = false;
-            //this.btnSend.Enabled = false;
-
-
-            string exitMsg = "exit";  // 要退出时，发送 exit 信息给服务器
-            _streamWriter.WriteLine(exitMsg);
-            //刷新当前数据流中的数据
-            _streamWriter.Flush();
-
-            // 刷新界面
-            this.SetText("客户端关闭");
-
-            //释放资源
-            ReleaseResouce();
-        }
-        delegate void SetTextCallback(string text);
-
-        delegate void SetCtrlStateCallback(bool enabled);
-        private void SetCtrlState(bool enabled)
-        {
-            if (this.btnConnect.InvokeRequired)
-            {
-                SetCtrlStateCallback d = new SetCtrlStateCallback(SetCtrlState);
-                this.Invoke(d, new object[] { enabled });
-            }
-            else
-            {
-                btnConnect.Enabled = enabled;
-                btnDown.Enabled = !enabled;
-                btnSend.Enabled = !enabled;
+                this._client = null;
             }
         }
 
+        #endregion
 
-        private void SetText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (this.listBox_printer.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                this.listBox_printer.Items.Add(text);
-               // this.textBox1.Text = text;
-            }
-        }
 
+        #region 发送接收
+
+        // 按钮 触发 发送
         private void btnSend_Click(object sender, EventArgs e)
         {
-            //// 启动发送线程
-            //_sendThread = new Thread(new ThreadStart(SendData));
-            //_sendThread.Start();
-
-            SendData();
+            this.sendCmd();
         }
 
-        // 发送数据
-        private void SendData()
+        // 回车 触发 发送
+        private void txtMsg_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.sendCmd();
+            }
+        }
+
+        // 发送包装小函数
+        private void sendCmd()
         {
             // 发送信息不允许为空
             if (txtMsg.Text == "")
@@ -184,17 +126,41 @@ namespace dp2SIPClient
                 return;
             }
 
+            string text = this.txtMsg.Text;
+            SendData(text);
+        }
+
+
+        // 发送数据
+        private void SendData(string text)
+        {
             try
             {
-                //往当前的数据流中写入一行字符串
-                _streamWriter.WriteLine(txtMsg.Text);
-                
-                //刷新当前数据流中的数据
-                _streamWriter.Flush();
+                byte[] baPackage = this.Encoding.GetBytes(text);
+                if (this._networkStream.DataAvailable == true)
+                {
+                    MessageBox.Show("发送前发现流中有未读的数据!");
+                    //this.RecvData();
+                    return;
+
+                }
+
+                this._networkStream.Write(baPackage, 0, baPackage.Length);
+                this._networkStream.Flush();//刷新当前数据流中的数据
 
                 // 刷新界面
-                this.SetText("发送信息:" + txtMsg.Text);
+                this.PrinteInfo("send:" + txtMsg.Text);
                 txtMsg.Text = "";  // 清空
+
+                // 调接收数据
+                string strBack = "";
+                string strError = "";
+                int nRet = RecvTcpPackage(out strBack, out strError);
+                if (nRet == -1)
+                {
+                    MessageBox.Show(strError);
+                    return;
+                }
             }
             catch (Exception exc)
             {
@@ -202,23 +168,164 @@ namespace dp2SIPClient
             }
         }
 
-        private void txtMsg_Enter(object sender, EventArgs e)
-        {
-            this.SendData();
-        }
 
-        private void txtMsg_KeyUp(object sender, KeyEventArgs e)
+        // 接收数据
+        public int RecvTcpPackage(out string strPackage,
+            out string strError)
         {
+            strError = "";
+            strPackage = "";
 
-        }
+            Debug.Assert(this._client != null, "client为空");
 
-        private void txtMsg_KeyUp_1(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
+            int offset = 0; //偏移量
+            int wRet = 0;
+
+
+            byte[] baPackage = new byte[1024];
+            int nOneLength = 1024; //COMM_BUFF_LEN;
+
+            while (offset < nOneLength)
             {
-                this.SendData();
+                if (this._client == null)
+                {
+                    strError = "通讯中断";
+                    goto ERROR1;
+                }
+
+                try
+                {
+                    wRet = this._networkStream.Read(baPackage,
+                        offset,
+                        baPackage.Length - offset);
+                }
+                catch (SocketException ex)
+                {
+                    // ??这个什么错误码
+                    if (ex.ErrorCode == 10035)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        continue;
+                    }
+
+                    // bool bRet = this.client.Connected;
+
+                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+                catch (Exception ex)
+                {
+                    //bool bRet = this.client.Connected;
+
+                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+
+                if (wRet == 0)
+                {
+                    return 0;
+                    //strError = "Closed by remote peer";
+                    //goto ERROR1;
+                }
+
+                // 得到包的长度
+                if (wRet >= 1 || offset >= 1)
+                {
+                    //没有找到结束符，继续读
+                    int nRet = Array.IndexOf(baPackage, (byte)this.Terminator);
+                    if (nRet != -1)
+                    {
+                        // nLen = nInLen + wRet;
+                        nOneLength = nRet;
+                        break;
+                    }
+
+                    if (this._networkStream.DataAvailable == false) //流中没有数据了
+                    {
+                        nOneLength = offset + wRet;
+                        break;
+                    }
+                }
+
+                offset += wRet;
+                if (offset >= baPackage.Length)
+                {
+                    // 扩大缓冲区
+                    byte[] temp = new byte[baPackage.Length + 1024];
+                    Array.Copy(baPackage, 0, temp, 0, offset);
+                    baPackage = temp;
+                    nOneLength = baPackage.Length;
+                }
+            }
+
+            // 最后规整缓冲区尺寸，如果必要的话
+            if (baPackage.Length > nOneLength)
+            {
+                byte[] temp = new byte[nOneLength];
+                Array.Copy(baPackage, 0, temp, 0, nOneLength);
+                baPackage = temp;
+            }
+
+            strPackage = this.Encoding.GetString(baPackage);
+            this.PrinteInfo("Recv:" + strPackage);
+            //this.WriteToLog("Recv:" + strPackage);
+
+            return 0;
+        ERROR1:
+            this.CloseSocket();
+            baPackage = null;
+            return -1;
+        }
+
+        #endregion
+
+
+        #region 一些参数信息
+
+        public Encoding Encoding
+        {
+            get
+            {
+                //string strEndodingName = Properties.Settings.Default.EncodingName;
+                //if (string.IsNullOrEmpty(strEndodingName))
+                //    strEndodingName = "UTF-8";
+
+                string strEndodingName = "UTF-8";
+
+                return Encoding.GetEncoding(strEndodingName);
             }
         }
 
+        // 命令结束符
+        char Terminator
+        {
+            get
+            {
+                //string strTerminator = Properties.Settings.Default.Terminator;
+                //if (strTerminator == "LF") //NewLine
+                //    return (char)10;
+                //else // if(strTerminator == "CR") //Return
+                return (char)13;
+            }
+        }
+        #endregion
+
+
+        #region 界面控件
+
+        private void SetCtrlState(bool enabled)
+        {
+            btnConnect.Enabled = enabled;
+            btnDown.Enabled = !enabled;
+            btnSend.Enabled = !enabled;
+        }
+
+
+        private void PrinteInfo(string text)
+        {
+            this.listBox_printer.Items.Add(text);
+        }
+
+        #endregion
     }
 }

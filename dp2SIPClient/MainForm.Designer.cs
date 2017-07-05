@@ -52,12 +52,16 @@
             // 
             // listBox_printer
             // 
+            this.listBox_printer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_printer.FormattingEnabled = true;
+            this.listBox_printer.HorizontalScrollbar = true;
             this.listBox_printer.ItemHeight = 24;
             this.listBox_printer.Location = new System.Drawing.Point(15, 180);
             this.listBox_printer.Margin = new System.Windows.Forms.Padding(6);
             this.listBox_printer.Name = "listBox_printer";
-            this.listBox_printer.Size = new System.Drawing.Size(1086, 556);
+            this.listBox_printer.ScrollAlwaysVisible = true;
+            this.listBox_printer.Size = new System.Drawing.Size(1119, 556);
             this.listBox_printer.TabIndex = 19;
             // 
             // txtMsg
@@ -67,7 +71,7 @@
             this.txtMsg.Name = "txtMsg";
             this.txtMsg.Size = new System.Drawing.Size(578, 35);
             this.txtMsg.TabIndex = 18;
-            this.txtMsg.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtMsg_KeyUp_1);
+            this.txtMsg.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtMsg_KeyUp);
             // 
             // btnSend
             // 
@@ -156,8 +160,7 @@
             this.Controls.Add(this.txtPort);
             this.Controls.Add(this.txtIP);
             this.Name = "MainForm";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Text = "SIP2 Client";
             this.ResumeLayout(false);
             this.PerformLayout();
 
