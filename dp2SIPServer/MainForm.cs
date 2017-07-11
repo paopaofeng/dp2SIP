@@ -19,8 +19,6 @@ namespace dp2SIPServer
 {
     public partial class MainForm : Form
     {
-        public LibraryChannelPool _channelPool = new LibraryChannelPool();
-
         private Thread acceptThread = null;
 
         Thread clientThread = null;
@@ -63,37 +61,9 @@ namespace dp2SIPServer
             }
         }
 
-        List<LibraryChannel> _channelList = new List<LibraryChannel>();
-
-        // parameters:
-        //      style    风格。如果为 GUI，表示会自动添加 Idle 事件，并在其中执行 Application.DoEvents
-        public LibraryChannel GetChannel()
-        {
-            LibraryChannel channel = this._channelPool.GetChannel(Properties.Settings.Default.LibraryServerUrl,
-                Properties.Settings.Default.Username);
-            channel.Idle += channel_Idle;
-            _channelList.Add(channel);
-            // TODO: 检查数组是否溢出
-            return channel;
-        }
-
-        void channel_Idle(object sender, IdleEventArgs e)
-        {
-            Application.DoEvents();
-        }
-
-        public void ReturnChannel(LibraryChannel channel)
-        {
-            channel.Idle -= channel_Idle;
-
-            this._channelPool.ReturnChannel(channel);
-            _channelList.Remove(channel);
-        }
-
-
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(this.ServerUrl))
+            if (string.IsNullOrEmpty(this.ServerUrl))
             {
                 SettingsForm dlg = new SettingsForm();
                 if (dlg.ShowDialog(this) != DialogResult.OK)
@@ -110,7 +80,7 @@ namespace dp2SIPServer
 
         public void WriteHtml(string strHtml)
         {
-            strHtml = String.Format("{0}  {1}<br />", DateTime.Now.ToString("yyyyMMdd HH:mm:ss"), strHtml);
+            strHtml = String.Format("{0}  {1}<br />", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), strHtml);
             WriteHtml(this.webBrowser1,
                 strHtml);
         }
@@ -175,14 +145,24 @@ namespace dp2SIPServer
         {
             try
             {
-                if (Listener != null)
-                    Listener.Stop();
-
                 if (acceptThread != null)
+                {
                     acceptThread.Abort();
+                    this.WriteToLog(".....acceptThread.Abort()");
+                }
+
 
                 if (clientThread != null)
+                {
                     clientThread.Abort();
+                    this.WriteToLog(".....clientThread.Abort()");
+                }
+
+                if (Listener != null)
+                {
+                    Listener.Stop();
+                    this.WriteToLog(".....Listener.Stop()");
+                }
             }
             catch (Exception ex)
             {
@@ -190,11 +170,6 @@ namespace dp2SIPServer
             }
             finally
             {
-                foreach (LibraryChannel channel in _channelList)
-                {
-                    if (channel != null)
-                        channel.Abort();
-                }
                 this.toolStripStatusLabel1.Text = "监听已停止";
             }
         }
@@ -218,10 +193,13 @@ namespace dp2SIPServer
             catch(ThreadInterruptedException)
             {
                 Thread.CurrentThread.Abort();
+                this.WriteToLog("ThreadInterruptedException：.....Thread.CurrentThread.Abort()");
             }
             catch (SocketException ex)
             {
                 this.WriteToLog(ExceptionUtil.GetDebugText(ex));
+                Thread.CurrentThread.Abort();
+                this.WriteToLog("SocketException：.....Thread.CurrentThread.Abort()");
             }
         }
 
@@ -252,31 +230,7 @@ namespace dp2SIPServer
 
         public void WriteToLog(string strText)
         {
-            string strOperLogPath = Application.StartupPath + "\\operlog";
-
-            DirectoryInfo dirInfo = new DirectoryInfo(strOperLogPath);
-            if (!dirInfo.Exists)
-                dirInfo = Directory.CreateDirectory(strOperLogPath);
-
-            if (String.IsNullOrEmpty(strText) == true)
-                return;
-
-            strText = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + ":" + strText;
-
-            try
-            {
-                string strFilename = dirInfo.FullName + "\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
-                StreamWriter sw = new StreamWriter(strFilename,
-                    true,	// append
-                    Encoding.UTF8);
-
-                sw.WriteLine(strText);
-                sw.Close();
-            }
-            catch (Exception ex)
-            {
-                this.WriteHtml("写入日志文件发生错误：" + ExceptionUtil.GetDebugText(ex) + "\r\n");
-            }
+            LogManager.Logger.Info(strText);
         }
     }
 }

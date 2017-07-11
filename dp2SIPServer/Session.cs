@@ -1,29 +1,30 @@
 ﻿#define NEW
-//test22222
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Diagnostics;
-using System.Xml;
+// #define Default
+#define TEST
 
 using DigitalPlatform;
 using DigitalPlatform.IO;
 using DigitalPlatform.LibraryClient;
+using DigitalPlatform.LibraryClient.localhost;
 using DigitalPlatform.Marc;
 using DigitalPlatform.Text;
-using DigitalPlatform.LibraryClient.localhost;
 using DigitalPlatform.Xml;
-
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace dp2SIPServer
 {
-    public class Session
+    public class Session : IDisposable
     {
-        TcpClient client = null;
+        public LibraryChannelPool _channelPool = new LibraryChannelPool();
+
+        TcpClient _client = null;
 
         // 命令结束符
         char Terminator
@@ -63,17 +64,6 @@ namespace dp2SIPServer
         }
 
 
-        LibraryChannel GetChannel()
-        {
-            return this._mainForm.GetChannel();
-        }
-
-        void ReturnChannel(LibraryChannel channel)
-        {
-            this._mainForm.ReturnChannel(channel);
-        }
-
-
         string _dateTimeNow
         {
             get
@@ -92,41 +82,42 @@ namespace dp2SIPServer
 
         public void Dispose()
         {
-            if (this.client != null)
+            if (this._client != null)
             {
                 try
                 {
-                    this.client.Close();
+                    this._client.Close();
                 }
                 catch
                 {
                 }
-                this.client = null;
+                this._client = null;
             }
-#if NO
+
             foreach (LibraryChannel channel in _channelList)
             {
                 if (channel != null)
                     channel.Abort();
             }
-#endif
         }
 
         internal Session(TcpClient client)
         {
-            this.client = client;
+            this._client = client;
         }
 
 
-#if NO
         List<LibraryChannel> _channelList = new List<LibraryChannel>();
 
         // parameters:
         //      style    风格。如果为 GUI，表示会自动添加 Idle 事件，并在其中执行 Application.DoEvents
-        public LibraryChannel GetChannel()
+        public LibraryChannel GetChannel(string strUsername = "")
         {
+            if (strUsername == "")
+                strUsername = Properties.Settings.Default.Username;
+
             LibraryChannel channel = this._channelPool.GetChannel(Properties.Settings.Default.LibraryServerUrl,
-                Properties.Settings.Default.Username);
+                strUsername);
             channel.Idle += channel_Idle;
             _channelList.Add(channel);
             // TODO: 检查数组是否溢出
@@ -145,36 +136,6 @@ namespace dp2SIPServer
             this._channelPool.ReturnChannel(channel);
             _channelList.Remove(channel);
         }
-#endif
-
-        public void WriteToLog(string strText)
-        {
-            string strOperLogPath = Application.StartupPath + "\\operlog";
-
-            DirectoryInfo dirInfo = new DirectoryInfo(strOperLogPath);
-            if (!dirInfo.Exists)
-                dirInfo = Directory.CreateDirectory(strOperLogPath);
-
-            if (String.IsNullOrEmpty(strText) == true)
-                return;
-
-            strText = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + ":" + strText;
-
-            try
-            {
-                string strFilename = dirInfo.FullName + "\\" + DateTime.Now.ToString("yyyyMMdd") + ".log";
-                StreamWriter sw = new StreamWriter(strFilename,
-                    true,	// append
-                    Encoding.UTF8);
-
-                sw.WriteLine(strText);
-                sw.Close();
-            }
-            catch (Exception ex)
-            {
-                this.MainForm.WriteHtml("写入日志文件发生错误：" + ExceptionUtil.GetDebugText(ex) + "\r\n");
-            }
-        }
 
 #if NEW
         public int RecvTcpPackage(out string strPackage,
@@ -187,7 +148,7 @@ namespace dp2SIPServer
             int nInLen;
             int wRet = 0;
 
-            Debug.Assert(this.client != null, "client为空");
+            Debug.Assert(this._client != null, "client为空");
 
             byte[] baPackage = new byte[1024];
             nInLen = 0;
@@ -198,7 +159,7 @@ namespace dp2SIPServer
 
             while (nInLen < nLen)
             {
-                if (this.client == null)
+                if (this._client == null)
                 {
                     strError = "通讯中断";
                     goto ERROR1;
@@ -206,7 +167,7 @@ namespace dp2SIPServer
 
                 try
                 {
-                    wRet = this.client.GetStream().Read(baPackage,
+                    wRet = this._client.GetStream().Read(baPackage,
                         nInLen,
                         baPackage.Length - nInLen);
                 }
@@ -222,7 +183,7 @@ namespace dp2SIPServer
 
                     strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
-                }                
+                }
                 catch (Exception ex)
                 {
                     //bool bRet = this.client.Connected;
@@ -230,7 +191,7 @@ namespace dp2SIPServer
                     strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
                 }
-                
+
                 if (wRet == 0)
                 {
                     strError = "Closed by remote peer";
@@ -249,7 +210,7 @@ namespace dp2SIPServer
                         break;
                     }
 
-                    if (this.client.GetStream().DataAvailable == false)
+                    if (this._client.GetStream().DataAvailable == false)
                     {
                         nLen = nInLen + wRet;
                         break;
@@ -276,11 +237,12 @@ namespace dp2SIPServer
             }
 
             strPackage = this.Encoding.GetString(baPackage);
-            this.WriteToLog("Recv:" + strPackage);
+
+            LogManager.Logger.Info("Recv:" + strPackage);
 
             return 0;
             ERROR1:
-            this.CloseSocket();
+            // this.CloseSocket();
             baPackage = null;
             return -1;
         }
@@ -375,7 +337,7 @@ namespace dp2SIPServer
         {
             strError = "";
 
-            if (client == null)
+            if (_client == null)
             {
                 strError = "client尚未初始化";
                 return -1;
@@ -389,7 +351,8 @@ namespace dp2SIPServer
                 msg.Append("|AY4AZ");
 
             msg.Append(GetChecksum(strPackage));
-            this.WriteToLog("Send:" + msg.ToString());
+
+            LogManager.Logger.Info("Send:" + msg.ToString());
 
             msg.Append(this.Terminator);
             strPackage = msg.ToString();
@@ -397,7 +360,7 @@ namespace dp2SIPServer
 
             try
             {
-                NetworkStream stream = client.GetStream();
+                NetworkStream stream = _client.GetStream();
                 if (stream.DataAvailable == true)
                 {
                     strError = "发送前发现流中有未读的数据";
@@ -423,7 +386,8 @@ namespace dp2SIPServer
             catch (Exception ex)
             {
                 strError = "Send出错: " + ExceptionUtil.GetDebugText(ex);
-                this.CloseSocket();
+                // this.CloseSocket();
+                LogManager.Logger.Error(strError);
                 return -1;
             }
         }
@@ -445,22 +409,22 @@ namespace dp2SIPServer
 
         public void CloseSocket()
         {
-            if (client != null)
+            if (_client != null)
             {
                 try
                 {
-                    NetworkStream stream = client.GetStream();
+                    NetworkStream stream = _client.GetStream();
                     stream.Close();
                 }
                 catch { }
 
                 try
                 {
-                    client.Close();
+                    _client.Close();
                 }
                 catch { }
 
-                client = null;
+                _client = null;
             }
         }
 
@@ -479,13 +443,13 @@ namespace dp2SIPServer
                     int nRet = RecvTcpPackage(out strPackage, out strError);
                     if (nRet == -1)
                     {
-                        this.WriteToLog(strError);
+                        LogManager.Logger.Error(strError);
                         return;
                     }
 
                     if (strPackage.Length < 2)
                     {
-                        this.WriteToLog("命令错误，命令长度不够2位");
+                        LogManager.Logger.Error("命令错误，命令长度不够2位");
                         return;
                     }
 
@@ -516,17 +480,17 @@ namespace dp2SIPServer
                                 break;
                         }
                     }
-
+#if DoLogin
                     // 登录到dp2系统
                     nRet = DoLogin(Properties.Settings.Default.Username,
                         Properties.Settings.Default.Password,
                         out strError);
                     if (nRet == -1 || nRet == 0)
                     {
-                        this.WriteToLog(strError);
+                        LogManager.Logger.Error(strError);
                         return;
                     }
-
+#endif
                     string strBackMsg = "";
                     switch (strMessageIdentifiers)
                     {
@@ -581,7 +545,7 @@ namespace dp2SIPServer
                                 if (nRet == 0)
                                 {
                                     if (String.IsNullOrEmpty(strError) == false)
-                                        this.WriteToLog(strError);
+                                        LogManager.Logger.Error(strError);
                                 }
                                 break;
                             }
@@ -591,13 +555,13 @@ namespace dp2SIPServer
                                 if (nRet == 0)
                                 {
                                     if (String.IsNullOrEmpty(strError) == false)
-                                        this.WriteToLog(strError);
+                                        LogManager.Logger.Error(strError);
                                 }
                                 break;
                             }
                         case "93": // 登录，方便调试，跳过验证终端编号，密码和用户名及用户密码。
                             {
-                                strBackMsg = "941";
+                                strBackMsg = Login(strPackage);
                                 break;
                             }
                         case "99":
@@ -613,7 +577,7 @@ namespace dp2SIPServer
                     nRet = SendTcpPackage(strBackMsg, out strError);
                     if (nRet == -1)
                     {
-                        this.WriteToLog(strError);
+                        LogManager.Logger.Error(strError);
                         return;
                     }
                 }
@@ -622,6 +586,85 @@ namespace dp2SIPServer
             {
                 this.CloseSocket();
             }
+        }
+
+
+
+        string Login(string strPackage)
+        {
+            string strBackMsg = "";
+
+            string strUserID = "";
+            string strPassword = "";
+            string strLocationCode = "";
+
+            string[] parts = strPackage.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string part in parts)
+            {
+                if (part.Length < 2)
+                    continue;
+
+                int nRet = part.IndexOf("CN");
+                if (nRet != -1)
+                {
+                    strUserID = part.Substring(nRet + 2);
+                }
+                else
+                {
+                    string strFieldID = part.Substring(0, 2);
+                    string strContent = part.Substring(2);
+
+                    switch (strFieldID)
+                    {
+                        case "CO":
+                            strPassword = strContent;
+                            break;
+                        case "CP":
+                            strLocationCode = strContent;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            string strError = "";
+            LibraryChannel channel = this.GetChannel(strUserID);
+            try
+            {
+                long lRet = channel.Login(strUserID,
+                    strPassword,
+                    "type=worker,client=dp2SIPServer|0.01",
+                    out strError);
+                if (lRet == -1)
+                {
+                    LogManager.Logger.Error(strError);
+                    strBackMsg = "940";
+                }
+                else if (lRet == 0)
+                {
+                    LogManager.Logger.Error(strError);
+                    strBackMsg = "940";
+                }
+                else
+                {
+                    strBackMsg = "941";
+
+                    this._channelPool.BeforeLogin += (sender, e) =>
+                    {
+                        e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
+                        e.UserName = strUserID;
+                        e.Parameters = "type=worker,client=dp2SIPServer|0.01";
+                        e.Password = strPassword;
+                        e.SavePasswordLong = true;
+                    };
+                }
+            }
+            finally
+            {
+                this.ReturnChannel(channel);
+            }
+            return strBackMsg;
         }
 
         // 进行登录
@@ -720,7 +763,7 @@ namespace dp2SIPServer
             if (lRet == -1)
             {
                 nFlag = 0;
-                this.WriteToLog("[ERROR] " + strErrorInfo);
+                LogManager.Logger.Error("[ERROR] " + strErrorInfo);
 
                 string strBiblioRecPath = "";
                 lRet = channel.GetBiblioSummary(null,
@@ -730,8 +773,8 @@ namespace dp2SIPServer
                     out strBiblioRecPath,
                     out strBiblioSummary,
                     out strErrorInfo);
-                if(lRet == -1)
-                    this.WriteToLog("[ERROR] " + strErrorInfo);
+                if (lRet == -1)
+                    LogManager.Logger.Error(strErrorInfo);
             }
             else
             {
@@ -764,7 +807,7 @@ namespace dp2SIPServer
                 catch (Exception ex)
                 {
                     strError = "册信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
-                    this.WriteToLog(strError);
+                    LogManager.Logger.Error(strError);
                 }
 
                 string strMarcSyntax = "";
@@ -785,7 +828,7 @@ namespace dp2SIPServer
                 else
                 {
                     strError = "书目信息解析错误:" + strError;
-                    this.WriteToLog(strError);
+                    LogManager.Logger.Error(strError);
                 }
             }
 
@@ -807,19 +850,21 @@ namespace dp2SIPServer
             {
                 if (bRenew == false)
                 {
-                    sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅失败。").Append(strErrorInfo);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书").Append("《").Append(strBiblioSummary).Append("》失败。").Append(strErrorInfo);
+                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅失败。").Append(strErrorInfo);
+                    sb.Append("|AF借阅失败");// .Append(strErrorInfo);
+                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书：").Append("《").Append(strBiblioSummary).Append("》失败。").Append(strErrorInfo);
                 }
                 else
                 {
-                    sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借失败。").Append(strErrorInfo);
+                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借失败。").Append(strErrorInfo);
+                    sb.Append("|AF续借失败");// .Append(strErrorInfo);
                     sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借图书").Append("《").Append(strBiblioSummary).Append("》失败。").Append(strErrorInfo);
                 }
             }
             else // if (nFlag == 1)
             {
                 string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, this.DateFormat);
-                sb.Append("|AJ《").Append(strBiblioSummary).Append("》|AH").Append(strLatestReturnTime);
+                sb.Append("|AJ").Append(strBiblioSummary).Append("|AH").Append(strLatestReturnTime);
 
                 // sb.Append("|BH").Append(strCurrencyType).Append("|BV").Append(strFeeAmount);
 
@@ -828,7 +873,8 @@ namespace dp2SIPServer
 #if PJST
                     sb.Append("|CHATN").Append("PR").Append(strPrice);
 #endif
-                    sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅成功。");
+                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅成功。").Append(channel.UserName);
+                    sb.Append("|AF借阅成功"); // .Append(channel.UserName);
                     sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书 ");
                     sb.Append("《").Append(strBiblioSummary).Append("》成功。");
                 }
@@ -837,7 +883,8 @@ namespace dp2SIPServer
 #if PJST
                     sb.Append("|CM").Append(strLastReturningDate);
 #endif
-                    sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借成功。");
+                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借成功。");
+                    sb.Append("|AF续借成功");
                     sb.Append("|AG读者【 ").Append(strOutputReaderBarcode).Append("】续借");
                     sb.Append("《").Append(strBiblioSummary).Append("》成功。");
                 }
@@ -902,7 +949,7 @@ namespace dp2SIPServer
             if (lRet == -1)
             {
                 nFlag = 0;
-                this.WriteToLog(strError);
+                LogManager.Logger.Error(strError);
                 if (channel.ErrorCode == ErrorCode.NotBorrowed)
                     nFlag = 1;
 
@@ -933,8 +980,8 @@ namespace dp2SIPServer
                 }
                 catch (Exception ex)
                 {
-                    strError = "[ERROR] 册信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
-                    this.WriteToLog(strError);
+                    strError = "册信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
+                    LogManager.Logger.Error(strError);
                 }
             }
 
@@ -969,12 +1016,12 @@ namespace dp2SIPServer
                 }
                 else
                 {
-                    strError = "[ERROR] 书目信息解析错误:" + strError;
-                    this.WriteToLog(strError);
+                    strError = "书目信息解析错误:" + strError;
+                    LogManager.Logger.Error(strError);
                 }
             }
 
-            if(string.IsNullOrEmpty(strTitle))
+            if (lRet != -1 && string.IsNullOrEmpty(strTitle))
             {
                 string strBiblioRecPath = "";
                 string strSummary = "";
@@ -1008,7 +1055,7 @@ namespace dp2SIPServer
             {
                 sb.Append("|AQ").Append(strLocation);
                 if (!string.IsNullOrEmpty(strTitle))
-                    sb.Append("|AJ《").Append(strTitle).Append("》");
+                    sb.Append("|AJ").Append(strTitle);
                 else
                     sb.Append("|AJ").Append(strItemBarcode);
 
@@ -1020,7 +1067,7 @@ namespace dp2SIPServer
 
                 // sb.Append("|CLsort bin A1");
 
-                sb.Append("|AF图书《").Append(strTitle).Append("》还回处理成功！").Append(strReturnDate);
+                sb.Append("|AF图书《").Append(strTitle).Append("》还回处理成功！").Append(channel.UserName);
                 sb.Append("|AG图书《").Append(strTitle).Append("》-- ").Append(strItemBarcode).Append("已于").Append(strReturnDate).Append("归还！");
             }
             else // nFlag == 0
@@ -1038,7 +1085,7 @@ namespace dp2SIPServer
                     sb.Append(" - 《").Append(strTitle).Append("》");
                 sb.Append("还回处理错误:").Append(strError);
             }
-            this._mainForm.ReturnChannel(channel);
+            this.ReturnChannel(channel);
 
             return sb.ToString();
         }
@@ -1597,7 +1644,6 @@ namespace dp2SIPServer
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("64              001").Append(this._dateTimeNow);
-
             if (String.IsNullOrEmpty(strPassword) == false)
             {
                 lRet = channel.VerifyReaderPassword(null,
@@ -1631,18 +1677,22 @@ namespace dp2SIPServer
                 out strError);
             if (lRet <= -1)
             {
-                this.WriteToLog("[ERROR] " + strError);
+                LogManager.Logger.Error(strError);
                 sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
+                this.ReturnChannel(channel);
                 return sb.ToString();
             }
             else if (lRet == 0)
             {
+                sb.Append("|BLN");
                 sb.Append("|AF查无此证").Append("|AG查询读者信息失败!");
+                this.ReturnChannel(channel);
                 return sb.ToString();
             }
             else if (lRet > 1)
             {
                 sb.Append("|AF证号重复").Append("|AG查询读者信息失败!");
+                this.ReturnChannel(channel);
                 return sb.ToString();
             }
 
@@ -1655,7 +1705,7 @@ namespace dp2SIPServer
             }
             catch (Exception ex)
             {
-                this.WriteToLog("[ERROR] 读者信息解析错误:" + ExceptionUtil.GetDebugText(ex));
+                LogManager.Logger.Error("读者信息解析错误:" + ExceptionUtil.GetDebugText(ex));
                 sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
 
                 this.ReturnChannel(channel);
@@ -1672,9 +1722,20 @@ namespace dp2SIPServer
             sb.Append(nHoldItemsCount.ToString().PadLeft(4, '0'));
             foreach (XmlNode node in holdItemNodes)
             {
-                string strItemBarcode = DomUtil.GetAttr(node, "item");
-                if (!string.IsNullOrEmpty(strItemBarcode))
-                    holdItems += "|AS" + strItemBarcode;
+                string strItemBarcode = DomUtil.GetAttr(node, "items");
+                if (string.IsNullOrEmpty(strItemBarcode))
+                    continue;
+
+#if Default
+                strItemBarcode = strItemBarcode.Replace(",", "|AS");
+                holdItems += "|AS" + strItemBarcode;
+#endif
+#if TEST
+                if (!string.IsNullOrEmpty(holdItems))
+                    holdItems += ",";
+
+                holdItems += strItemBarcode;
+#endif
             }
 
             // overdue items count 4 - char, fixed-length required field  -- 超期
@@ -1690,9 +1751,19 @@ namespace dp2SIPServer
             foreach (XmlNode item in chargedItemNodes)
             {
                 string strItemBarcode = DomUtil.GetAttr(item, "barcode");
+                if (string.IsNullOrEmpty(strItemBarcode))
+                    continue;
+#if Default
                 if (!string.IsNullOrEmpty(strItemBarcode))
                     chargedItems += "|AU" + strItemBarcode;
+#endif
 
+#if TEST
+                if (!string.IsNullOrEmpty(chargedItems))
+                    chargedItems += ",";
+
+                chargedItems += strItemBarcode;
+#endif
                 /*
                 string strReturningDate = DomUtil.GetAttr(item, "returningDate");
                 DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
@@ -1717,11 +1788,33 @@ namespace dp2SIPServer
             sb.Append("AOdp2Library");
             sb.Append("|AA").Append(strBarcode);
             sb.Append("|AE").Append(DomUtil.GetElementText(dom.DocumentElement, "name"));
-
+#if Default
             if (!string.IsNullOrEmpty(holdItems))
                 sb.Append(holdItems);
             if (!string.IsNullOrEmpty(chargedItems))
                 sb.Append(chargedItems);
+#endif
+
+#if TEST
+
+            if (!string.IsNullOrEmpty(holdItems))
+                sb.Append("|AU").Append(holdItems);
+            if (!string.IsNullOrEmpty(chargedItems))
+                sb.Append("|AS").Append(chargedItems);
+
+            /*
+            sb.Append("|BZ0010");
+            sb.Append("|CA0002");
+            sb.Append("|CB0003");
+            */
+
+            // sb.Append("|CQN");
+            // sb.Append("|BV0");
+            // sb.Append("|CC0"); // 安徽望湖小学
+            // sb.Append("|CA0020");
+            // sb.Append("|CB0001");
+#endif
+            sb.Append("|BLY");
 
             /*
             if (!string.IsNullOrEmpty(overdueItems))
@@ -1732,8 +1825,8 @@ namespace dp2SIPServer
 
             // 可借总册数
             string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
-
             string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
+            sb.Append("|BZ").Append(strBorrowsCount.PadLeft(4, '0'));
             string strMsg = "";
             if (strBorrowsCount != "0")
                 strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
@@ -1754,7 +1847,7 @@ namespace dp2SIPServer
         ///  4		charged -- 在借
         /// 12		lost -- 丢失
         /// 13		missing -- 没有找到
-        
+
         ///  5		charged; not to be recalled until earliest recall date -- 在借
         ///  6		in process -- 
         ///  7		recalled -- 召回
@@ -1899,22 +1992,22 @@ namespace dp2SIPServer
                         if (StringUtil.IsInList("丢失", strItemState))
                             strBookState = "12";
                     }
-/*
-                    string strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
-                    CurrencyItem currencyItem = null;
-                    if (!string.IsNullOrEmpty(strPrice))
-                    {
-                        int nRet1 = PriceUtil.ParseSinglePrice(strPrice, out currencyItem, out strError);
-                        if (nRet1 == 0)
-                        {
-                            strCurrencyType = currencyItem.Prefix;
-                            strFeeAmount = currencyItem.Value.ToString();
-                        }
-                        if (string.IsNullOrEmpty(strCurrencyType) == false && strCurrencyType.Length != 3)
-                            strCurrencyType = "CNY";
-                    }
+                    /*
+                                        string strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
+                                        CurrencyItem currencyItem = null;
+                                        if (!string.IsNullOrEmpty(strPrice))
+                                        {
+                                            int nRet1 = PriceUtil.ParseSinglePrice(strPrice, out currencyItem, out strError);
+                                            if (nRet1 == 0)
+                                            {
+                                                strCurrencyType = currencyItem.Prefix;
+                                                strFeeAmount = currencyItem.Value.ToString();
+                                            }
+                                            if (string.IsNullOrEmpty(strCurrencyType) == false && strCurrencyType.Length != 3)
+                                                strCurrencyType = "CNY";
+                                        }
 
-*/
+                    */
                     // strBookType = DomUtil.GetElementText(dom.DocumentElement, "bookType");
                     strAccessNo = DomUtil.GetElementText(dom.DocumentElement, "accessNo");
                     strLocation = DomUtil.GetElementText(dom.DocumentElement, "location");
@@ -1956,6 +2049,8 @@ namespace dp2SIPServer
                 }
             }
 
+            strError = RegularString(strError);
+
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("18").Append(strBookState).Append("0001").Append(this._dateTimeNow);
             if (nReservations > 0)
@@ -1967,13 +2062,13 @@ namespace dp2SIPServer
             sb.Append("|AB").Append(strBarcode);
             if (nRet == 0)
             {
-                sb.Append("|AF").Append("获得图书信息发生错误！").Append("|AG").Append("获得图书信息发生错误！");
-                this.WriteToLog(strError);
+                sb.Append("|AF").Append("获得图书信息发生错误！").Append(strError).Append("|AG").Append("获得图书信息发生错误！");
+                LogManager.Logger.Error(strError);
             }
             else
             {
                 // sb.Append("|CJ"); // 续借日期
-                sb.Append("|AJ《").Append(strTitle).Append("》");
+                sb.Append("|AJ").Append(strTitle);
 
                 /*
                 if (!string.IsNullOrEmpty(strCurrencyType))
@@ -2854,21 +2949,6 @@ namespace dp2SIPServer
             }
             return checksum;
         }
-
-        /// <summary>
-        /// To verify the correct checksum on received data, 
-        /// simply add all the hex values including the checksum.  
-        /// It should equal zero.
-        /// </summary>
-        /// <param name="message">
-        /// 内容中含有校验和(checksum)
-        /// </param>
-        /// <returns></returns>
-        private bool VerifyChecksum(string message)
-        {
-            return true;
-        }
-
         #endregion
 
         static string RegularString(string input)
