@@ -8,12 +8,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Collections;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using DigitalPlatform.LibraryClient;
 using DigitalPlatform;
-using System.IO;
 
 namespace dp2SIPServer
 {
@@ -126,7 +125,7 @@ namespace dp2SIPServer
         {
             try
             {
-                Listener = new TcpListener(IPAddress.Any, Port);
+                Listener = new TcpListener(IPAddress.Any, this.Port);
                 Listener.Start();
                 this.toolStripStatusLabel1.Text = "正在监听...";
                 WriteHtml("启动成功");
@@ -174,7 +173,6 @@ namespace dp2SIPServer
             }
         }
 
-
         private void DoAccept()
         {
             try
@@ -182,9 +180,9 @@ namespace dp2SIPServer
                 while (true)
                 {
                     TcpClient client = Listener.AcceptTcpClient();
-                    _session = new Session(client) { MainForm = this };
+                    this._session = new Session(client) { MainForm = this };
 
-                    clientThread = new Thread(new ThreadStart(_session.Processing));
+                    clientThread = new Thread(new ThreadStart(this._session.Processing));
 
                     // Start proccessing
                     clientThread.Start();

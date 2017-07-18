@@ -1,6 +1,5 @@
 ﻿#define NEW
-// #define Default
-#define TEST
+#define Default
 
 using DigitalPlatform;
 using DigitalPlatform.IO;
@@ -10,6 +9,7 @@ using DigitalPlatform.Marc;
 using DigitalPlatform.Text;
 using DigitalPlatform.Xml;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,6 +25,12 @@ namespace dp2SIPServer
         public LibraryChannelPool _channelPool = new LibraryChannelPool();
 
         TcpClient _client = null;
+
+        string _username
+        {
+            get;
+            set;
+        }
 
         // 命令结束符
         char Terminator
@@ -94,7 +100,7 @@ namespace dp2SIPServer
                 this._client = null;
             }
 
-            foreach (LibraryChannel channel in _channelList)
+            foreach (LibraryChannel channel in this._channelList)
             {
                 if (channel != null)
                     channel.Abort();
@@ -426,6 +432,12 @@ namespace dp2SIPServer
 
                 _client = null;
             }
+
+            foreach (LibraryChannel channel in this._channelList)
+            {
+                if (channel != null)
+                    channel.Abort();
+            }
         }
 
         /// <summary>
@@ -649,7 +661,6 @@ namespace dp2SIPServer
                 else
                 {
                     strBackMsg = "941";
-
                     this._channelPool.BeforeLogin += (sender, e) =>
                     {
                         e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
@@ -658,6 +669,10 @@ namespace dp2SIPServer
                         e.Password = strPassword;
                         e.SavePasswordLong = true;
                     };
+
+                    this._username = strUserID;
+
+                    LogManager.Logger.Info("终端 " + strLocationCode + " : " + strUserID + " 接入");
                 }
             }
             finally
@@ -693,7 +708,14 @@ namespace dp2SIPServer
                 this.ReturnChannel(channel);
                 return -1;
             }
-
+            this._channelPool.BeforeLogin += (sender, e) =>
+            {
+                e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
+                e.UserName = strUserName;
+                e.Parameters = "type=worker,client=dp2SIPServer|0.01";
+                e.Password = strPassword;
+                e.SavePasswordLong = true;
+            };
             this.ReturnChannel(channel);
             return (int)lRet;
         }
@@ -739,7 +761,7 @@ namespace dp2SIPServer
             string strOutputReaderBarcode = "";
             BorrowInfo borrow_info = null;
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
 
             long lRet = channel.Borrow(
                 null,   // stop,
@@ -885,7 +907,7 @@ namespace dp2SIPServer
 #endif
                     // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借成功。");
                     sb.Append("|AF续借成功");
-                    sb.Append("|AG读者【 ").Append(strOutputReaderBarcode).Append("】续借");
+                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借");
                     sb.Append("《").Append(strBiblioSummary).Append("》成功。");
                 }
             }
@@ -928,7 +950,7 @@ namespace dp2SIPServer
             ReturnInfo return_info = null;
             string strError = "";
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
             long lRet = channel.Return(null,
                 "return",
                 "",    //strReaderBarcode,
@@ -1640,201 +1662,200 @@ namespace dp2SIPServer
             string strBackMsg = "";
             string strError = "";
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("64              001").Append(this._dateTimeNow);
-            if (String.IsNullOrEmpty(strPassword) == false)
+
+            try
             {
-                lRet = channel.VerifyReaderPassword(null,
-                    strBarcode,
-                    strPassword,
-                    out strError);
-                if (lRet == -1)
+                if (String.IsNullOrEmpty(strPassword) == false)
                 {
-                    sb.Append("|BLN").Append("|CQN");
-                    sb.Append("|AF").Append("校验密码过程中发生错误……");
-                    sb.Append("|AG").Append("校验密码过程中发生错误……");
-                    strBackMsg = sb.ToString();
+                    lRet = channel.VerifyReaderPassword(null,
+                        strBarcode,
+                        strPassword,
+                        out strError);
+                    if (lRet == -1)
+                    {
+                        sb.Append("|BLN").Append("|CQN");
+                        sb.Append("|AF").Append("校验密码过程中发生错误……");
+                        sb.Append("|AG").Append("校验密码过程中发生错误……");
+                        strBackMsg = sb.ToString();
+                    }
+                    else if (lRet == 0)
+                    {
+                        sb.Append("|BLN").Append("|CQN");
+                        sb.Append("|AF").Append("卡号或密码不正确。");
+                        sb.Append("|AG").Append("卡号或密码不正确。");
+                        strBackMsg = sb.ToString();
+                    }
+                    return strBackMsg;
+                }
+
+                string[] results = null;
+                lRet = channel.GetReaderInfo(null,
+                    strBarcode, //读者卡号,
+                    "advancexml",   // this.RenderFormat, // "html",
+                    out results,
+                    out strError);
+                if (lRet <= -1)
+                {
+                    LogManager.Logger.Error(strError);
+                    sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
+                    return sb.ToString();
                 }
                 else if (lRet == 0)
                 {
-                    sb.Append("|BLN").Append("|CQN");
-                    sb.Append("|AF").Append("卡号或密码不正确。");
-                    sb.Append("|AG").Append("卡号或密码不正确。");
-                    strBackMsg = sb.ToString();
+                    sb.Append("|BLN");
+                    sb.Append("|AF查无此证").Append("|AG查询读者信息失败!");
+                    return sb.ToString();
                 }
-
-                this.ReturnChannel(channel);
-                return strBackMsg;
-            }
-
-            string[] results = null;
-            lRet = channel.GetReaderInfo(null,
-                strBarcode, //读者卡号,
-                "advancexml",   // this.RenderFormat, // "html",
-                out results,
-                out strError);
-            if (lRet <= -1)
-            {
-                LogManager.Logger.Error(strError);
-                sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
-                this.ReturnChannel(channel);
-                return sb.ToString();
-            }
-            else if (lRet == 0)
-            {
-                sb.Append("|BLN");
-                sb.Append("|AF查无此证").Append("|AG查询读者信息失败!");
-                this.ReturnChannel(channel);
-                return sb.ToString();
-            }
-            else if (lRet > 1)
-            {
-                sb.Append("|AF证号重复").Append("|AG查询读者信息失败!");
-                this.ReturnChannel(channel);
-                return sb.ToString();
-            }
-
-            // if(lRet == 1)
-            XmlDocument dom = new XmlDocument();
-            string strReaderXml = results[0];
-            try
-            {
-                dom.LoadXml(strReaderXml);
-            }
-            catch (Exception ex)
-            {
-                LogManager.Logger.Error("读者信息解析错误:" + ExceptionUtil.GetDebugText(ex));
-                sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
-
-                this.ReturnChannel(channel);
-                return sb.ToString();
-            }
-
-            // hold items count 4 - char, fixed-length required field -- 预约
-            int nHoldItemsCount = 0;
-            string holdItems = "";
-            XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
-            if (holdItemNodes != null)
-                nHoldItemsCount = holdItemNodes.Count;
-
-            sb.Append(nHoldItemsCount.ToString().PadLeft(4, '0'));
-            foreach (XmlNode node in holdItemNodes)
-            {
-                string strItemBarcode = DomUtil.GetAttr(node, "items");
-                if (string.IsNullOrEmpty(strItemBarcode))
-                    continue;
-
-#if Default
-                strItemBarcode = strItemBarcode.Replace(",", "|AS");
-                holdItems += "|AS" + strItemBarcode;
-#endif
-#if TEST
-                if (!string.IsNullOrEmpty(holdItems))
-                    holdItems += ",";
-
-                holdItems += strItemBarcode;
-#endif
-            }
-
-            // overdue items count 4 - char, fixed-length required field  -- 超期
-            // charged items count 4 - char, fixed-length required field -- 在借
-            // int nOverdueItemsCount = 0;
-            int nChargedItemsCount = 0;
-            XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
-            if (chargedItemNodes != null)
-                nChargedItemsCount = chargedItemNodes.Count;
-
-            string chargedItems = "";
-            // string overdueItems = "";
-            foreach (XmlNode item in chargedItemNodes)
-            {
-                string strItemBarcode = DomUtil.GetAttr(item, "barcode");
-                if (string.IsNullOrEmpty(strItemBarcode))
-                    continue;
-#if Default
-                if (!string.IsNullOrEmpty(strItemBarcode))
-                    chargedItems += "|AU" + strItemBarcode;
-#endif
-
-#if TEST
-                if (!string.IsNullOrEmpty(chargedItems))
-                    chargedItems += ",";
-
-                chargedItems += strItemBarcode;
-#endif
-                /*
-                string strReturningDate = DomUtil.GetAttr(item, "returningDate");
-                DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
-                if (returningDate > DateTime.Now)
+                else if (lRet > 1)
                 {
-                    nOverdueItemsCount++;
-                    overdueItems += "|AT" + strItemBarcode;
+                    sb.Append("|AF证号重复").Append("|AG查询读者信息失败!");
+                    return sb.ToString();
                 }
-                */
-            }
-            // sb.Append(nOverdueItemsCount.ToString().PadLeft(4, '0'));
-            sb.Append("0000");
-            sb.Append(nChargedItemsCount.ToString().PadLeft(4, '0'));
 
-            // fine items count 4 - char, fixed-length required field
-            sb.Append("0000");
-            // recall items count 4 - char, fixed-length required field
-            sb.Append("0000");
-            // unavailable holds count 4 - char, fixed-length required field
-            sb.Append("0000");
+                // if(lRet == 1)
+                XmlDocument dom = new XmlDocument();
+                string strReaderXml = results[0];
+                try
+                {
+                    dom.LoadXml(strReaderXml);
+                }
+                catch (Exception ex)
+                {
+                    LogManager.Logger.Error("读者信息解析错误:" + ExceptionUtil.GetDebugText(ex));
+                    sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
+                    return sb.ToString();
+                }
 
-            sb.Append("AOdp2Library");
-            sb.Append("|AA").Append(strBarcode);
-            sb.Append("|AE").Append(DomUtil.GetElementText(dom.DocumentElement, "name"));
+                // hold items count 4 - char, fixed-length required field -- 预约
+                int nHoldItemsCount = 0;
+                string holdItems = "";
+                XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
+                if (holdItemNodes != null)
+                    nHoldItemsCount = holdItemNodes.Count;
+
+                sb.Append(nHoldItemsCount.ToString().PadLeft(4, '0'));
+                foreach (XmlNode node in holdItemNodes)
+                {
+                    string strItemBarcode = DomUtil.GetAttr(node, "items");
+                    if (string.IsNullOrEmpty(strItemBarcode))
+                        continue;
+
 #if Default
-            if (!string.IsNullOrEmpty(holdItems))
-                sb.Append(holdItems);
-            if (!string.IsNullOrEmpty(chargedItems))
-                sb.Append(chargedItems);
+                    strItemBarcode = strItemBarcode.Replace(",", "|AS");
+                    holdItems += "|AS" + strItemBarcode;
+#endif
+#if TEST
+                    if (!string.IsNullOrEmpty(holdItems))
+                        holdItems += ",";
+
+                    holdItems += strItemBarcode;
+#endif
+                }
+
+                // overdue items count 4 - char, fixed-length required field  -- 超期
+                // charged items count 4 - char, fixed-length required field -- 在借
+                // int nOverdueItemsCount = 0;
+                int nChargedItemsCount = 0;
+                XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
+                if (chargedItemNodes != null)
+                    nChargedItemsCount = chargedItemNodes.Count;
+
+                string chargedItems = "";
+                // string overdueItems = "";
+                foreach (XmlNode item in chargedItemNodes)
+                {
+                    string strItemBarcode = DomUtil.GetAttr(item, "barcode");
+                    if (string.IsNullOrEmpty(strItemBarcode))
+                        continue;
+#if Default
+                    if (!string.IsNullOrEmpty(strItemBarcode))
+                        chargedItems += "|AU" + strItemBarcode;
+#endif
+
+#if TEST
+                    if (!string.IsNullOrEmpty(chargedItems))
+                        chargedItems += ",";
+
+                    chargedItems += strItemBarcode;
+#endif
+                    /*
+                    string strReturningDate = DomUtil.GetAttr(item, "returningDate");
+                    DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
+                    if (returningDate > DateTime.Now)
+                    {
+                        nOverdueItemsCount++;
+                        overdueItems += "|AT" + strItemBarcode;
+                    }
+                    */
+                }
+                // sb.Append(nOverdueItemsCount.ToString().PadLeft(4, '0'));
+                sb.Append("0000");
+                sb.Append(nChargedItemsCount.ToString().PadLeft(4, '0'));
+
+                // fine items count 4 - char, fixed-length required field
+                sb.Append("0000");
+                // recall items count 4 - char, fixed-length required field
+                sb.Append("0000");
+                // unavailable holds count 4 - char, fixed-length required field
+                sb.Append("0000");
+
+                sb.Append("AOdp2Library");
+                sb.Append("|AA").Append(strBarcode);
+                sb.Append("|AE").Append(DomUtil.GetElementText(dom.DocumentElement, "name"));
+#if Default
+                if (!string.IsNullOrEmpty(holdItems))
+                    sb.Append(holdItems);
+                if (!string.IsNullOrEmpty(chargedItems))
+                    sb.Append(chargedItems);
 #endif
 
 #if TEST
 
-            if (!string.IsNullOrEmpty(holdItems))
-                sb.Append("|AU").Append(holdItems);
-            if (!string.IsNullOrEmpty(chargedItems))
-                sb.Append("|AS").Append(chargedItems);
+                if (!string.IsNullOrEmpty(holdItems))
+                    sb.Append("|AU").Append(holdItems);
+                if (!string.IsNullOrEmpty(chargedItems))
+                    sb.Append("|AS").Append(chargedItems);
 
-            /*
-            sb.Append("|BZ0010");
-            sb.Append("|CA0002");
-            sb.Append("|CB0003");
-            */
+                /*
+                sb.Append("|BZ0010");
+                sb.Append("|CA0002");
+                sb.Append("|CB0003");
+                */
 
-            // sb.Append("|CQN");
-            // sb.Append("|BV0");
-            // sb.Append("|CC0"); // 安徽望湖小学
-            // sb.Append("|CA0020");
-            // sb.Append("|CB0001");
+                // sb.Append("|CQN");
+                // sb.Append("|BV0");
+                // sb.Append("|CC0"); // 安徽望湖小学
+                // sb.Append("|CA0020");
+                // sb.Append("|CB0001");
 #endif
-            sb.Append("|BLY");
+                sb.Append("|BLY");
 
-            /*
-            if (!string.IsNullOrEmpty(overdueItems))
-                sb.Append(overdueItems);
-            */
-            // 押金
-            // sb.Append("|BV").Append(DomUtil.GetElementText(dom.DocumentElement, "foregift"));
+                /*
+                if (!string.IsNullOrEmpty(overdueItems))
+                    sb.Append(overdueItems);
+                */
+                // 押金
+                // sb.Append("|BV").Append(DomUtil.GetElementText(dom.DocumentElement, "foregift"));
 
-            // 可借总册数
-            string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
-            string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
-            sb.Append("|BZ").Append(strBorrowsCount.PadLeft(4, '0'));
-            string strMsg = "";
-            if (strBorrowsCount != "0")
-                strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
-            else
-                strMsg += "您在本馆借书数已达最多可借数【" + strCount + "】，不能继续借了!";
-            sb.Append("|AF").Append(strMsg).Append("|AG").Append(strMsg);
-
-            this.ReturnChannel(channel);
+                // 可借总册数
+                string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
+                string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
+                sb.Append("|BZ").Append(strBorrowsCount.PadLeft(4, '0'));
+                string strMsg = "";
+                if (strBorrowsCount != "0")
+                    strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
+                else
+                    strMsg += "您在本馆借书数已达最多可借数【" + strCount + "】，不能继续借了!";
+                sb.Append("|AF").Append(strMsg).Append("|AG").Append(strMsg);
+            }
+            finally
+            {
+                this.ReturnChannel(channel);
+            }
             return sb.ToString();
         }
 
@@ -1906,35 +1927,38 @@ namespace dp2SIPServer
 
             string strItemXml = "";
             string strBiblio = "";
-            LibraryChannel channel = this.GetChannel();
-            long lRet = channel.GetItemInfo(null,
-                strBarcode,
-                "xml",
-                out strItemXml,
-                "xml",
-                out strBiblio,
-                out strError);
-            switch (lRet)
+            LibraryChannel channel = this.GetChannel(this._username);
+            StringBuilder sb = new StringBuilder(1024);
+            try
             {
-                case -1:
-                    nRet = 0;
-                    strBookState = "01";
-                    strError = "获得'" + strBarcode + "'发生错误:" + strError;
-                    break;
-                case 0:
-                    nRet = 0;
-                    strBookState = "13";
-                    strError = strBarcode + " 册记录不存在";
-                    break;
-                case 1:
-                    nRet = 1;
-                    break;
-                default: // lRet > 1
-                    nRet = 0;
-                    strBookState = "01";
-                    strError = strBarcode + " 找到多条册记录，条码重复";
-                    break;
-            }
+                long lRet = channel.GetItemInfo(null,
+                    strBarcode,
+                    "xml",
+                    out strItemXml,
+                    "xml",
+                    out strBiblio,
+                    out strError);
+                switch (lRet)
+                {
+                    case -1:
+                        nRet = 0;
+                        strBookState = "01";
+                        strError = "获得'" + strBarcode + "'发生错误:" + strError;
+                        break;
+                    case 0:
+                        nRet = 0;
+                        strBookState = "13";
+                        strError = strBarcode + " 册记录不存在";
+                        break;
+                    case 1:
+                        nRet = 1;
+                        break;
+                    default: // lRet > 1
+                        nRet = 0;
+                        strBookState = "01";
+                        strError = strBarcode + " 找到多条册记录，条码重复";
+                        break;
+                }
 
 #if PJST
             switch (lRet)
@@ -1959,28 +1983,28 @@ namespace dp2SIPServer
                     break;
             }
 #endif
-            XmlDocument dom = new XmlDocument();
-            if (nRet == 1)
-            {
-                try
+                XmlDocument dom = new XmlDocument();
+                if (nRet == 1)
                 {
-                    dom.LoadXml(strItemXml);
-
-                    string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
-                    if (String.IsNullOrEmpty(strItemState))
+                    try
                     {
-                        strReaderBarcode = DomUtil.GetElementText(dom.DocumentElement, "borrower");
+                        dom.LoadXml(strItemXml);
+
+                        string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
+                        if (String.IsNullOrEmpty(strItemState))
+                        {
+                            strReaderBarcode = DomUtil.GetElementText(dom.DocumentElement, "borrower");
 #if PJST
                         strBookState = String.IsNullOrEmpty(strReaderBarcode) ? "02" : "03"; // 2在馆 3借出
 #endif
-                        strBookState = String.IsNullOrEmpty(strReaderBarcode) ? "03" : "04";
+                            strBookState = String.IsNullOrEmpty(strReaderBarcode) ? "03" : "04";
 
-                        XmlNodeList nodesReservationRequest = dom.DocumentElement.SelectNodes("reservations/request");
-                        if (nodesReservationRequest != null)
-                            nReservations = nodesReservationRequest.Count;
-                    }
-                    else
-                    {
+                            XmlNodeList nodesReservationRequest = dom.DocumentElement.SelectNodes("reservations/request");
+                            if (nodesReservationRequest != null)
+                                nReservations = nodesReservationRequest.Count;
+                        }
+                        else
+                        {
 #if PJST
                         if (StringUtil.IsInList("丢失", strItemState))
                             strBookState = "04";
@@ -1989,114 +2013,117 @@ namespace dp2SIPServer
                         else
                             strIsArrived = "0";
 #endif
-                        if (StringUtil.IsInList("丢失", strItemState))
-                            strBookState = "12";
-                    }
-                    /*
-                                        string strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
-                                        CurrencyItem currencyItem = null;
-                                        if (!string.IsNullOrEmpty(strPrice))
-                                        {
-                                            int nRet1 = PriceUtil.ParseSinglePrice(strPrice, out currencyItem, out strError);
-                                            if (nRet1 == 0)
+                            if (StringUtil.IsInList("丢失", strItemState))
+                                strBookState = "12";
+                        }
+                        /*
+                                            string strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
+                                            CurrencyItem currencyItem = null;
+                                            if (!string.IsNullOrEmpty(strPrice))
                                             {
-                                                strCurrencyType = currencyItem.Prefix;
-                                                strFeeAmount = currencyItem.Value.ToString();
+                                                int nRet1 = PriceUtil.ParseSinglePrice(strPrice, out currencyItem, out strError);
+                                                if (nRet1 == 0)
+                                                {
+                                                    strCurrencyType = currencyItem.Prefix;
+                                                    strFeeAmount = currencyItem.Value.ToString();
+                                                }
+                                                if (string.IsNullOrEmpty(strCurrencyType) == false && strCurrencyType.Length != 3)
+                                                    strCurrencyType = "CNY";
                                             }
-                                            if (string.IsNullOrEmpty(strCurrencyType) == false && strCurrencyType.Length != 3)
-                                                strCurrencyType = "CNY";
-                                        }
 
-                    */
-                    // strBookType = DomUtil.GetElementText(dom.DocumentElement, "bookType");
-                    strAccessNo = DomUtil.GetElementText(dom.DocumentElement, "accessNo");
-                    strLocation = DomUtil.GetElementText(dom.DocumentElement, "location");
+                        */
+                        // strBookType = DomUtil.GetElementText(dom.DocumentElement, "bookType");
+                        strAccessNo = DomUtil.GetElementText(dom.DocumentElement, "accessNo");
+                        strLocation = DomUtil.GetElementText(dom.DocumentElement, "location");
 
-                    strBorrowDate = DomUtil.GetElementText(dom.DocumentElement, "borrowDate");
-                    strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
+                        strBorrowDate = DomUtil.GetElementText(dom.DocumentElement, "borrowDate");
+                        strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
 
-                    strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
-                    strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
+                        strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
+                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
 
 
-                    string strMarcSyntax = "";
-                    MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
-                    if (record != null)
-                    {
-                        if (strMarcSyntax == "unimarc")
+                        string strMarcSyntax = "";
+                        MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
+                        if (record != null)
                         {
-                            strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
-                            strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                            strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
+                            if (strMarcSyntax == "unimarc")
+                            {
+                                strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
+                                strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                                strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
+                            }
+                            else if (strMarcSyntax == "usmarc")
+                            {
+                                strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
+                                strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
+                                strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
+                            }
                         }
-                        else if (strMarcSyntax == "usmarc")
+                        else
                         {
-                            strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
-                            strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                            strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
+                            nRet = 0;
+                            strError = "书目信息解析错误:" + strError;
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
                         nRet = 0;
-                        strError = "书目信息解析错误:" + strError;
+                        strError = strBarcode + ":读者记录解析错误:" + ExceptionUtil.GetDebugText(ex);
                     }
                 }
-                catch (Exception ex)
-                {
-                    nRet = 0;
-                    strError = strBarcode + ":读者记录解析错误:" + ExceptionUtil.GetDebugText(ex);
-                }
-            }
 
-            strError = RegularString(strError);
+                strError = RegularString(strError);
 
-            StringBuilder sb = new StringBuilder(1024);
-            sb.Append("18").Append(strBookState).Append("0001").Append(this._dateTimeNow);
-            if (nReservations > 0)
-                sb.Append("CF").Append(nReservations);
+                sb.Append("18").Append(strBookState).Append("0001").Append(this._dateTimeNow);
+                if (nReservations > 0)
+                    sb.Append("CF").Append(nReservations);
 #if PJST
             if (String.IsNullOrEmpty(strReaderBarcode) == false)
                 sb.Append("|AA").Append(strReaderBarcode);
 #endif
-            sb.Append("|AB").Append(strBarcode);
-            if (nRet == 0)
-            {
-                sb.Append("|AF").Append("获得图书信息发生错误！").Append(strError).Append("|AG").Append("获得图书信息发生错误！");
-                LogManager.Logger.Error(strError);
-            }
-            else
-            {
-                // sb.Append("|CJ"); // 续借日期
-                sb.Append("|AJ").Append(strTitle);
+                sb.Append("|AB").Append(strBarcode);
+                if (nRet == 0)
+                {
+                    sb.Append("|AF").Append("获得图书信息发生错误！").Append(strError).Append("|AG").Append("获得图书信息发生错误！");
+                    LogManager.Logger.Error(strError);
+                }
+                else
+                {
+                    // sb.Append("|CJ"); // 续借日期
+                    sb.Append("|AJ").Append(strTitle);
 
-                /*
-                if (!string.IsNullOrEmpty(strCurrencyType))
-                    sb.Append("|BH").Append(strCurrencyType);
-                if (!string.IsNullOrEmpty(strFeeAmount))
-                    sb.Append("|BV").Append(strFeeAmount);
-                */
+                    /*
+                    if (!string.IsNullOrEmpty(strCurrencyType))
+                        sb.Append("|BH").Append(strCurrencyType);
+                    if (!string.IsNullOrEmpty(strFeeAmount))
+                        sb.Append("|BV").Append(strFeeAmount);
+                    */
 
-                if (!string.IsNullOrEmpty(strReaderBarcode))
-                    sb.Append("|BG").Append(strReaderBarcode);
-                if (!string.IsNullOrEmpty(strBorrowDate))
-                    sb.Append("|CM").Append(strBorrowDate); // 借阅日期
-                if (!string.IsNullOrEmpty(strReturningDate))
-                    sb.Append("|AH").Append(strReturningDate);
+                    if (!string.IsNullOrEmpty(strReaderBarcode))
+                        sb.Append("|BG").Append(strReaderBarcode);
+                    if (!string.IsNullOrEmpty(strBorrowDate))
+                        sb.Append("|CM").Append(strBorrowDate); // 借阅日期
+                    if (!string.IsNullOrEmpty(strReturningDate))
+                        sb.Append("|AH").Append(strReturningDate);
 
 #if PJST
                 sb.Append("|AW").Append(strAuthor).Append("|AK").Append(strISBN);
                 sb.Append("|RE").Append(strIsArrived).Append("|KC").Append(strAccessNo);
                 sb.Append("|CH").Append(strPrice);
 #endif
-                sb.Append("|CK").Append(strMediatype);
-                sb.Append("|AP").Append(strLocation);
+                    sb.Append("|CK").Append(strMediatype);
+                    sb.Append("|AP").Append(strLocation);
 
-                if (nReservations > 0)
-                    sb.Append("|AF此书被预约").Append("|AG此书被预约");
+                    if (nReservations > 0)
+                        sb.Append("|AF此书被预约").Append("|AG此书被预约");
+                }
+            }
+            finally
+            {
+                this.ReturnChannel(channel);
             }
 
-            this.ReturnChannel(channel);
             return sb.ToString();
         }
 
@@ -2330,7 +2357,7 @@ namespace dp2SIPServer
 
             string strOperation = "";
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("82").Append(this._dateTimeNow).Append("AOdp2Library");
@@ -2624,7 +2651,7 @@ namespace dp2SIPServer
             strBackMsg = "";
             strError = "";
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("9220141021 100511AOdp2Library");
@@ -2794,7 +2821,7 @@ namespace dp2SIPServer
             byte[] baTimestamp,
             out string strError)
         {
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
 
             string strExistingXml = "";
             string strSavedXml = "";
@@ -2861,7 +2888,7 @@ namespace dp2SIPServer
             sb.Append("|AA").Append(strBarcode);
             sb.Append("|XK").Append(strOperation);
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._username);
             string strMsg = "";
             long lRet = channel.ChangeReaderPassword(null,
                 strBarcode,
