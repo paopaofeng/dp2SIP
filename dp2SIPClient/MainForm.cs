@@ -27,51 +27,53 @@ namespace dp2SIPClient
 
         #region 连接 SIP2 Server
 
-        // 连接
-        private void btnConnect_Click(object sender, EventArgs e)
+
+
+        public string SIPServerUrl
         {
-            //_serverThread = new Thread(new ThreadStart(Connection));
-            //_serverThread.Start();
-            this.Connection();
+            get
+            {
+                return Properties.Settings.Default.SIPServerUrl;
+            }
         }
 
-        // 停止
-        private void btnDown_Click(object sender, EventArgs e)
+
+        public int SIPServerPort
         {
-            this.SetCtrlState(true);
-
-            //todo
-            string exitMsg = "exit";  // 要退出时，发送 exit 信息给服务器
-            this.SendData(exitMsg);
-
-            // 刷新界面
-            this.PrinteInfo("客户端关闭");
-
-            //释放资源
-            this.CloseSocket();
+            get
+            {
+                return Properties.Settings.Default.SIPServerPort;
+            }
         }
 
         private void Connection()
         {
+            this.Enabled = false;
             try
             {
-                IPAddress ipAddress = IPAddress.Parse(txtIP.Text);
-                Int32 port = Int32.Parse(txtPort.Text);
+                IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
                 string hostName = Dns.GetHostEntry(ipAddress).HostName;
-                _client = new TcpClient(hostName, port);
+                _client = new TcpClient(hostName, this.SIPServerPort);
+
+
+                // 保存到一个变量上，方便使用
+                _networkStream = _client.GetStream();
+
+                //界面设置
+                this.toolStripStatusLabel_info.Text = "连接服务器成功。";
+                toolStripLabel_send.Enabled = true;
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("没有连接到服务器!");
+                this.toolStripStatusLabel_info.Text = "连接服务器失败:" + ex.Message;
                 return;
             }
+            finally
+            {
+                this.Enabled = true;
+            }
 
-            // 保存到一个变量上，方便使用
-            _networkStream = _client.GetStream();
 
-            //界面设置
-            this.PrinteInfo("客户端成功连接上服务器");
-            SetCtrlState(false);
         }
 
         // 关闭连接
@@ -313,12 +315,6 @@ namespace dp2SIPClient
 
         #region 界面控件
 
-        private void SetCtrlState(bool enabled)
-        {
-            btnConnect.Enabled = enabled;
-            btnDown.Enabled = !enabled;
-            btnSend.Enabled = !enabled;
-        }
 
 
         private void PrinteInfo(string text)
@@ -332,52 +328,44 @@ namespace dp2SIPClient
 
         #endregion
 
-        private void btnCheckSum1_Click(object sender, EventArgs e)
+
+
+
+        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string text = this.txtMsg.Text;
-            string checkSum = this.GetChecksum1(text);
-            this.PrinteInfo(checkSum);
+            Form_setting dlg = new Form_setting();
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                this.Connection();
+            }
         }
 
-        /// <summary>
-        /// To calculate the checksum add each character as an unsigned binary number,
-        /// take the lower 16 bits of the total and perform a 2's complement. 
-        /// The checksum field is the result represented by four hex digits.
-        /// </summary>
-        /// <param name="message">
-        /// 内容中不包含 校验和(checksum)
-        /// </param>
-        /// <returns></returns>
-        private string GetChecksum1(string message)
+        private void 实用工具ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            string checksum = "";
+            Form_checksum dlg = new Form_checksum();
+        }
 
-            try
+        private void toolStripLabel_send_Click(object sender, EventArgs e)
+        {
+            this.sendCmd();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.SIPServerUrl))
             {
-                ushort sum = 0;
-                foreach (char c in message)
+                Form_setting dlg = new Form_setting();
+                if (dlg.ShowDialog(this) != DialogResult.OK)
                 {
-                    sum += c;
+                    this.Close();
+                    return;
                 }
-
-                ushort checksum_inverted_plus1 = (ushort)(~sum + 1);
-
-                checksum = checksum_inverted_plus1.ToString("X4");
             }
-            catch (Exception ex)
-            {
-                string strError = ex.Message;
-                checksum = null;
-            }
-            return checksum;
-        }
 
-        private void btnCheckSum2_Click(object sender, EventArgs e)
-        {
-            string text = this.txtMsg.Text;
-            string checkSum = SIP2.CheckSum.ApplyChecksum(text);
-            this.PrinteInfo(checkSum);
+            this.Connection();
 
+           // this.toolStripStatusLabel_port.Text = "监听端口：" + this.Port;
+           // this.toolStripLabel_send.Enabled = true;
         }
 
 
