@@ -1,4 +1,6 @@
 ﻿using DigitalPlatform;
+using DigitalPlatform.SIP2.SIP2Entity;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -102,9 +104,30 @@ namespace dp2SIPClient
 
         #region 发送接收
 
-        // 按钮 触发 发送
-        private void btnSend_Click(object sender, EventArgs e)
+        //发送消息
+        private void toolStripLabel_send_Click(object sender, EventArgs e)
         {
+            try
+            {
+                if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
+                {
+                    Login_93 request = new Login_93(this.textBox_Login_UIDAlgorithm.Text,
+                        this.textBox_Login_PWDAlgorithm.Text,
+                        this.textBox_Login_loginUserId_CN_r.Text == "null" ? null : this.textBox_Login_loginUserId_CN_r.Text,
+                        this.textBox_Login_loginPassword_CO_r.Text == "null" ? null : this.textBox_Login_loginPassword_CO_r.Text,
+                        this.textBox_Login_locationCode_CP_o.Text == "null" ? null : this.textBox_Login_locationCode_CP_o.Text
+                        );
+
+                    this.txtMsg.Text = request.ToText();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
+            //发送命令
             this.sendCmd();
         }
 
@@ -114,6 +137,7 @@ namespace dp2SIPClient
             if (e.KeyCode == Keys.Enter)
             {
                 this.sendCmd();
+                return;
             }
         }
 
@@ -128,7 +152,7 @@ namespace dp2SIPClient
                 return;
             }
 
-            string text = this.txtMsg.Text;
+            string text = this.txtMsg.Text.Trim();
             SendData(text);
         }
 
@@ -136,38 +160,60 @@ namespace dp2SIPClient
         // 发送数据
         private void SendData(string text)
         {
+            this.Enabled = false;
             try
             {
-                byte[] baPackage = this.Encoding.GetBytes(text);
                 if (this._networkStream.DataAvailable == true)
                 {
-                    MessageBox.Show("发送前发现流中有未读的数据!");
+                    MessageBox.Show("异常：发送前发现流中有未读的数据!");
                     //this.RecvData();
                     return;
-
                 }
 
+                // 刷新界面
+                this.Print("send:" + text);
+                //txtMsg.Text = "";  // 清空
+                this.txtMsg.SelectAll();
+
+
+                // 命令参数检查
+                BaseRequest request = null;
+                string error="";
+                bool bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                if (bRet == false)
+                {
+                    this.Print("error-s:" + error);
+                    return;
+                }
+
+                byte[] baPackage = this.Encoding.GetBytes(text);
                 this._networkStream.Write(baPackage, 0, baPackage.Length);
                 this._networkStream.Flush();//刷新当前数据流中的数据
 
-                // 刷新界面
-                this.PrinteInfo("send:" + txtMsg.Text);
-                txtMsg.Text = "";  // 清空
+
 
                 // 调接收数据
-                string strBack = "";
+                string strRecv = "";
                 string strError = "";
-                int nRet = RecvTcpPackage(out strBack, out strError);
+                int nRet = RecvTcpPackage(out strRecv, out strError);
                 if (nRet == -1)
                 {
-                    MessageBox.Show(strError);
+                    this.Print("error-r:" + strError);
                     return;
                 }
+                this.Print("recv:" + strRecv);
+                //this.PrinteInfo("recv:" + strPackage);
+                //this.WriteToLog("Recv:" + strPackage);
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message, "Client提示");
             }
+            finally
+            {
+                this.Enabled = true;
+            }
+
         }
 
 
@@ -269,10 +315,8 @@ namespace dp2SIPClient
             }
 
             strPackage = this.Encoding.GetString(baPackage);
-            this.PrinteInfo("recv:" + strPackage);
-            //this.WriteToLog("Recv:" + strPackage);
-
             return 0;
+
         ERROR1:
             this.CloseSocket();
             baPackage = null;
@@ -317,13 +361,13 @@ namespace dp2SIPClient
 
 
 
-        private void PrinteInfo(string text)
+        private void Print(string text)
         {
             if (this.txtInfo.Text != "")
                 this.txtInfo.Text += "\r\n";
+            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +" "+ text;
 
-            this.txtInfo.Text += text;
-            //this.listBox_printer.Items.Add(text);
+            //this.txtInfo.Text = text;
         }
 
         #endregion
@@ -343,12 +387,10 @@ namespace dp2SIPClient
         private void 实用工具ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Form_checksum dlg = new Form_checksum();
+            dlg.ShowDialog(this);
         }
 
-        private void toolStripLabel_send_Click(object sender, EventArgs e)
-        {
-            this.sendCmd();
-        }
+
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -367,6 +409,15 @@ namespace dp2SIPClient
            // this.toolStripStatusLabel_port.Text = "监听端口：" + this.Port;
            // this.toolStripLabel_send.Enabled = true;
         }
+
+        private void 清空信息区ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.txtInfo.Text = "";
+        }
+
+
+
+
 
 
 
