@@ -107,28 +107,31 @@ namespace dp2SIPClient
         //发送消息
         private void toolStripLabel_send_Click(object sender, EventArgs e)
         {
+            BaseRequest request = null;
             try
             {
                 if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
                 {
-                    Login_93 request = new Login_93(this.textBox_Login_UIDAlgorithm.Text,
-                        this.textBox_Login_PWDAlgorithm.Text,
-                        this.textBox_Login_loginUserId_CN_r.Text == "null" ? null : this.textBox_Login_loginUserId_CN_r.Text,
-                        this.textBox_Login_loginPassword_CO_r.Text == "null" ? null : this.textBox_Login_loginPassword_CO_r.Text,
-                        this.textBox_Login_locationCode_CP_o.Text == "null" ? null : this.textBox_Login_locationCode_CP_o.Text
-                        );
-
-                    this.txtMsg.Text = request.ToText();
+                    request = new Login_93(this.textBox_Login_UIDAlgorithm.Text,
+                       this.textBox_Login_PWDAlgorithm.Text,
+                       this.textBox_Login_loginUserId_CN_r.Text == "null" ? null : this.textBox_Login_loginUserId_CN_r.Text,
+                       this.textBox_Login_loginPassword_CO_r.Text == "null" ? null : this.textBox_Login_loginPassword_CO_r.Text,
+                       this.textBox_Login_locationCode_CP_o.Text == "null" ? null : this.textBox_Login_locationCode_CP_o.Text
+                       );
                 }
+
+
+
+                //发送命令
+                this.txtMsg.Text = request.ToText();
+                this.sendCmd();
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return;
             }
-
-            //发送命令
-            this.sendCmd();
         }
 
         // 回车 触发 发送

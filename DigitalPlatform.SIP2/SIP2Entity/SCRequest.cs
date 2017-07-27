@@ -19,9 +19,10 @@ Whether to use this message or to use some other mechanism to login to the ACS i
         public string loginUserId_CN_r = null;// variable-length required field
         public string loginPassword_CO_r = null;// variable-length required field
         public string locationCode_CP_o = null;// variable-length optional field; the SC location.
+       
+        // 构造函数
         public Login_93()
         { }
-
 
         public Login_93(string p_UIDAlgorithm_1
             , string p_PWDAlgorithm_1
@@ -30,24 +31,25 @@ Whether to use this message or to use some other mechanism to login to the ACS i
             , string p_locationCode_CP_o)
         {
             if (p_UIDAlgorithm_1.Length != 1)
-            {
                 throw new Exception("UIDAlgorithm长度必须是1位");
-            }
             this.UIDAlgorithm_1 = p_UIDAlgorithm_1;
 
             if (p_PWDAlgorithm_1.Length != 1)
-            {
                 throw new Exception("PWDAlgorithm长度必须是1位");
-            }
             this.PWDAlgorithm_1 = p_PWDAlgorithm_1;
 
-
+            if (p_loginUserId_CN_r == null)
+                throw new Exception("loginUserId_CN不能为null");
             this.loginUserId_CN_r = p_loginUserId_CN_r;
+
+            if (p_loginPassword_CO_r == null)
+                throw new Exception("loginPassword_CO不能为null");
             this.loginPassword_CO_r = p_loginPassword_CO_r;
+
             this.locationCode_CP_o = p_locationCode_CP_o;
         }
 
-
+        // 解析字符串命令为对象
         public override bool parse(string text, out string error)
         {
             error = "";
@@ -117,7 +119,7 @@ Whether to use this message or to use some other mechanism to login to the ACS i
             }
 
             // 校验;
-            bool ret = this.VerifyInternal(out error);
+            bool ret = this.Verify(out error);
             if (ret == false)
                 return false;
 
@@ -129,7 +131,29 @@ Whether to use this message or to use some other mechanism to login to the ACS i
             return false;
         }
 
-        public bool VerifyInternal(out string error)
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            string text = "93";
+
+            text += this.UIDAlgorithm_1;
+            text += this.PWDAlgorithm_1;
+            
+            if (this.loginUserId_CN_r != null)
+                text += "CN" + this.loginUserId_CN_r + "|";
+
+            if (this.loginPassword_CO_r != null)
+                text += "CO" + this.loginPassword_CO_r + "|";
+
+            if (this.locationCode_CP_o != null)
+                text += "CP" + this.locationCode_CP_o + "|";
+
+
+            return text;
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
         {
             error = "";
             if (this.UIDAlgorithm_1 == "")
@@ -160,27 +184,6 @@ Whether to use this message or to use some other mechanism to login to the ACS i
             return false;
         }
 
-        public string ToText()
-        {
-            string text = "93";
-
-            text += this.UIDAlgorithm_1;
-            text += this.PWDAlgorithm_1;
-            
-            if (this.loginUserId_CN_r != null)
-                text += "CN" + this.loginUserId_CN_r + "|";
-
-            if (this.loginPassword_CO_r != null)
-                text += "CO" + this.loginPassword_CO_r + "|";
-
-            if (this.locationCode_CP_o != null)
-                text += "CP" + this.locationCode_CP_o + "|";
-
-
-            return text;
-        }
-
-
     }
 
 /*
@@ -193,6 +196,28 @@ The SC status message sends SC status to the ACS.  It requires an ACS Status Res
         public string statusCode_1 = "";// 1-char, fixed-length required field: 0 or 1 or 2
         public string maxPrintWidth_3 = "";// 3-char, fixed-length required field
         public string protocolVersion_4 = "";// 4-char, fixed-length required field:  x.xx
+
+        // 解析字符串命令为对象
+        public override bool parse(string text, out string error)
+        {
+            error = "未实现参数校验";
+            bool ret = false;
+
+            return ret;
+        }
+
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            return "未实现";
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
+        {
+            error = "未实现";
+            return false;
+        }
     }
 
 /*

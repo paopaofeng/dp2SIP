@@ -43,23 +43,27 @@
             this.splitContainer_main = new System.Windows.Forms.SplitContainer();
             this.tabControl_main = new System.Windows.Forms.TabControl();
             this.tabPage_Login93 = new System.Windows.Forms.TabPage();
+            this.textBox_Login_locationCode_CP_o = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_Login_loginPassword_CO_r = new System.Windows.Forms.TextBox();
+            this.label_oginPassword_CO = new System.Windows.Forms.Label();
+            this.textBox_Login_loginUserId_CN_r = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox_Login_PWDAlgorithm = new System.Windows.Forms.TextBox();
+            this.label_PWDAlgorithm = new System.Windows.Forms.Label();
+            this.textBox_Login_UIDAlgorithm = new System.Windows.Forms.TextBox();
+            this.label_UIDAlgorithm = new System.Windows.Forms.Label();
             this.tabPage_SCStatus99 = new System.Windows.Forms.TabPage();
             this.tabPage_Checkout11 = new System.Windows.Forms.TabPage();
             this.tabPage_Checkin09 = new System.Windows.Forms.TabPage();
             this.tabPage_PatronInformation63 = new System.Windows.Forms.TabPage();
-            this.tabPage_EndPatronSession35 = new System.Windows.Forms.TabPage();
             this.tabPage_ItemInformation17 = new System.Windows.Forms.TabPage();
             this.tabPage_Renew29 = new System.Windows.Forms.TabPage();
-            this.label_UIDAlgorithm = new System.Windows.Forms.Label();
-            this.textBox_Login_UIDAlgorithm = new System.Windows.Forms.TextBox();
-            this.textBox_Login_PWDAlgorithm = new System.Windows.Forms.TextBox();
-            this.label_PWDAlgorithm = new System.Windows.Forms.Label();
-            this.textBox_Login_loginUserId_CN_r = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox_Login_loginPassword_CO_r = new System.Windows.Forms.TextBox();
-            this.label_oginPassword_CO = new System.Windows.Forms.Label();
-            this.textBox_Login_locationCode_CP_o = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.tabPage_EndPatronSession35 = new System.Windows.Forms.TabPage();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -69,6 +73,7 @@
             this.splitContainer_main.SuspendLayout();
             this.tabControl_main.SuspendLayout();
             this.tabPage_Login93.SuspendLayout();
+            this.tabPage_SCStatus99.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtMsg
@@ -91,7 +96,7 @@
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(678, 705);
+            this.txtInfo.Size = new System.Drawing.Size(678, 701);
             this.txtInfo.TabIndex = 21;
             // 
             // menuStrip1
@@ -151,7 +156,7 @@
             this.toolStripLabel_send});
             this.toolStrip1.Location = new System.Drawing.Point(0, 39);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1551, 34);
+            this.toolStrip1.Size = new System.Drawing.Size(1551, 38);
             this.toolStrip1.TabIndex = 25;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -183,7 +188,7 @@
             // splitContainer_main
             // 
             this.splitContainer_main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer_main.Location = new System.Drawing.Point(0, 73);
+            this.splitContainer_main.Location = new System.Drawing.Point(0, 77);
             this.splitContainer_main.Name = "splitContainer_main";
             // 
             // splitContainer_main.Panel1
@@ -194,7 +199,7 @@
             // splitContainer_main.Panel2
             // 
             this.splitContainer_main.Panel2.Controls.Add(this.txtInfo);
-            this.splitContainer_main.Size = new System.Drawing.Size(1551, 705);
+            this.splitContainer_main.Size = new System.Drawing.Size(1551, 701);
             this.splitContainer_main.SplitterDistance = 869;
             this.splitContainer_main.TabIndex = 27;
             // 
@@ -214,7 +219,7 @@
             this.tabControl_main.Location = new System.Drawing.Point(7, 44);
             this.tabControl_main.Name = "tabControl_main";
             this.tabControl_main.SelectedIndex = 0;
-            this.tabControl_main.Size = new System.Drawing.Size(859, 658);
+            this.tabControl_main.Size = new System.Drawing.Size(859, 654);
             this.tabControl_main.TabIndex = 19;
             // 
             // tabPage_Login93
@@ -237,117 +242,21 @@
             this.tabPage_Login93.Text = "Login93";
             this.tabPage_Login93.UseVisualStyleBackColor = true;
             // 
-            // tabPage_SCStatus99
+            // textBox_Login_locationCode_CP_o
             // 
-            this.tabPage_SCStatus99.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_SCStatus99.Name = "tabPage_SCStatus99";
-            this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_SCStatus99.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_SCStatus99.TabIndex = 1;
-            this.tabPage_SCStatus99.Text = "SCStatus99";
-            this.tabPage_SCStatus99.UseVisualStyleBackColor = true;
+            this.textBox_Login_locationCode_CP_o.Location = new System.Drawing.Point(238, 237);
+            this.textBox_Login_locationCode_CP_o.Name = "textBox_Login_locationCode_CP_o";
+            this.textBox_Login_locationCode_CP_o.Size = new System.Drawing.Size(271, 35);
+            this.textBox_Login_locationCode_CP_o.TabIndex = 9;
             // 
-            // tabPage_Checkout11
+            // label2
             // 
-            this.tabPage_Checkout11.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_Checkout11.Name = "tabPage_Checkout11";
-            this.tabPage_Checkout11.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_Checkout11.TabIndex = 2;
-            this.tabPage_Checkout11.Text = "Checkout11";
-            this.tabPage_Checkout11.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_Checkin09
-            // 
-            this.tabPage_Checkin09.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_Checkin09.Name = "tabPage_Checkin09";
-            this.tabPage_Checkin09.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_Checkin09.TabIndex = 3;
-            this.tabPage_Checkin09.Text = "Checkin09";
-            this.tabPage_Checkin09.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_PatronInformation63
-            // 
-            this.tabPage_PatronInformation63.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_PatronInformation63.Name = "tabPage_PatronInformation63";
-            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_PatronInformation63.TabIndex = 4;
-            this.tabPage_PatronInformation63.Text = "PatronInformation63";
-            this.tabPage_PatronInformation63.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_EndPatronSession35
-            // 
-            this.tabPage_EndPatronSession35.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_EndPatronSession35.Name = "tabPage_EndPatronSession35";
-            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_EndPatronSession35.TabIndex = 5;
-            this.tabPage_EndPatronSession35.Text = "EndPatronSession35";
-            this.tabPage_EndPatronSession35.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_ItemInformation17
-            // 
-            this.tabPage_ItemInformation17.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
-            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_ItemInformation17.TabIndex = 6;
-            this.tabPage_ItemInformation17.Text = "ItemInformation17";
-            this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
-            // 
-            // tabPage_Renew29
-            // 
-            this.tabPage_Renew29.Location = new System.Drawing.Point(8, 39);
-            this.tabPage_Renew29.Name = "tabPage_Renew29";
-            this.tabPage_Renew29.Size = new System.Drawing.Size(772, 559);
-            this.tabPage_Renew29.TabIndex = 7;
-            this.tabPage_Renew29.Text = "Renew29";
-            this.tabPage_Renew29.UseVisualStyleBackColor = true;
-            // 
-            // label_UIDAlgorithm
-            // 
-            this.label_UIDAlgorithm.AutoSize = true;
-            this.label_UIDAlgorithm.Location = new System.Drawing.Point(6, 18);
-            this.label_UIDAlgorithm.Name = "label_UIDAlgorithm";
-            this.label_UIDAlgorithm.Size = new System.Drawing.Size(178, 24);
-            this.label_UIDAlgorithm.TabIndex = 0;
-            this.label_UIDAlgorithm.Text = "* UIDAlgorithm";
-            // 
-            // textBox_Login_UIDAlgorithm
-            // 
-            this.textBox_Login_UIDAlgorithm.Location = new System.Drawing.Point(238, 15);
-            this.textBox_Login_UIDAlgorithm.Name = "textBox_Login_UIDAlgorithm";
-            this.textBox_Login_UIDAlgorithm.Size = new System.Drawing.Size(84, 35);
-            this.textBox_Login_UIDAlgorithm.TabIndex = 1;
-            // 
-            // textBox_Login_PWDAlgorithm
-            // 
-            this.textBox_Login_PWDAlgorithm.Location = new System.Drawing.Point(238, 68);
-            this.textBox_Login_PWDAlgorithm.Name = "textBox_Login_PWDAlgorithm";
-            this.textBox_Login_PWDAlgorithm.Size = new System.Drawing.Size(84, 35);
-            this.textBox_Login_PWDAlgorithm.TabIndex = 3;
-            // 
-            // label_PWDAlgorithm
-            // 
-            this.label_PWDAlgorithm.AutoSize = true;
-            this.label_PWDAlgorithm.Location = new System.Drawing.Point(6, 68);
-            this.label_PWDAlgorithm.Name = "label_PWDAlgorithm";
-            this.label_PWDAlgorithm.Size = new System.Drawing.Size(178, 24);
-            this.label_PWDAlgorithm.TabIndex = 2;
-            this.label_PWDAlgorithm.Text = "* PWDAlgorithm";
-            // 
-            // textBox_Login_loginUserId_CN_r
-            // 
-            this.textBox_Login_loginUserId_CN_r.Location = new System.Drawing.Point(238, 126);
-            this.textBox_Login_loginUserId_CN_r.Name = "textBox_Login_loginUserId_CN_r";
-            this.textBox_Login_loginUserId_CN_r.Size = new System.Drawing.Size(271, 35);
-            this.textBox_Login_loginUserId_CN_r.TabIndex = 5;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 129);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(202, 24);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "* loginUserId_CN";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 240);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(214, 24);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "  locationCode_CP";
             // 
             // textBox_Login_loginPassword_CO_r
             // 
@@ -365,21 +274,153 @@
             this.label_oginPassword_CO.TabIndex = 6;
             this.label_oginPassword_CO.Text = "* loginPassword_CO";
             // 
-            // textBox_Login_locationCode_CP_o
+            // textBox_Login_loginUserId_CN_r
             // 
-            this.textBox_Login_locationCode_CP_o.Location = new System.Drawing.Point(238, 237);
-            this.textBox_Login_locationCode_CP_o.Name = "textBox_Login_locationCode_CP_o";
-            this.textBox_Login_locationCode_CP_o.Size = new System.Drawing.Size(271, 35);
-            this.textBox_Login_locationCode_CP_o.TabIndex = 9;
+            this.textBox_Login_loginUserId_CN_r.Location = new System.Drawing.Point(238, 126);
+            this.textBox_Login_loginUserId_CN_r.Name = "textBox_Login_loginUserId_CN_r";
+            this.textBox_Login_loginUserId_CN_r.Size = new System.Drawing.Size(271, 35);
+            this.textBox_Login_loginUserId_CN_r.TabIndex = 5;
             // 
-            // label2
+            // label1
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 240);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(214, 24);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "  locationCode_CP";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 129);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(202, 24);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "* loginUserId_CN";
+            // 
+            // textBox_Login_PWDAlgorithm
+            // 
+            this.textBox_Login_PWDAlgorithm.Location = new System.Drawing.Point(238, 68);
+            this.textBox_Login_PWDAlgorithm.Name = "textBox_Login_PWDAlgorithm";
+            this.textBox_Login_PWDAlgorithm.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Login_PWDAlgorithm.TabIndex = 3;
+            // 
+            // label_PWDAlgorithm
+            // 
+            this.label_PWDAlgorithm.AutoSize = true;
+            this.label_PWDAlgorithm.Location = new System.Drawing.Point(6, 68);
+            this.label_PWDAlgorithm.Name = "label_PWDAlgorithm";
+            this.label_PWDAlgorithm.Size = new System.Drawing.Size(178, 24);
+            this.label_PWDAlgorithm.TabIndex = 2;
+            this.label_PWDAlgorithm.Text = "* PWDAlgorithm";
+            // 
+            // textBox_Login_UIDAlgorithm
+            // 
+            this.textBox_Login_UIDAlgorithm.Location = new System.Drawing.Point(238, 15);
+            this.textBox_Login_UIDAlgorithm.Name = "textBox_Login_UIDAlgorithm";
+            this.textBox_Login_UIDAlgorithm.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Login_UIDAlgorithm.TabIndex = 1;
+            // 
+            // label_UIDAlgorithm
+            // 
+            this.label_UIDAlgorithm.AutoSize = true;
+            this.label_UIDAlgorithm.Location = new System.Drawing.Point(6, 18);
+            this.label_UIDAlgorithm.Name = "label_UIDAlgorithm";
+            this.label_UIDAlgorithm.Size = new System.Drawing.Size(178, 24);
+            this.label_UIDAlgorithm.TabIndex = 0;
+            this.label_UIDAlgorithm.Text = "* UIDAlgorithm";
+            // 
+            // tabPage_SCStatus99
+            // 
+            this.tabPage_SCStatus99.Controls.Add(this.textBox1);
+            this.tabPage_SCStatus99.Controls.Add(this.label3);
+            this.tabPage_SCStatus99.Controls.Add(this.textBox2);
+            this.tabPage_SCStatus99.Controls.Add(this.label4);
+            this.tabPage_SCStatus99.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_SCStatus99.Name = "tabPage_SCStatus99";
+            this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_SCStatus99.Size = new System.Drawing.Size(843, 607);
+            this.tabPage_SCStatus99.TabIndex = 1;
+            this.tabPage_SCStatus99.Text = "SCStatus99";
+            this.tabPage_SCStatus99.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_Checkout11
+            // 
+            this.tabPage_Checkout11.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_Checkout11.Name = "tabPage_Checkout11";
+            this.tabPage_Checkout11.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_Checkout11.TabIndex = 2;
+            this.tabPage_Checkout11.Text = "Checkout11";
+            this.tabPage_Checkout11.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_Checkin09
+            // 
+            this.tabPage_Checkin09.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_Checkin09.Name = "tabPage_Checkin09";
+            this.tabPage_Checkin09.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_Checkin09.TabIndex = 3;
+            this.tabPage_Checkin09.Text = "Checkin09";
+            this.tabPage_Checkin09.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_PatronInformation63
+            // 
+            this.tabPage_PatronInformation63.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_PatronInformation63.Name = "tabPage_PatronInformation63";
+            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_PatronInformation63.TabIndex = 4;
+            this.tabPage_PatronInformation63.Text = "PatronInformation63";
+            this.tabPage_PatronInformation63.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_ItemInformation17
+            // 
+            this.tabPage_ItemInformation17.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
+            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_ItemInformation17.TabIndex = 6;
+            this.tabPage_ItemInformation17.Text = "ItemInformation17";
+            this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_Renew29
+            // 
+            this.tabPage_Renew29.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_Renew29.Name = "tabPage_Renew29";
+            this.tabPage_Renew29.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_Renew29.TabIndex = 7;
+            this.tabPage_Renew29.Text = "Renew29";
+            this.tabPage_Renew29.UseVisualStyleBackColor = true;
+            // 
+            // tabPage_EndPatronSession35
+            // 
+            this.tabPage_EndPatronSession35.Location = new System.Drawing.Point(8, 39);
+            this.tabPage_EndPatronSession35.Name = "tabPage_EndPatronSession35";
+            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(843, 611);
+            this.tabPage_EndPatronSession35.TabIndex = 5;
+            this.tabPage_EndPatronSession35.Text = "EndPatronSession35";
+            this.tabPage_EndPatronSession35.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(238, 72);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(84, 35);
+            this.textBox1.TabIndex = 7;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 72);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(178, 24);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "* PWDAlgorithm";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(238, 19);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(84, 35);
+            this.textBox2.TabIndex = 5;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 22);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(178, 24);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "* UIDAlgorithm";
             // 
             // MainForm
             // 
@@ -409,6 +450,8 @@
             this.tabControl_main.ResumeLayout(false);
             this.tabPage_Login93.ResumeLayout(false);
             this.tabPage_Login93.PerformLayout();
+            this.tabPage_SCStatus99.ResumeLayout(false);
+            this.tabPage_SCStatus99.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -448,6 +491,10 @@
         private System.Windows.Forms.Label label_oginPassword_CO;
         private System.Windows.Forms.TextBox textBox_Login_locationCode_CP_o;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label4;
     }
 }
 
