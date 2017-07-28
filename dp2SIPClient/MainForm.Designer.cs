@@ -136,6 +136,30 @@
             this.textBox_ItemInformation17_transactionDate_18 = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
             this.label39 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_feeAcknowledged_BO_1_o = new System.Windows.Forms.TextBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_itemProperties_CH_o = new System.Windows.Forms.TextBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_terminalPassword_AC_o = new System.Windows.Forms.TextBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_titleIdentifier_AJ_o = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_itemIdentifier_AB_o = new System.Windows.Forms.TextBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_patronPassword_AD_o = new System.Windows.Forms.TextBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_patronIdentifier_AA_r = new System.Windows.Forms.TextBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_institutionId_AO_r = new System.Windows.Forms.TextBox();
+            this.label47 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_nbDueDate_18 = new System.Windows.Forms.TextBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_transactionDate_18 = new System.Windows.Forms.TextBox();
+            this.label49 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_noBlock_1 = new System.Windows.Forms.TextBox();
+            this.label50 = new System.Windows.Forms.Label();
+            this.textBox_Renew29_thirdPartyAllowed_1 = new System.Windows.Forms.TextBox();
+            this.label51 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -149,6 +173,7 @@
             this.tabPage_Checkout11.SuspendLayout();
             this.tabPage_PatronInformation63.SuspendLayout();
             this.tabPage_ItemInformation17.SuspendLayout();
+            this.tabPage_Renew29.SuspendLayout();
             this.tabPage_Checkin09.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -160,7 +185,7 @@
             this.txtMsg.Location = new System.Drawing.Point(7, 0);
             this.txtMsg.Margin = new System.Windows.Forms.Padding(6);
             this.txtMsg.Name = "txtMsg";
-            this.txtMsg.Size = new System.Drawing.Size(929, 35);
+            this.txtMsg.Size = new System.Drawing.Size(983, 35);
             this.txtMsg.TabIndex = 18;
             this.txtMsg.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtMsg_KeyUp);
             // 
@@ -172,7 +197,7 @@
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(735, 747);
+            this.txtInfo.Size = new System.Drawing.Size(681, 747);
             this.txtInfo.TabIndex = 21;
             // 
             // menuStrip1
@@ -290,7 +315,7 @@
             // 
             this.splitContainer_main.Panel2.Controls.Add(this.txtInfo);
             this.splitContainer_main.Size = new System.Drawing.Size(1680, 747);
-            this.splitContainer_main.SplitterDistance = 941;
+            this.splitContainer_main.SplitterDistance = 995;
             this.splitContainer_main.TabIndex = 27;
             // 
             // tabControl_main
@@ -309,7 +334,7 @@
             this.tabControl_main.Location = new System.Drawing.Point(7, 44);
             this.tabControl_main.Name = "tabControl_main";
             this.tabControl_main.SelectedIndex = 0;
-            this.tabControl_main.Size = new System.Drawing.Size(931, 700);
+            this.tabControl_main.Size = new System.Drawing.Size(985, 700);
             this.tabControl_main.TabIndex = 19;
             // 
             // tabPage_Login93
@@ -504,7 +529,7 @@
             this.tabPage_Checkout11.Controls.Add(this.label8);
             this.tabPage_Checkout11.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Checkout11.Name = "tabPage_Checkout11";
-            this.tabPage_Checkout11.Size = new System.Drawing.Size(915, 657);
+            this.tabPage_Checkout11.Size = new System.Drawing.Size(969, 657);
             this.tabPage_Checkout11.TabIndex = 2;
             this.tabPage_Checkout11.Text = "Checkout11";
             this.tabPage_Checkout11.UseVisualStyleBackColor = true;
@@ -708,16 +733,40 @@
             this.tabPage_ItemInformation17.Controls.Add(this.label38);
             this.tabPage_ItemInformation17.Location = new System.Drawing.Point(8, 39);
             this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
-            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(915, 653);
+            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(969, 657);
             this.tabPage_ItemInformation17.TabIndex = 6;
             this.tabPage_ItemInformation17.Text = "ItemInformation17";
             this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
             // 
             // tabPage_Renew29
             // 
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_feeAcknowledged_BO_1_o);
+            this.tabPage_Renew29.Controls.Add(this.label40);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_itemProperties_CH_o);
+            this.tabPage_Renew29.Controls.Add(this.label41);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_terminalPassword_AC_o);
+            this.tabPage_Renew29.Controls.Add(this.label42);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_titleIdentifier_AJ_o);
+            this.tabPage_Renew29.Controls.Add(this.label43);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_itemIdentifier_AB_o);
+            this.tabPage_Renew29.Controls.Add(this.label44);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_patronPassword_AD_o);
+            this.tabPage_Renew29.Controls.Add(this.label45);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_patronIdentifier_AA_r);
+            this.tabPage_Renew29.Controls.Add(this.label46);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_institutionId_AO_r);
+            this.tabPage_Renew29.Controls.Add(this.label47);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_nbDueDate_18);
+            this.tabPage_Renew29.Controls.Add(this.label48);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_transactionDate_18);
+            this.tabPage_Renew29.Controls.Add(this.label49);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_noBlock_1);
+            this.tabPage_Renew29.Controls.Add(this.label50);
+            this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_thirdPartyAllowed_1);
+            this.tabPage_Renew29.Controls.Add(this.label51);
             this.tabPage_Renew29.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Renew29.Name = "tabPage_Renew29";
-            this.tabPage_Renew29.Size = new System.Drawing.Size(915, 657);
+            this.tabPage_Renew29.Size = new System.Drawing.Size(969, 653);
             this.tabPage_Renew29.TabIndex = 7;
             this.tabPage_Renew29.Text = "Renew29";
             this.tabPage_Renew29.UseVisualStyleBackColor = true;
@@ -1142,6 +1191,198 @@
             this.label39.TabIndex = 75;
             this.label39.Text = "institutionId_AO_r";
             // 
+            // textBox_Renew29_feeAcknowledged_BO_1_o
+            // 
+            this.textBox_Renew29_feeAcknowledged_BO_1_o.Location = new System.Drawing.Point(301, 569);
+            this.textBox_Renew29_feeAcknowledged_BO_1_o.Name = "textBox_Renew29_feeAcknowledged_BO_1_o";
+            this.textBox_Renew29_feeAcknowledged_BO_1_o.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Renew29_feeAcknowledged_BO_1_o.TabIndex = 57;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(19, 569);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(274, 24);
+            this.label40.TabIndex = 56;
+            this.label40.Text = "feeAcknowledged_BO_1_o";
+            // 
+            // textBox_Renew29_itemProperties_CH_o
+            // 
+            this.textBox_Renew29_itemProperties_CH_o.Location = new System.Drawing.Point(301, 524);
+            this.textBox_Renew29_itemProperties_CH_o.Name = "textBox_Renew29_itemProperties_CH_o";
+            this.textBox_Renew29_itemProperties_CH_o.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Renew29_itemProperties_CH_o.TabIndex = 55;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(19, 524);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(238, 24);
+            this.label41.TabIndex = 54;
+            this.label41.Text = "itemProperties_CH_o";
+            // 
+            // textBox_Renew29_terminalPassword_AC_o
+            // 
+            this.textBox_Renew29_terminalPassword_AC_o.Location = new System.Drawing.Point(301, 476);
+            this.textBox_Renew29_terminalPassword_AC_o.Name = "textBox_Renew29_terminalPassword_AC_o";
+            this.textBox_Renew29_terminalPassword_AC_o.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_terminalPassword_AC_o.TabIndex = 53;
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(19, 476);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(262, 24);
+            this.label42.TabIndex = 52;
+            this.label42.Text = "terminalPassword_AC_o";
+            // 
+            // textBox_Renew29_titleIdentifier_AJ_o
+            // 
+            this.textBox_Renew29_titleIdentifier_AJ_o.Location = new System.Drawing.Point(301, 426);
+            this.textBox_Renew29_titleIdentifier_AJ_o.Name = "textBox_Renew29_titleIdentifier_AJ_o";
+            this.textBox_Renew29_titleIdentifier_AJ_o.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_titleIdentifier_AJ_o.TabIndex = 51;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(19, 426);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(250, 24);
+            this.label43.TabIndex = 50;
+            this.label43.Text = "titleIdentifier_AJ_o";
+            // 
+            // textBox_Renew29_itemIdentifier_AB_o
+            // 
+            this.textBox_Renew29_itemIdentifier_AB_o.Location = new System.Drawing.Point(301, 375);
+            this.textBox_Renew29_itemIdentifier_AB_o.Name = "textBox_Renew29_itemIdentifier_AB_o";
+            this.textBox_Renew29_itemIdentifier_AB_o.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_itemIdentifier_AB_o.TabIndex = 49;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(19, 375);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(238, 24);
+            this.label44.TabIndex = 48;
+            this.label44.Text = "itemIdentifier_AB_o";
+            // 
+            // textBox_Renew29_patronPassword_AD_o
+            // 
+            this.textBox_Renew29_patronPassword_AD_o.Location = new System.Drawing.Point(301, 327);
+            this.textBox_Renew29_patronPassword_AD_o.Name = "textBox_Renew29_patronPassword_AD_o";
+            this.textBox_Renew29_patronPassword_AD_o.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_patronPassword_AD_o.TabIndex = 47;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(19, 327);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(238, 24);
+            this.label45.TabIndex = 46;
+            this.label45.Text = "patronPassword_AD_o";
+            // 
+            // textBox_Renew29_patronIdentifier_AA_r
+            // 
+            this.textBox_Renew29_patronIdentifier_AA_r.Location = new System.Drawing.Point(301, 274);
+            this.textBox_Renew29_patronIdentifier_AA_r.Name = "textBox_Renew29_patronIdentifier_AA_r";
+            this.textBox_Renew29_patronIdentifier_AA_r.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_patronIdentifier_AA_r.TabIndex = 45;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(19, 274);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(262, 24);
+            this.label46.TabIndex = 44;
+            this.label46.Text = "patronIdentifier_AA_r";
+            // 
+            // textBox_Renew29_institutionId_AO_r
+            // 
+            this.textBox_Renew29_institutionId_AO_r.Location = new System.Drawing.Point(301, 221);
+            this.textBox_Renew29_institutionId_AO_r.Name = "textBox_Renew29_institutionId_AO_r";
+            this.textBox_Renew29_institutionId_AO_r.Size = new System.Drawing.Size(355, 35);
+            this.textBox_Renew29_institutionId_AO_r.TabIndex = 43;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(19, 224);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(226, 24);
+            this.label47.TabIndex = 42;
+            this.label47.Text = "institutionId_AO_r";
+            // 
+            // textBox_Renew29_nbDueDate_18
+            // 
+            this.textBox_Renew29_nbDueDate_18.Location = new System.Drawing.Point(301, 173);
+            this.textBox_Renew29_nbDueDate_18.Name = "textBox_Renew29_nbDueDate_18";
+            this.textBox_Renew29_nbDueDate_18.Size = new System.Drawing.Size(522, 35);
+            this.textBox_Renew29_nbDueDate_18.TabIndex = 41;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(19, 173);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(154, 24);
+            this.label48.TabIndex = 40;
+            this.label48.Text = "nbDueDate_18";
+            // 
+            // textBox_Renew29_transactionDate_18
+            // 
+            this.textBox_Renew29_transactionDate_18.Location = new System.Drawing.Point(301, 125);
+            this.textBox_Renew29_transactionDate_18.Name = "textBox_Renew29_transactionDate_18";
+            this.textBox_Renew29_transactionDate_18.Size = new System.Drawing.Size(522, 35);
+            this.textBox_Renew29_transactionDate_18.TabIndex = 39;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(19, 125);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(226, 24);
+            this.label49.TabIndex = 38;
+            this.label49.Text = "transactionDate_18";
+            // 
+            // textBox_Renew29_noBlock_1
+            // 
+            this.textBox_Renew29_noBlock_1.Location = new System.Drawing.Point(301, 72);
+            this.textBox_Renew29_noBlock_1.Name = "textBox_Renew29_noBlock_1";
+            this.textBox_Renew29_noBlock_1.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Renew29_noBlock_1.TabIndex = 37;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(19, 72);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(118, 24);
+            this.label50.TabIndex = 36;
+            this.label50.Text = "noBlock_1";
+            // 
+            // textBox_Renew29_thirdPartyAllowed_1
+            // 
+            this.textBox_Renew29_thirdPartyAllowed_1.Location = new System.Drawing.Point(301, 19);
+            this.textBox_Renew29_thirdPartyAllowed_1.Name = "textBox_Renew29_thirdPartyAllowed_1";
+            this.textBox_Renew29_thirdPartyAllowed_1.Size = new System.Drawing.Size(84, 35);
+            this.textBox_Renew29_thirdPartyAllowed_1.TabIndex = 35;
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(19, 22);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(238, 24);
+            this.label51.TabIndex = 34;
+            this.label51.Text = "thirdPartyAllowed_1";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
@@ -1178,6 +1419,8 @@
             this.tabPage_PatronInformation63.PerformLayout();
             this.tabPage_ItemInformation17.ResumeLayout(false);
             this.tabPage_ItemInformation17.PerformLayout();
+            this.tabPage_Renew29.ResumeLayout(false);
+            this.tabPage_Renew29.PerformLayout();
             this.tabPage_Checkin09.ResumeLayout(false);
             this.tabPage_Checkin09.PerformLayout();
             this.ResumeLayout(false);
@@ -1295,6 +1538,30 @@
         private System.Windows.Forms.TextBox textBox_ItemInformation17_institutionId_AO_r;
         private System.Windows.Forms.TextBox textBox_ItemInformation17_transactionDate_18;
         private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.TextBox textBox_Renew29_feeAcknowledged_BO_1_o;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.TextBox textBox_Renew29_itemProperties_CH_o;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.TextBox textBox_Renew29_terminalPassword_AC_o;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.TextBox textBox_Renew29_titleIdentifier_AJ_o;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.TextBox textBox_Renew29_itemIdentifier_AB_o;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.TextBox textBox_Renew29_patronPassword_AD_o;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.TextBox textBox_Renew29_patronIdentifier_AA_r;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.TextBox textBox_Renew29_institutionId_AO_r;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.TextBox textBox_Renew29_nbDueDate_18;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.TextBox textBox_Renew29_transactionDate_18;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.TextBox textBox_Renew29_noBlock_1;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.TextBox textBox_Renew29_thirdPartyAllowed_1;
+        private System.Windows.Forms.Label label51;
     }
 }
 

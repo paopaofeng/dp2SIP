@@ -183,7 +183,25 @@ namespace dp2SIPClient
                        this.textBox_ItemInformation17_terminalPassword_AC_o.Text == "null" ? null : this.textBox_ItemInformation17_terminalPassword_AC_o.Text
                         );
                 }
+                else if (this.tabControl_main.SelectedTab == this.tabPage_Renew29)
+                {
+                    request = new Renew_29(this.textBox_Renew29_thirdPartyAllowed_1.Text,
+                       this.textBox_Renew29_noBlock_1.Text,
+                       this.textBox_Renew29_transactionDate_18.Text,
 
+                       this.textBox_Renew29_nbDueDate_18.Text,
+                       this.textBox_Renew29_institutionId_AO_r.Text == "null" ? null : this.textBox_Renew29_institutionId_AO_r.Text,
+                       this.textBox_Renew29_patronIdentifier_AA_r.Text == "null" ? null : this.textBox_Renew29_patronIdentifier_AA_r.Text,
+
+                       this.textBox_Renew29_patronPassword_AD_o.Text == "null" ? null : this.textBox_Renew29_patronPassword_AD_o.Text,
+                       this.textBox_Renew29_itemIdentifier_AB_o.Text == "null" ? null : this.textBox_Renew29_itemIdentifier_AB_o.Text,
+                       this.textBox_Renew29_titleIdentifier_AJ_o.Text == "null" ? null : this.textBox_Renew29_titleIdentifier_AJ_o.Text,
+
+                       this.textBox_Renew29_terminalPassword_AC_o.Text == "null" ? null : this.textBox_Renew29_terminalPassword_AC_o.Text,
+                       this.textBox_Renew29_itemProperties_CH_o.Text == "null" ? null : this.textBox_Renew29_itemProperties_CH_o.Text,
+                       this.textBox_Renew29_feeAcknowledged_BO_1_o.Text == "null" ? null : this.textBox_Renew29_feeAcknowledged_BO_1_o.Text
+                       );
+                }
                 //发送命令
                 this.txtMsg.Text = request.ToText();
                 this.sendCmd();
@@ -318,7 +336,34 @@ namespace dp2SIPClient
                 this.textBox_ItemInformation17_itemIdentifier_AB_r.Text = request17.itemIdentifier_AB_r;
                 this.textBox_ItemInformation17_terminalPassword_AC_o.Text = request17.terminalPassword_AC_o;
             }
+            else if (this.tabControl_main.SelectedTab == this.tabPage_Renew29)
+            {
+                //29NN20170630    144419                  AOdp2Library|AAL905071|AB510105|BON|
+                string transactionDate = SIPUtility.NowDateTime;
+                text = "29NN" + transactionDate + "                  AOdp2Library|AAFZXP00001|ABDPB000051|BON|";
+                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                if (bRet == false)
+                    goto ERROR1;
 
+                Renew_29 request29 = (Renew_29)request;
+                this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.thirdPartyAllowed_1;
+                this.textBox_Renew29_noBlock_1.Text = request29.noBlock_1;
+                this.textBox_Renew29_transactionDate_18.Text = request29.transactionDate_18;
+
+                this.textBox_Renew29_nbDueDate_18.Text = request29.nbDueDate_18;
+                this.textBox_Renew29_institutionId_AO_r.Text = request29.institutionId_AO_r;
+                this.textBox_Renew29_patronIdentifier_AA_r.Text = request29.patronIdentifier_AA_r;
+
+                //AD	AB AJ
+                this.textBox_Renew29_patronPassword_AD_o.Text = request29.patronPassword_AD_o;
+                this.textBox_Renew29_itemIdentifier_AB_o.Text = request29.itemIdentifier_AB_o;
+                this.textBox_Renew29_titleIdentifier_AJ_o.Text = request29.titleIdentifier_AJ_o;
+
+                //AC	CH	BO
+                this.textBox_Renew29_terminalPassword_AC_o.Text = request29.terminalPassword_AC_o;
+                this.textBox_Renew29_itemProperties_CH_o.Text = request29.itemProperties_CH_o;
+                this.textBox_Renew29_feeAcknowledged_BO_1_o.Text = request29.feeAcknowledged_BO_1_o;
+            }
             return;
 
         ERROR1:

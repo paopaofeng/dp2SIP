@@ -1280,15 +1280,269 @@ namespace DigitalPlatform.SIP2.SIP2Entity
         public string thirdPartyAllowed_1 = "";//1-char, fixed-length required field:  Y or N.
         public string noBlock_1 = "";//1-char, fixed-length required field:  Y or N.
         public string transactionDate_18 = "";//18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+       
         public string nbDueDate_18 = "";//18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string institutionId_AO_r = "";//variable-length required field
         public string patronIdentifier_AA_r = "";//variable-length required field
+       
         public string patronPassword_AD_o = "";//variable-length optional field
         public string itemIdentifier_AB_o = "";//variable-length optional field
         public string titleIdentifier_AJ_o = "";//variable-length optional field
+       
         public string terminalPassword_AC_o = "";//variable-length optional field
         public string itemProperties_CH_o = "";//variable-length optional field
-        public string feeAcknowledged_BO_o = "";//1-char, optional field: Y or N.
+        public string feeAcknowledged_BO_1_o = "";//1-char, optional field: Y or N.
+
+                // 构造函数
+        public Renew_29()
+        { }
+
+        public Renew_29(string p_thirdPartyAllowed_1
+            , string p_noBlock_1
+            , string p_transactionDate_18
+
+            , string p_nbDueDate_18
+            , string p_institutionId_AO_r
+            , string p_patronIdentifier_AA_r
+
+            , string p_patronPassword_AD_o
+            , string p_itemIdentifier_AB_o
+            , string p_titleIdentifier_AJ_o
+
+            , string p_terminalPassword_AC_o
+            , string p_itemProperties_CH_o
+            , string p_feeAcknowledged_BO_1_o
+            )
+        {
+            if (p_thirdPartyAllowed_1.Length != 1)
+                throw new Exception("p_thirdPartyAllowed_1字段长度必须是1位");
+            this.thirdPartyAllowed_1 = p_thirdPartyAllowed_1;
+
+            if (p_noBlock_1.Length != 1)
+                throw new Exception("noBlock_1字段长度必须是3位");
+            this.noBlock_1 = p_noBlock_1;
+
+            if (p_transactionDate_18.Length != 18)
+                throw new Exception("transactionDate_18字段长度必须是4位");
+            this.transactionDate_18 = p_transactionDate_18;
+
+
+
+            if (p_nbDueDate_18.Length != 18)
+                throw new Exception("nbDueDate_18字段长度必须是4位");
+            this.nbDueDate_18 = p_nbDueDate_18;
+
+            if (p_institutionId_AO_r == null)
+                throw new Exception("institutionId_AO_r不能为null");
+            this.institutionId_AO_r = p_institutionId_AO_r;
+
+            if (p_patronIdentifier_AA_r == null)
+                throw new Exception("patronIdentifier_AA_r不能为null");
+            this.patronIdentifier_AA_r = p_patronIdentifier_AA_r;
+
+
+            this.patronPassword_AD_o = p_patronPassword_AD_o;
+            this.itemIdentifier_AB_o = p_itemIdentifier_AB_o;
+            this.titleIdentifier_AJ_o = p_titleIdentifier_AJ_o;
+
+            this.terminalPassword_AC_o = p_terminalPassword_AC_o;
+            this.itemProperties_CH_o = p_itemProperties_CH_o;
+            this.feeAcknowledged_BO_1_o = p_feeAcknowledged_BO_1_o;
+        }
+
+        // 解析字符串命令为对象
+        public override bool parse(string text, out string error)
+        {
+            error = "";
+
+            if (text == null || text.Length == 0)
+            {
+                error = "命令字符串为null或长度为0。";
+                goto ERROR1;
+            }
+
+            //处理定长字段
+            string rest = text;
+            while (rest.Length > 0)
+            {
+                if (this.thirdPartyAllowed_1 == "")
+                {
+                    this.thirdPartyAllowed_1 = rest.Substring(0, 1);
+                    rest = rest.Substring(1);
+                    continue;
+                }
+                if (this.noBlock_1 == "")
+                {
+                    this.noBlock_1 = rest.Substring(0, 1);
+                    rest = rest.Substring(1);
+                    continue;
+                }
+                if (this.transactionDate_18 == "")
+                {
+                    this.transactionDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                if (this.nbDueDate_18 == "")
+                {
+                    this.nbDueDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                break;
+            }
+
+            //处理变长字段
+            string[] parts = rest.Split(new char[] { '|' });
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                if (part.Length < 2)
+                {
+                    continue;
+                    //error = "发现不足2位的字段:" + part;
+                    //goto ERROR1;
+                }
+                //AO	AA AD	AB AJ	AC	CH	BO
+                string fieldId = part.Substring(0, 2);
+                string value = part.Substring(2);
+                if (fieldId == "AO")
+                {
+                    this.institutionId_AO_r = value;
+                }
+                else if (fieldId == "AA")
+                {
+                    this.patronIdentifier_AA_r = value;
+                }
+
+                else if (fieldId == "AD")
+                {
+                    this.patronPassword_AD_o = value;
+                }
+                else if (fieldId == "AB")
+                {
+                    this.itemIdentifier_AB_o = value;
+                }
+                else if (fieldId == "AJ")
+                {
+                    this.titleIdentifier_AJ_o = value;
+                }
+                //===
+                else if (fieldId == "AC")
+                {
+                    this.terminalPassword_AC_o = value;
+                }
+                else if (fieldId == "CH")
+                {
+                    this.itemProperties_CH_o = value;
+                }
+                else if (fieldId == "BO")
+                {
+                    this.feeAcknowledged_BO_1_o = value;
+                }
+                else
+                {
+                    error = "不支持的字段:" + part;
+                    goto ERROR1;
+                }
+            }
+
+            // 校验;
+            bool ret = this.Verify(out error);
+            if (ret == false)
+                return false;
+
+            return true;
+
+        ERROR1:
+
+            return false;
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
+        {
+            error = "";
+
+            //1-char	1-char	18-char	18-char
+            if (this.thirdPartyAllowed_1 == "")
+            {
+                error = "thirdPartyAllowed_1字段未赋值";
+                goto ERROR1;
+            }
+            if (this.noBlock_1 == "")
+            {
+                error = "noBlock_1字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.transactionDate_18 == "")
+            {
+                error = "transactionDate_18字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.nbDueDate_18 == "")
+            {
+                error = "nbDueDate_18字段未赋值";
+                goto ERROR1;
+            }
+            //AO	AA
+            if (this.institutionId_AO_r == null)
+            {
+                error = "缺必备字段AO";
+                goto ERROR1;
+            }
+
+            if (this.patronIdentifier_AA_r == null)
+            {
+                error = "缺必备字段AA";
+                goto ERROR1;
+            }
+
+            return true;
+        ERROR1:
+
+            return false;
+        }
+
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            string text = "29";
+
+            //1-char	1-char	18-char	18-char
+            text += this.thirdPartyAllowed_1;
+            text += this.noBlock_1 ;
+            text += this.transactionDate_18;
+            text += this.nbDueDate_18;
+
+            //AO	AA AD	AB AJ	AC	CH	BO
+            if (this.institutionId_AO_r != null)
+                text += "AO" + this.institutionId_AO_r + "|";
+
+            if (this.patronIdentifier_AA_r != null)
+                text += "AA" + this.patronIdentifier_AA_r + "|";
+
+            if (this.patronPassword_AD_o != null)
+                text += "AD" + this.patronPassword_AD_o + "|";
+            if (this.itemIdentifier_AB_o!= null)
+                text += "AB" + this.itemIdentifier_AB_o + "|";
+            if (this.titleIdentifier_AJ_o != null)
+                text += "AJ" + this.titleIdentifier_AJ_o + "|";
+
+
+            if (this.terminalPassword_AC_o != null)
+                text += "AC" + this.terminalPassword_AC_o + "|";
+            if (this.itemProperties_CH_o != null)
+                text += "CH" + this.itemProperties_CH_o + "|";
+            if (this.feeAcknowledged_BO_1_o != null)
+                text += "BO" + this.feeAcknowledged_BO_1_o + "|";
+
+
+
+            return text;
+        }
     }
 
     /*
