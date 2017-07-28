@@ -630,12 +630,240 @@ namespace DigitalPlatform.SIP2.SIP2Entity
         public string noBlock_1 = "";             //1-char, fixed-length required field:  Y or N.
         public string transactionDate_18 = "";  //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string returnDate_18 = "";         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+        
         public string currentLocation_AP_r = "";//variable-length required field
         public string institutionId_AO_r = "";     //variable-length required field
         public string itemIdentifier_AB_r = "";     //variable-length required field
+        
         public string terminalPassword_AC_r = "";//variable-length required field
         public string itemProperties_CH_o = "";    //variable-length optional field
-        public string cancel_BI_o = "";                 //1-char, optional field: Y or N
+        public string cancel_BI_1_o = "";                 //1-char, optional field: Y or N
+
+        // 构造函数
+        public Checkin_09()
+        { }
+
+        public Checkin_09(string p_noBlock_1
+            , string p_transactionDate_18
+            , string p_returnDate_18
+
+            , string p_currentLocation_AP_r
+            , string p_institutionId_AO_r
+            , string p_itemIdentifier_AB_r
+
+            , string p_terminalPassword_AC_r
+            , string p_itemProperties_CH_o
+            , string p_cancel_BI_1_o)
+        {
+            if (p_noBlock_1.Length != 1)
+                throw new Exception("noBlock_1字段长度必须是3位");
+            this.noBlock_1 = p_noBlock_1;
+
+            if (p_transactionDate_18.Length != 18)
+                throw new Exception("transactionDate_18字段长度必须是4位");
+            this.transactionDate_18 = p_transactionDate_18;
+
+            if (p_returnDate_18.Length != 18)
+                throw new Exception("returnDate_18字段长度必须是4位");
+            this.returnDate_18 = p_returnDate_18;
+
+
+            if (p_currentLocation_AP_r == null)
+                throw new Exception("currentLocation_AP_r不能为null");
+            this.currentLocation_AP_r = p_currentLocation_AP_r;
+
+            if (p_institutionId_AO_r == null)
+                throw new Exception("institutionId_AO_r不能为null");
+            this.institutionId_AO_r = p_institutionId_AO_r;
+
+            if (p_itemIdentifier_AB_r == null)
+                throw new Exception("itemIdentifier_AB_r不能为null");
+            this.itemIdentifier_AB_r = p_itemIdentifier_AB_r;
+
+            if (p_terminalPassword_AC_r == null)
+                throw new Exception("terminalPassword_AC_r不能为null");
+            this.terminalPassword_AC_r = p_terminalPassword_AC_r;
+
+            this.itemProperties_CH_o = p_itemProperties_CH_o;
+            this.cancel_BI_1_o = p_cancel_BI_1_o;
+        }
+
+        // 解析字符串命令为对象
+        public override bool parse(string text, out string error)
+        {
+            error = "";
+
+            if (text == null || text.Length == 0)
+            {
+                error = "命令字符串为null或长度为0。";
+                goto ERROR1;
+            }
+
+            //处理定长字段
+            string rest = text;
+            while (rest.Length > 0)
+            {
+                if (this.noBlock_1 == "")
+                {
+                    this.noBlock_1 = rest.Substring(0, 1);
+                    rest = rest.Substring(1);
+                    continue;
+                }
+                if (this.transactionDate_18 == "")
+                {
+                    this.transactionDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                if (this.returnDate_18 == "")
+                {
+                    this.returnDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                break;
+            }
+
+            //处理变长字段
+            string[] parts = rest.Split(new char[] { '|' });
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                if (part.Length < 2)
+                {
+                    continue;
+                }
+                //AP	AO	AB	AC	CH	BI
+                string fieldId = part.Substring(0, 2);
+                string value = part.Substring(2);
+                if (fieldId == "AP")
+                {
+                    this.currentLocation_AP_r = value;
+                }
+                else if (fieldId == "AO")
+                {
+                    this.institutionId_AO_r = value;
+                }
+                else if (fieldId == "AB")
+                {
+                    this.itemIdentifier_AB_r = value;
+                }
+                else if (fieldId == "AC")
+                {
+                    this.terminalPassword_AC_r = value;
+                }
+                else if (fieldId == "CH")
+                {
+                    this.itemProperties_CH_o = value;
+                }
+                else if (fieldId == "BI")
+                {
+                    this.cancel_BI_1_o = value;
+                }
+                else
+                {
+                    error = "不支持的字段:" + part;
+                    goto ERROR1;
+                }
+            }
+
+            // 校验;
+            bool ret = this.Verify(out error);
+            if (ret == false)
+                return false;
+
+            return true;
+
+        ERROR1:
+
+            return false;
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
+        {
+            error = "";
+
+            //1-char 18-char	18-char
+            if (this.noBlock_1 == "")
+            {
+                error = "noBlock_1字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.transactionDate_18 == "")
+            {
+                error = "transactionDate_18字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.returnDate_18 == "")
+            {
+                error = "returnDate_18字段未赋值";
+                goto ERROR1;
+            }
+            //AP	AO	AB	AC
+            if (this.currentLocation_AP_r == null)
+            {
+                error = "缺必备字段AP";
+                goto ERROR1;
+            }
+            if (this.institutionId_AO_r == null)
+            {
+                error = "缺必备字段AO";
+                goto ERROR1;
+            }
+            if (this.itemIdentifier_AB_r == null)
+            {
+                error = "缺必备字段AB";
+                goto ERROR1;
+            }
+
+            if (this.terminalPassword_AC_r == null)
+            {
+                error = "缺必备字段AC";
+                goto ERROR1;
+            }
+
+
+            return true;
+        ERROR1:
+
+            return false;
+        }
+
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            string text = "09";
+
+            //1-char	18-char	18-char
+            text += this.noBlock_1 ;
+            text += this.transactionDate_18;
+            text += this.returnDate_18;
+
+            //AP	AO	AB	AC	CH	BI
+            if (this.currentLocation_AP_r != null)
+                text += "AP" + this.currentLocation_AP_r + "|";
+
+            if (this.institutionId_AO_r != null)
+                text += "AO" + this.institutionId_AO_r + "|";
+
+            if (this.itemIdentifier_AB_r != null)
+                text += "AB" + this.itemIdentifier_AB_r + "|";
+
+            if (this.terminalPassword_AC_r!= null)
+                text += "AC" + this.terminalPassword_AC_r + "|";
+
+            if (this.itemProperties_CH_o != null)
+                text += "CH" + this.itemProperties_CH_o + "|";
+
+            if (this.cancel_BI_1_o != null)
+                text += "BI" + this.cancel_BI_1_o + "|";
+
+            return text;
+        }
+
     }
 
     /*
@@ -648,12 +876,226 @@ namespace DigitalPlatform.SIP2.SIP2Entity
         public string language_3 = "";//3-char, fixed-length required field
         public string transactionDate_18 = "";// 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string summary_10 = "";//10-char, fixed-length required field
+        
         public string institutionId_AO_r = "";// variable-length required field
         public string patronIdentifier_AA_r = "";// variable-length required field
         public string terminalPassword_AC_o = "";// variable-length optional fiel d
+        
         public string patronPassword_AD_o = "";// variable-length optional field
         public string startItem_BP_o = "";// variable-length optional field
         public string endItem_BQ_o = "";//variable-length optional field
+
+        
+        // 构造函数
+        public PatronInformation_63()
+        { }
+
+        public PatronInformation_63(string p_language_3
+            , string p_transactionDate_18
+            , string p_summary_10
+
+            , string p_institutionId_AO_r
+            , string p_patronIdentifier_AA_r
+            , string p_terminalPassword_AC_o
+
+            , string p_patronPassword_AD_o
+            , string p_startItem_BP_o
+            , string p_endItem_BQ_o
+            )
+        {
+            if (p_language_3.Length != 3)
+                throw new Exception("p_language_3字段长度必须是3位");
+            this.language_3 = p_language_3;
+
+            if (p_transactionDate_18.Length != 18)
+                throw new Exception("p_transactionDate_18字段长度必须是4位");
+            this.transactionDate_18 = p_transactionDate_18;
+
+            if (p_summary_10.Length != 10)
+                throw new Exception("p_summary_10字段长度必须是4位");
+            this.summary_10 = p_summary_10;
+
+            //===
+            if (p_institutionId_AO_r == null)
+                throw new Exception("p_institutionId_AO_r不能为null");
+            this.institutionId_AO_r = p_institutionId_AO_r;
+
+            if (p_patronIdentifier_AA_r == null)
+                throw new Exception("p_patronIdentifier_AA_r不能为null");
+            this.patronIdentifier_AA_r = p_patronIdentifier_AA_r;
+
+            this.terminalPassword_AC_o = p_terminalPassword_AC_o;
+
+            //===
+            this.patronPassword_AD_o = p_patronPassword_AD_o;
+            this.startItem_BP_o = p_startItem_BP_o;
+            this.endItem_BQ_o = p_endItem_BQ_o;
+        }
+
+        // 解析字符串命令为对象
+        public override bool parse(string text, out string error)
+        {
+            error = "";
+
+            if (text == null || text.Length == 0)
+            {
+                error = "命令字符串为null或长度为0。";
+                goto ERROR1;
+            }
+
+            //处理定长字段
+            string rest = text;
+            while (rest.Length > 0)
+            {
+                if (this.language_3 == "")
+                {
+                    this.language_3 = rest.Substring(0, 3);
+                    rest = rest.Substring(3);
+                    continue;
+                }
+                if (this.transactionDate_18 == "")
+                {
+                    this.transactionDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                if (this.summary_10 == "")
+                {
+                    this.summary_10 = rest.Substring(0, 10);
+                    rest = rest.Substring(10);
+                    continue;
+                }
+                break;
+            }
+
+            //处理变长字段
+            string[] parts = rest.Split(new char[] { '|' });
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                if (part.Length < 2)
+                {
+                    continue;
+                }
+                //AO	AA	AC	AD	BP  BQ
+                string fieldId = part.Substring(0, 2);
+                string value = part.Substring(2);
+                if (fieldId == "AO")
+                {
+                    this.institutionId_AO_r = value;
+                }
+                else if (fieldId == "AA")
+                {
+                    this.patronIdentifier_AA_r = value;
+                }
+                else if (fieldId == "AC")
+                {
+                    this.terminalPassword_AC_o = value;
+                }
+                else if (fieldId == "AD")
+                {
+                    this.patronPassword_AD_o = value;
+                }
+                else if (fieldId == "BP")
+                {
+                    this.startItem_BP_o = value;
+                }
+                else if (fieldId == "BQ")
+                {
+                    this.endItem_BQ_o = value;
+                }
+                else
+                {
+                    error = "不支持的字段:" + part;
+                    goto ERROR1;
+                }
+            }
+
+            // 校验;
+            bool ret = this.Verify(out error);
+            if (ret == false)
+                return false;
+
+            return true;
+
+        ERROR1:
+
+            return false;
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
+        {
+            error = "";
+
+            //3-char	18-char	10-char
+            if (this.language_3 == "")
+            {
+                error = "language_3字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.transactionDate_18 == "")
+            {
+                error = "transactionDate_18字段未赋值";
+                goto ERROR1;
+            }
+
+            if (this.summary_10 == "")
+            {
+                error = "summary_10字段未赋值";
+                goto ERROR1;
+            }
+            //AO	AA
+            if (this.institutionId_AO_r == null)
+            {
+                error = "缺必备字段AO";
+                goto ERROR1;
+            }
+            if (this.patronIdentifier_AA_r == null)
+            {
+                error = "缺必备字段AA";
+                goto ERROR1;
+            }
+
+
+            return true;
+        ERROR1:
+
+            return false;
+        }
+
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            string text = "63";
+
+            //3-char	18-char	10-char
+            text += this.language_3 ;
+            text += this.transactionDate_18;
+            text += this.summary_10;
+
+            //AO	AA	AC	AD	BP  BQ
+            if (this.institutionId_AO_r != null)
+                text += "AO" + this.institutionId_AO_r + "|";
+
+            if (this.patronIdentifier_AA_r != null)
+                text += "AA" + this.patronIdentifier_AA_r + "|";
+
+            if (this.terminalPassword_AC_o!= null)
+                text += "AC" + this.terminalPassword_AC_o + "|";
+
+            if (this.patronPassword_AD_o != null)
+                text += "AD" + this.patronPassword_AD_o + "|";
+
+            if (this.startItem_BP_o != null)
+                text += "BP" + this.startItem_BP_o + "|";
+
+            if (this.endItem_BQ_o != null)
+                text += "BQ" + this.endItem_BQ_o + "|";
+
+            return text;
+        }
     }
 
     /*
@@ -681,6 +1123,151 @@ namespace DigitalPlatform.SIP2.SIP2Entity
         public string institutionId_AO_r = "";// variable-length required field
         public string itemIdentifier_AB_r = "";// variable-length required field.
         public string terminalPassword_AC_o = "";// variable-length optional fiel d
+
+        
+        // 构造函数
+        public ItemInformation_17()
+        { }
+
+        public ItemInformation_17(string p_transactionDate_18
+            , string p_institutionId_AO_r
+            , string p_itemIdentifier_AB_r
+            , string p_terminalPassword_AC_o
+            )
+        {
+            if (p_transactionDate_18.Length != 18)
+                throw new Exception("p_transactionDate_18字段长度必须是4位");
+            this.transactionDate_18 = p_transactionDate_18;
+
+            if (p_institutionId_AO_r == null)
+                throw new Exception("p_institutionId_AO_r不能为null");
+            this.institutionId_AO_r = p_institutionId_AO_r;
+
+            if (p_itemIdentifier_AB_r == null)
+                throw new Exception("p_itemIdentifier_AB_r不能为null");
+            this.itemIdentifier_AB_r = p_itemIdentifier_AB_r;
+
+            this.terminalPassword_AC_o = p_terminalPassword_AC_o;
+        }
+
+        // 解析字符串命令为对象
+        public override bool parse(string text, out string error)
+        {
+            error = "";
+
+            if (text == null || text.Length == 0)
+            {
+                error = "命令字符串为null或长度为0。";
+                goto ERROR1;
+            }
+
+            //处理定长字段
+            string rest = text;
+            while (rest.Length > 0)
+            {
+                if (this.transactionDate_18 == "")
+                {
+                    this.transactionDate_18 = rest.Substring(0, 18);
+                    rest = rest.Substring(18);
+                    continue;
+                }
+                break;
+            }
+
+            //处理变长字段
+            string[] parts = rest.Split(new char[] { '|' });
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                if (part.Length < 2)
+                {
+                    continue;
+                }
+                //AO	AB	AC
+                string fieldId = part.Substring(0, 2);
+                string value = part.Substring(2);
+                if (fieldId == "AO")
+                {
+                    this.institutionId_AO_r = value;
+                }
+                else if (fieldId == "AB")
+                {
+                    this.itemIdentifier_AB_r = value;
+                }
+                else if (fieldId == "AC")
+                {
+                    this.terminalPassword_AC_o = value;
+                }
+                else
+                {
+                    error = "不支持的字段:" + part;
+                    goto ERROR1;
+                }
+            }
+
+            // 校验;
+            bool ret = this.Verify(out error);
+            if (ret == false)
+                return false;
+
+            return true;
+
+        ERROR1:
+
+            return false;
+        }
+
+        // 校验对象的各参数是否合法
+        public override bool Verify(out string error)
+        {
+            error = "";
+
+            //18-char
+            if (this.transactionDate_18 == "")
+            {
+                error = "transactionDate_18字段未赋值";
+                goto ERROR1;
+            }
+
+            //AO	AB
+            if (this.institutionId_AO_r == null)
+            {
+                error = "缺必备字段AO";
+                goto ERROR1;
+            }
+            if (this.itemIdentifier_AB_r == null)
+            {
+                error = "缺必备字段AB";
+                goto ERROR1;
+            }
+
+
+            return true;
+        ERROR1:
+
+            return false;
+        }
+
+        // 将对象转换字符串命令
+        public override string ToText()
+        {
+            string text = "17";
+
+            //18-char
+            text += this.transactionDate_18;
+
+            //AO	AB	AC
+            if (this.institutionId_AO_r != null)
+                text += "AO" + this.institutionId_AO_r + "|";
+
+            if (this.itemIdentifier_AB_r != null)
+                text += "AB" + this.itemIdentifier_AB_r + "|";
+
+            if (this.terminalPassword_AC_o!= null)
+                text += "AC" + this.terminalPassword_AC_o + "|";
+
+            return text;
+        }
     }
 
     /*
