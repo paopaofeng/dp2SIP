@@ -1,6 +1,6 @@
 ﻿using DigitalPlatform;
+using DigitalPlatform.SIP2;
 using DigitalPlatform.SIP2.SIP2Entity;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -112,14 +112,38 @@ namespace dp2SIPClient
             {
                 if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
                 {
-                    request = new Login_93(this.textBox_Login_UIDAlgorithm.Text,
-                       this.textBox_Login_PWDAlgorithm.Text,
-                       this.textBox_Login_loginUserId_CN_r.Text == "null" ? null : this.textBox_Login_loginUserId_CN_r.Text,
-                       this.textBox_Login_loginPassword_CO_r.Text == "null" ? null : this.textBox_Login_loginPassword_CO_r.Text,
-                       this.textBox_Login_locationCode_CP_o.Text == "null" ? null : this.textBox_Login_locationCode_CP_o.Text
+                    request = new Login_93(this.textBox_Login93_UIDAlgorithm_1.Text,
+                       this.textBox_Login93_PWDAlgorithm_1.Text,
+                       this.textBox_Login93_loginUserId_CN_r.Text == "null" ? null : this.textBox_Login93_loginUserId_CN_r.Text,
+                       this.textBox_Login93_loginPassword_CO_r.Text == "null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
+                       this.textBox_Login93_locationCode_CP_o.Text == "null" ? null : this.textBox_Login93_locationCode_CP_o.Text
                        );
                 }
+                else if (this.tabControl_main.SelectedTab == this.tabPage_SCStatus99)
+                {
+                    request = new SCStatus_99(this.textBox_SCStatus99_statusCode_1.Text,
+                       this.textBox_SCStatus99_maxPrintWidth_3.Text,
+                       this.textBox_SCStatus99_protocolVersion_4.Text);
+                }
+                else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
+                {
+                    request = new Checkout_11(this.textBox_Checkout11_SCRenewalPolicy_1.Text,
+                       this.textBox_Checkout11_noBlock_1.Text,
+                       this.textBox_Checkout11_transactionDate_18.Text,
 
+                       this.textBox_Checkout11_nbDueDate_18.Text,
+                       this.textBox_Checkout11_institutionId_AO_r.Text == "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
+                       this.textBox_Checkout11_patronIdentifier_AA_r.Text == "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+                       
+                       this.textBox_Checkout11_itemIdentifier_AB_r.Text == "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                       this.textBox_Checkout11_terminalPassword_AC_r.Text == "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
+                       this.textBox_Checkout11_itemProperties_CH_o.Text == "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
+
+                       this.textBox_Checkout11_patronPassword_AD_o.Text == "null" ? null : this.textBox_Checkout11_patronPassword_AD_o.Text,
+                       this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text == "null" ? null : this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text,
+                       this.textBox_Checkout11_cancel_BI_1_o.Text == "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+                       );
+                }
 
 
                 //发送命令
@@ -132,6 +156,77 @@ namespace dp2SIPClient
                 MessageBox.Show(ex.Message);
                 return;
             }
+
+
+        }
+
+        private void toolStripLabel_sample_Click(object sender, EventArgs e)
+        {
+            this.txtMsg.Text = "";
+
+            string error = "";
+            bool bRet = false;
+            BaseRequest request = null;
+            string text = "";
+            if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
+            {
+                text = "93  CNsupervisor|CO1|CPC00|AY0AZFB58";
+                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                if (bRet == false)
+                    goto ERROR1;
+
+                Login_93 request93 = (Login_93)request;
+                this.textBox_Login93_UIDAlgorithm_1.Text = request93.UIDAlgorithm_1;
+                this.textBox_Login93_PWDAlgorithm_1.Text = request93.PWDAlgorithm_1;
+                this.textBox_Login93_loginUserId_CN_r.Text = request93.loginUserId_CN_r;//"null" ? null : this.textBox_Login93_loginUserId_CN_r.Text,
+                this.textBox_Login93_loginPassword_CO_r.Text = request93.loginPassword_CO_r;//"null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
+                this.textBox_Login93_locationCode_CP_o.Text = request93.locationCode_CP_o;//"null" ? null : this.textBox_Login93_locationCode_CP_o.Text
+            }
+            else if (this.tabControl_main.SelectedTab == this.tabPage_SCStatus99)
+            {
+                text = "9900302.00";
+                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                if (bRet == false)
+                    goto ERROR1;
+
+                SCStatus_99 request99 = (SCStatus_99)request;
+                this.textBox_SCStatus99_statusCode_1.Text = request99.statusCode_1;
+                this.textBox_SCStatus99_maxPrintWidth_3.Text = request99.maxPrintWidth_3;
+                this.textBox_SCStatus99_protocolVersion_4.Text = request99.protocolVersion_4;
+            }
+            else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
+            {
+                //20170630    141135
+                text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AAFZXP00001|ABDPB000051|AC|BON|BIN|";
+                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                if (bRet == false)
+                    goto ERROR1;
+
+                Checkout_11 request11 = (Checkout_11)request;
+                this.textBox_Checkout11_SCRenewalPolicy_1.Text = request11.SCRenewalPolicy_1;
+                this.textBox_Checkout11_noBlock_1.Text = request11.noBlock_1;
+                this.textBox_Checkout11_transactionDate_18.Text = request11.transactionDate_18;
+
+                this.textBox_Checkout11_nbDueDate_18.Text = request11.nbDueDate_18;
+                this.textBox_Checkout11_institutionId_AO_r.Text = request11.institutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
+                this.textBox_Checkout11_patronIdentifier_AA_r.Text = request11.patronIdentifier_AA_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+
+                this.textBox_Checkout11_itemIdentifier_AB_r.Text = request11.itemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                this.textBox_Checkout11_terminalPassword_AC_r.Text = request11.terminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
+                this.textBox_Checkout11_itemProperties_CH_o.Text = request11.itemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
+
+                this.textBox_Checkout11_patronPassword_AD_o.Text = request11.patronPassword_AD_o;//= "null" ? null : this.textBox_Checkout11_patronPassword_AD_o.Text,
+                this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.feeAcknowledged_BO_1_o;//= "null" ? null : this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text,
+                this.textBox_Checkout11_cancel_BI_1_o.Text = request11.cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+
+            }
+
+            return;
+
+        ERROR1:
+            this.Print("error:" + error);
+
+
         }
 
         // 回车 触发 发送
@@ -409,6 +504,7 @@ namespace dp2SIPClient
 
             this.Connection();
 
+
            // this.toolStripStatusLabel_port.Text = "监听端口：" + this.Port;
            // this.toolStripLabel_send.Enabled = true;
         }
@@ -417,6 +513,8 @@ namespace dp2SIPClient
         {
             this.txtInfo.Text = "";
         }
+
+
 
 
 

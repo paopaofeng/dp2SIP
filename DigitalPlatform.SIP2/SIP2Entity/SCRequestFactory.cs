@@ -32,14 +32,14 @@ namespace DigitalPlatform.SIP2.SIP2Entity
                          request = new SCStatus_99();
                          return request.parse(text, out error);
                      }
-                 case "09":
-                     {
-                         request = new Checkin_09();
-                         return request.parse(text, out error);
-                     }
                  case "11":
                      {
                          request = new Checkout_11();
+                         return request.parse(text, out error);
+                     }
+                 case "09":
+                     {
+                         request = new Checkin_09();
                          return request.parse(text, out error);
                      }
                  case "63":
@@ -69,7 +69,6 @@ namespace DigitalPlatform.SIP2.SIP2Entity
              }
 
 
-            return true;
         }
     }
 }

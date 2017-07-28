@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SIPUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SIP2Entity\ACSResponse.cs" />
     <Compile Include="SIP2Entity\BaseRequest.cs" />
