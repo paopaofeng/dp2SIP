@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define OLD
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,12 +56,16 @@ namespace dp2SIPServer
 
         public string CheckIn(LibraryChannel channel, string message)
         {
+            string strError = "";
+            string strItemBarcode = "";
+
             CheckInResponse response = new CheckInResponse();
 
-            // CheckInRequest request = new CheckInRequest(message);
-
+#if OLD
+            CheckInRequest request = new CheckInRequest(message);
+            strItemBarcode = request.ItemIdentifier;
+#else
             BaseRequest request = null;
-            string strError = "";
             bool bRet = SCRequestFactory.ParseRequest(message, out request, out strError);
             if(!bRet)
             {
@@ -68,12 +74,11 @@ namespace dp2SIPServer
                 return response.GetMessage();
             }
 
-            string strItemBarcode = "";
             Checkin_09 checkinRequest = request as Checkin_09;
             if (checkinRequest != null)
                 strItemBarcode = checkinRequest.itemIdentifier_AB_r;
-
-            if(bRet && !string.IsNullOrEmpty(strItemBarcode))
+#endif
+            if(!string.IsNullOrEmpty(strItemBarcode))
             {
                 response.ItemIdentifier = strItemBarcode;
 
@@ -108,18 +113,6 @@ namespace dp2SIPServer
 
                     response.ScreenMessage = strError;
                     response.PrintLine = strError;
-
-                    string strBiblioRecPath = "";
-                    string strSummary = "";
-                    lRet = channel.GetBiblioSummary(null,
-                        strItemBarcode,
-                        "",
-                        "",
-                        out strBiblioRecPath,
-                        out strSummary,
-                        out strError);
-                    if (-1 != lRet)
-                        response.TitleIdentifier = strSummary;
                 }
                 else
                 {
@@ -152,25 +145,39 @@ namespace dp2SIPServer
                             LogManager.Logger.Error(ex.Message);
                         }
                     }
+                }
 
-                    if (biblioRecords != null && biblioRecords.Length > 0)
+                if (biblioRecords != null && biblioRecords.Length > 0)
+                {
+                    string strTitle = String.Empty;
+                    string strMarcSyntax = "";
+                    MarcRecord record = MarcXml2MarcRecord(biblioRecords[0], out strMarcSyntax, out strError);
+                    if (record != null)
                     {
-                        string strTitle = String.Empty;
-                        string strMarcSyntax = "";
-                        MarcRecord record = MarcXml2MarcRecord(biblioRecords[0], out strMarcSyntax, out strError);
-                        if (record != null)
-                        {
-                            if (strMarcSyntax == "unimarc")
-                                response.TitleIdentifier = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                            else if (strMarcSyntax == "usmarc")
-                                response.TitleIdentifier = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                        }
-                        else
-                        {
-                            strError = "书目信息解析错误:" + strError;
-                            LogManager.Logger.Error(strError);
-                        }
+                        if (strMarcSyntax == "unimarc")
+                            response.TitleIdentifier = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                        else if (strMarcSyntax == "usmarc")
+                            response.TitleIdentifier = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
                     }
+                    else
+                    {
+                        strError = "书目信息解析错误:" + strError;
+                        LogManager.Logger.Error(strError);
+                    }
+                }
+                else
+                {
+                    string strBiblioRecPath = "";
+                    string strSummary = "";
+                    lRet = channel.GetBiblioSummary(null,
+                        strItemBarcode,
+                        "",
+                        "",
+                        out strBiblioRecPath,
+                        out strSummary,
+                        out strError);
+                    if (-1 != lRet)
+                        response.TitleIdentifier = strSummary;
                 }
             }
 
