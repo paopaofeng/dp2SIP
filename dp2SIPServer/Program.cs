@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DigitalPlatform;
+
 namespace dp2SIPServer
 {
     static class Program
@@ -25,37 +27,23 @@ namespace dp2SIPServer
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
             Application.ThreadException += Application_ThreadException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             Application.Run(new MainForm());
 #if NO
             glExitApp = true;//标志应用程序可以退出
 #endif
         }
-#if NO
+
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            using (StreamWriter sw = new StreamWriter(@"F:\dp2SIPServerNew\output.txt",
-                    true,	// append
-                    Encoding.UTF8))
-            {
-                sw.WriteLine("CurrentDomain_UnhandledException");
-                sw.WriteLine("IsTerminating : " + e.IsTerminating.ToString());
-                sw.WriteLine(e.ExceptionObject.ToString());
+            LogManager.Logger.Error("系统异常");
 
-                while (true)
-                {
-                    //循环处理，否则应用程序将会退出
-                    if (glExitApp)
-                    {//标志应用程序可以退出，否则程序退出后，进程仍然在运行
-                        sw.WriteLine("ExitApp");
-                        return;
-                    }
-                    System.Threading.Thread.Sleep(2 * 1000);
-                };
-            }
+            Exception ex = e.ExceptionObject as Exception;
+            LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
         }
-
+#if NO
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             using (StreamWriter sw = new StreamWriter(@"F:\dp2SIPServerNew\output2.txt",
