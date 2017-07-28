@@ -5,21 +5,28 @@ using System.Text;
 
 namespace DigitalPlatform.SIP2.SIP2Entity
 {
-/*
-2.00 Login Response
-The ACS should send this message in response to the Login message.  When this message is used, it will be the first message sent to the SC.
-94<ok>
-*/
+    /*<summary>
+     * 2.00 Login Response
+     * The ACS should send this message in response to the Login message.When this message is used, it will be the first message sent to the SC.
+     * 94<ok>
+     */
     public class LoginResponse_94 : BaseResponse
     {
-        public string ok_1 = "";//1-char, fixed-length required field:  0 or 1.
+        //1-char, fixed-length required field:  0 or 1.
+        public char OK_1
+        {
+            set
+            {
+                this._ok = value;
+            }
+        }
     }
 
-/*
- ACS Status
- The ACS must send this message in response to a SC Status message.  This message will be the first message sent by the ACS to the SC, since it establishes some of the rules to be followed by the SC and establishes some parameters needed for further communication (exception: the Login Response Message may be sent first to complete login of the SC).
- 98<on-line status><checkin ok><checkout ok><ACS renewal policy><status update ok><off-line ok><timeout period><retries allowed><date / time sync><protocol version><institution id><library name><supported messages ><terminal location><screen message><print line>
-*/
+    /*
+     * ACS Status
+     * The ACS must send this message in response to a SC Status message.This message will be the first message sent by the ACS to the SC, since it establishes some of the rules to be followed by the SC and establishes some parameters needed for further communication (exception: the Login Response Message may be sent first to complete login of the SC).
+     * 98<on-line status><checkin ok><checkout ok><ACS renewal policy><status update ok><off-line ok><timeout period><retries allowed><date / time sync><protocol version><institution id><library name><supported messages ><terminal location><screen message><print line>
+     */
     public class ACSStatus_98 : BaseResponse
     {
         public string onlineStatus_1 = "";// 1-char, fixed-length required field:  Y or N.
@@ -40,11 +47,11 @@ The ACS should send this message in response to the Login message.  When this me
         public string printLine_AG_o = "";//variable-length optional field
     }
 
-/*
-Checkout Response
-This message must be sent by the ACS in response to a Checkout message from the SC.
-12<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
-*/
+    /*
+    Checkout Response
+    This message must be sent by the ACS in response to a Checkout message from the SC.
+    12<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
+    */
     public class CheckoutResponse_12 : BaseResponse
     {
         //OK should be set to 1 if the ACS checked out the item to the patron. should be set to 0 if the ACS did not check out the item to the patron.
@@ -75,11 +82,11 @@ This message must be sent by the ACS in response to a Checkout message from the 
         public string printLine_AG_o = "";//variable-length optional field
     }
 
-/*
- Checkin Response
- This message must be sent by the ACS in response to a SC Checkin message.
- 10<ok><resensitize><magnetic media><alert><transaction date><institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
-*/
+    /*
+     Checkin Response
+     This message must be sent by the ACS in response to a SC Checkin message.
+     10<ok><resensitize><magnetic media><alert><transaction date><institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
+    */
     public class CheckinResponse_10 : BaseResponse
     {
         //OK should be set to 1 if the ACS checked in the item. should be set to 0 if the ACS did not check in the item.
@@ -102,15 +109,15 @@ This message must be sent by the ACS in response to a Checkout message from the 
         public string printLine_AG_o = "";//variable-length optional field
     }
 
-/*
- Patron Information Response
- The ACS must send this message in response to the Patron Information message.
- 64<patron status><language><transaction date><hold items count><overdue items count>
- <charged items count><fine items count><recall items count><unavailable holds count><institution id>
- <patron identifier><personal name><hold items limit><overdue items limit><charged items limit>
- <valid patron><valid patron password><currency type><fee amount><fee limit><items>
- <home address><e-mail address><home phone number><screen message><print line>
-*/
+    /*
+     Patron Information Response
+     The ACS must send this message in response to the Patron Information message.
+     64<patron status><language><transaction date><hold items count><overdue items count>
+     <charged items count><fine items count><recall items count><unavailable holds count><institution id>
+     <patron identifier><personal name><hold items limit><overdue items limit><charged items limit>
+     <valid patron><valid patron password><currency type><fee amount><fee limit><items>
+     <home address><e-mail address><home phone number><screen message><print line>
+    */
     public class PatronInformationResponse_64 : BaseResponse
     {
         public string patronStatus_14 = "";//14-char, fixed-length required field
@@ -164,11 +171,11 @@ This message must be sent by the ACS in response to a Checkout message from the 
         public string printLine_AG_o = "";//variable-length optional field
     }
 
- /*
- 2.00 Item Information Response
- The ACS must send this message in response to the Item Information message. 
- 18<circulation status><hold queue length><security marker><fee type><transaction date><due date><recall date><hold pickup date><item identifier><title identifier><owner><currency type><fee amount><media type><permanent location><current location><item properties><screen message><print line>
- */
+    /*
+    2.00 Item Information Response
+    The ACS must send this message in response to the Item Information message. 
+    18<circulation status><hold queue length><security marker><fee type><transaction date><due date><recall date><hold pickup date><item identifier><title identifier><owner><currency type><fee amount><media type><permanent location><current location><item properties><screen message><print line>
+    */
     public class ItemInformationResponse_18 : BaseResponse
     {
         public string circulationStatus_2 = "";//2-char, fixed-length required field (00 thru 99)
@@ -192,12 +199,12 @@ This message must be sent by the ACS in response to a Checkout message from the 
         public string printLine_AG_o = "";//variable-length optional field    
     }
 
-/*
-2.00 Renew Response
-This message must be sent by the ACS in response to a Renew message by the SC.
-30<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
-See the description of the Checkout Response message for how the ok, renewal ok, desensitize, and fee amount fields will be interpreted.
-*/
+    /*
+    2.00 Renew Response
+    This message must be sent by the ACS in response to a Renew message by the SC.
+    30<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
+    See the description of the Checkout Response message for how the ok, renewal ok, desensitize, and fee amount fields will be interpreted.
+    */
     public class RenewResponse_30 : BaseResponse
     {
         public string ok_1 = "";//1-char, fixed-length required field:  0 or 1.
@@ -238,8 +245,8 @@ See the description of the Checkout Response message for how the ok, renewal ok,
         public string validPatronPassword_CQ_o = "";//1-char, optional field: Y or N
         public string currencyType_BH_o = "";//3-char, fixed-length optional field
         public string feeAmount_BV_o = "";//variable-length optional field.  The amount of fees owed by this patron.
-        public string screenMessage_AF_o= "";//variable-length optional field
-        public string printLine_AG_o= "";//variable-length optional field
+        public string screenMessage_AF_o = "";//variable-length optional field
+        public string printLine_AG_o = "";//variable-length optional field
     }
 
     /*
@@ -250,11 +257,11 @@ See the description of the Checkout Response message for how the ok, renewal ok,
     public class RequestSCResend_96 : BaseResponse
     { }
 
-     /*
-     2.00 Fee Paid Response
-     The ACS must send this message in response to the Fee Paid message.
-     38<payment accepted><transaction date><institution id><patron identifier><transaction id><screen message><print line>
-     */
+    /*
+    2.00 Fee Paid Response
+    The ACS must send this message in response to the Fee Paid message.
+    38<payment accepted><transaction date><institution id><patron identifier><transaction id><screen message><print line>
+    */
     public class FeePaidResponse_38 : BaseResponse
     {
         public string paymentAccepted_1 = "";//1-char, fixed-length required field:  Y or N.
@@ -268,11 +275,11 @@ See the description of the Checkout Response message for how the ok, renewal ok,
 
 
 
-     /*
-     2.00 Item Status Update Response
-     The ACS must send this message in response to the Item Status Update message.
-     20<item properties ok><transaction date><item identifier><title identifier><item properties><screen message><print line>
-     */
+    /*
+    2.00 Item Status Update Response
+    The ACS must send this message in response to the Item Status Update message.
+    20<item properties ok><transaction date><item identifier><title identifier><item properties><screen message><print line>
+    */
     public class ItemStatusUpdateResponse_20 : BaseResponse
     {
         public string itemPropertiesOk_1 = "";//1-char, fixed-length required field:  0 or 1.
@@ -325,11 +332,11 @@ See the description of the Checkout Response message for how the ok, renewal ok,
     }
 
 
- /*
- 2.00 Renew All Response
- The ACS should send this message in response to a Renew All message from the SC.
- 66<ok ><renewed count><unrenewed count><transaction date><institution id><renewed items><unrenewed items><screen message><print line>
- */
+    /*
+    2.00 Renew All Response
+    The ACS should send this message in response to a Renew All message from the SC.
+    66<ok ><renewed count><unrenewed count><transaction date><institution id><renewed items><unrenewed items><screen message><print line>
+    */
     public class RenewAllResponse_66 : BaseResponse
     {
         public string ok_1 = "";//1-char, fixed-length required field:  0 or 1

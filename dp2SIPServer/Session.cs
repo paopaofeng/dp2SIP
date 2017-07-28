@@ -22,6 +22,8 @@ namespace dp2SIPServer
 {
     public class Session : IDisposable
     {
+        SIP sip = new SIP();
+
         public LibraryChannelPool _channelPool = new LibraryChannelPool();
 
         TcpClient _client = null;
@@ -419,18 +421,18 @@ namespace dp2SIPServer
             {
                 try
                 {
-                    NetworkStream stream = _client.GetStream();
+                    NetworkStream stream = this._client.GetStream();
                     stream.Close();
                 }
                 catch { }
 
                 try
                 {
-                    _client.Close();
+                    this._client.Close();
                 }
                 catch { }
 
-                _client = null;
+                this._client = null;
             }
 
             foreach (LibraryChannel channel in this._channelList)
@@ -508,7 +510,18 @@ namespace dp2SIPServer
                     {
                         case "09":
                             {
-                                strBackMsg = Return(strItemBarcode);
+                                /*
+                                 strBackMsg = Return(strItemBarcode);
+                                */
+                                LibraryChannel channel = this.GetChannel(this._username);
+                                try
+                                {
+                                    strBackMsg = sip.CheckIn(channel,strPackage);
+                                }
+                                finally
+                                {
+                                    this.ReturnChannel(channel);
+                                }
                                 break;
                             }
                         case "11":
@@ -524,7 +537,7 @@ namespace dp2SIPServer
                         case "29":
                             {
                                 strBackMsg = Borrow(true, // 续借
-                                    "",  //读者条码号为空，续借
+                                    "",  // 读者条码号为空，续借
                                     strItemBarcode);
                                 break;
                             }
@@ -1659,6 +1672,8 @@ namespace dp2SIPServer
         {
             long lRet = 0;
 
+            bool isVerifyPassword = false;
+
             string strBackMsg = "";
             string strError = "";
 
@@ -1681,6 +1696,7 @@ namespace dp2SIPServer
                         sb.Append("|AF").Append("校验密码过程中发生错误……");
                         sb.Append("|AG").Append("校验密码过程中发生错误……");
                         strBackMsg = sb.ToString();
+                        return strBackMsg;
                     }
                     else if (lRet == 0)
                     {
@@ -1688,8 +1704,10 @@ namespace dp2SIPServer
                         sb.Append("|AF").Append("卡号或密码不正确。");
                         sb.Append("|AG").Append("卡号或密码不正确。");
                         strBackMsg = sb.ToString();
+                        return strBackMsg;
                     }
-                    return strBackMsg;
+
+                    isVerifyPassword = true;
                 }
 
                 string[] results = null;
@@ -1758,14 +1776,14 @@ namespace dp2SIPServer
 
                 // overdue items count 4 - char, fixed-length required field  -- 超期
                 // charged items count 4 - char, fixed-length required field -- 在借
-                // int nOverdueItemsCount = 0;
+                int nOverdueItemsCount = 0;
                 int nChargedItemsCount = 0;
                 XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
                 if (chargedItemNodes != null)
                     nChargedItemsCount = chargedItemNodes.Count;
 
                 string chargedItems = "";
-                // string overdueItems = "";
+                string overdueItems = "";
                 foreach (XmlNode item in chargedItemNodes)
                 {
                     string strItemBarcode = DomUtil.GetAttr(item, "barcode");
@@ -1782,18 +1800,17 @@ namespace dp2SIPServer
 
                     chargedItems += strItemBarcode;
 #endif
-                    /*
+
                     string strReturningDate = DomUtil.GetAttr(item, "returningDate");
                     DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
-                    if (returningDate > DateTime.Now)
+                    if (returningDate < DateTime.Now)
                     {
                         nOverdueItemsCount++;
                         overdueItems += "|AT" + strItemBarcode;
                     }
-                    */
                 }
-                // sb.Append(nOverdueItemsCount.ToString().PadLeft(4, '0'));
-                sb.Append("0000");
+                sb.Append(nOverdueItemsCount.ToString().PadLeft(4, '0'));
+                // sb.Append("0000");
                 sb.Append(nChargedItemsCount.ToString().PadLeft(4, '0'));
 
                 // fine items count 4 - char, fixed-length required field
@@ -1814,25 +1831,15 @@ namespace dp2SIPServer
 #endif
 
 #if TEST
-
                 if (!string.IsNullOrEmpty(holdItems))
                     sb.Append("|AU").Append(holdItems);
                 if (!string.IsNullOrEmpty(chargedItems))
                     sb.Append("|AS").Append(chargedItems);
-
-                /*
-                sb.Append("|BZ0010");
-                sb.Append("|CA0002");
-                sb.Append("|CB0003");
-                */
-
-                // sb.Append("|CQN");
-                // sb.Append("|BV0");
-                // sb.Append("|CC0"); // 安徽望湖小学
-                // sb.Append("|CA0020");
-                // sb.Append("|CB0001");
 #endif
                 sb.Append("|BLY");
+
+                if (isVerifyPassword)
+                    sb.Append("|CQY");
 
                 /*
                 if (!string.IsNullOrEmpty(overdueItems))

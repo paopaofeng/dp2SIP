@@ -760,11 +760,14 @@ namespace DigitalPlatform.SIP2.SIP2Entity
                 {
                     this.cancel_BI_1_o = value;
                 }
+
+                /*
                 else
                 {
                     error = "不支持的字段:" + part;
                     goto ERROR1;
                 }
+                */
             }
 
             // 校验;
