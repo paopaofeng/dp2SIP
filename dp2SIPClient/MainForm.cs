@@ -1,5 +1,6 @@
 ﻿using DigitalPlatform;
 using DigitalPlatform.SIP2;
+using DigitalPlatform.SIP2.Request;
 using DigitalPlatform.SIP2.SIP2Entity;
 using System;
 using System.Collections.Generic;
@@ -234,9 +235,9 @@ namespace dp2SIPClient
                 Login_93 request93 = (Login_93)request;
                 this.textBox_Login93_UIDAlgorithm_1.Text = request93.UIDAlgorithm_1;
                 this.textBox_Login93_PWDAlgorithm_1.Text = request93.PWDAlgorithm_1;
-                this.textBox_Login93_loginUserId_CN_r.Text = request93.loginUserId_CN_r;//"null" ? null : this.textBox_Login93_loginUserId_CN_r.Text,
-                this.textBox_Login93_loginPassword_CO_r.Text = request93.loginPassword_CO_r;//"null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
-                this.textBox_Login93_locationCode_CP_o.Text = request93.locationCode_CP_o;//"null" ? null : this.textBox_Login93_locationCode_CP_o.Text
+                this.textBox_Login93_loginUserId_CN_r.Text = request93.LoginUserId_CN_r;//"null" ? null : this.textBox_Login93_loginUserId_CN_r.Text,
+                this.textBox_Login93_loginPassword_CO_r.Text = request93.LoginPassword_CO_r;//"null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
+                this.textBox_Login93_locationCode_CP_o.Text = request93.LocationCode_CP_o;//"null" ? null : this.textBox_Login93_locationCode_CP_o.Text
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_SCStatus99)
             {
@@ -246,9 +247,9 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 SCStatus_99 request99 = (SCStatus_99)request;
-                this.textBox_SCStatus99_statusCode_1.Text = request99.statusCode_1;
-                this.textBox_SCStatus99_maxPrintWidth_3.Text = request99.maxPrintWidth_3;
-                this.textBox_SCStatus99_protocolVersion_4.Text = request99.protocolVersion_4;
+                this.textBox_SCStatus99_statusCode_1.Text = request99.StatusCode_1;
+                this.textBox_SCStatus99_maxPrintWidth_3.Text = request99.MaxPrintWidth_3;
+                this.textBox_SCStatus99_protocolVersion_4.Text = request99.ProtocolVersion_4;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
             {
@@ -260,20 +261,20 @@ namespace dp2SIPClient
 
                 Checkout_11 request11 = (Checkout_11)request;
                 this.textBox_Checkout11_SCRenewalPolicy_1.Text = request11.SCRenewalPolicy_1;
-                this.textBox_Checkout11_noBlock_1.Text = request11.noBlock_1;
-                this.textBox_Checkout11_transactionDate_18.Text = request11.transactionDate_18;
+                this.textBox_Checkout11_noBlock_1.Text = request11.NoBlock_1;
+                this.textBox_Checkout11_transactionDate_18.Text = request11.TransactionDate_18;
 
-                this.textBox_Checkout11_nbDueDate_18.Text = request11.nbDueDate_18;
-                this.textBox_Checkout11_institutionId_AO_r.Text = request11.institutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
-                this.textBox_Checkout11_patronIdentifier_AA_r.Text = request11.patronIdentifier_AA_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+                this.textBox_Checkout11_nbDueDate_18.Text = request11.NbDueDate_18;
+                this.textBox_Checkout11_institutionId_AO_r.Text = request11.InstitutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
+                this.textBox_Checkout11_patronIdentifier_AA_r.Text = request11.PatronIdentifier_AA_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
 
-                this.textBox_Checkout11_itemIdentifier_AB_r.Text = request11.itemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
-                this.textBox_Checkout11_terminalPassword_AC_r.Text = request11.terminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
-                this.textBox_Checkout11_itemProperties_CH_o.Text = request11.itemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
+                this.textBox_Checkout11_itemIdentifier_AB_r.Text = request11.ItemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                this.textBox_Checkout11_terminalPassword_AC_r.Text = request11.TerminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
+                this.textBox_Checkout11_itemProperties_CH_o.Text = request11.ItemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
 
-                this.textBox_Checkout11_patronPassword_AD_o.Text = request11.patronPassword_AD_o;//= "null" ? null : this.textBox_Checkout11_patronPassword_AD_o.Text,
-                this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.feeAcknowledged_BO_1_o;//= "null" ? null : this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text,
-                this.textBox_Checkout11_cancel_BI_1_o.Text = request11.cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+                this.textBox_Checkout11_patronPassword_AD_o.Text = request11.PatronPassword_AD_o;//= "null" ? null : this.textBox_Checkout11_patronPassword_AD_o.Text,
+                this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.FeeAcknowledged_BO_1_o;//= "null" ? null : this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text,
+                this.textBox_Checkout11_cancel_BI_1_o.Text = request11.Cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkin09)
             {
@@ -286,17 +287,17 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 Checkin_09 request09 = (Checkin_09)request;
-                this.textBox_Checkin09_noBlock_1.Text = request09.noBlock_1;
-                this.textBox_Checkin09_transactionDate_18.Text = request09.transactionDate_18;
-                this.textBox_Checkin09_returnDate_18.Text = request09.returnDate_18;
+                this.textBox_Checkin09_noBlock_1.Text = request09.NoBlock_1;
+                this.textBox_Checkin09_transactionDate_18.Text = request09.TransactionDate_18;
+                this.textBox_Checkin09_returnDate_18.Text = request09.ReturnDate_18;
 
-                this.textBox_Checkin09_currentLocation_AP_r.Text = request09.currentLocation_AP_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
-                this.textBox_Checkin09_institutionId_AO_r.Text = request09.institutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
-                this.textBox_Checkin09_itemIdentifier_AB_r.Text = request09.itemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                this.textBox_Checkin09_currentLocation_AP_r.Text = request09.CurrentLocation_AP_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+                this.textBox_Checkin09_institutionId_AO_r.Text = request09.InstitutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
+                this.textBox_Checkin09_itemIdentifier_AB_r.Text = request09.ItemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
                 
-                this.textBox_Checkin09_terminalPassword_AC_r.Text = request09.terminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
-                this.textBox_Checkin09_itemProperties_CH_o.Text = request09.itemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
-                this.textBox_Checkin09_cancel_BI_1_o.Text = request09.cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+                this.textBox_Checkin09_terminalPassword_AC_r.Text = request09.TerminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
+                this.textBox_Checkin09_itemProperties_CH_o.Text = request09.ItemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
+                this.textBox_Checkin09_cancel_BI_1_o.Text = request09.Cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_PatronInformation63)
             {
@@ -308,17 +309,17 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 PatronInformation_63 request63 = (PatronInformation_63)request;
-                this.textBox_PatronInformation63_language_3.Text = request63.language_3;
-                this.textBox_PatronInformation63_transactionDate_18.Text = request63.transactionDate_18;
-                this.textBox_PatronInformation63_summary_10.Text = request63.summary_10;
+                this.textBox_PatronInformation63_language_3.Text = request63.Language_3;
+                this.textBox_PatronInformation63_transactionDate_18.Text = request63.TransactionDate_18;
+                this.textBox_PatronInformation63_summary_10.Text = request63.Summary_10;
 
-                this.textBox_PatronInformation63_institutionId_AO_r.Text = request63.institutionId_AO_r;
-                this.textBox_PatronInformation63_patronIdentifier_AA_r.Text = request63.patronIdentifier_AA_r;
-                this.textBox_PatronInformation63_terminalPassword_AC_o.Text = request63.terminalPassword_AC_o;
+                this.textBox_PatronInformation63_institutionId_AO_r.Text = request63.InstitutionId_AO_r;
+                this.textBox_PatronInformation63_patronIdentifier_AA_r.Text = request63.PatronIdentifier_AA_r;
+                this.textBox_PatronInformation63_terminalPassword_AC_o.Text = request63.TerminalPassword_AC_o;
 
-                this.textBox_PatronInformation63_patronPassword_AD_o.Text = request63.patronPassword_AD_o;
-                this.textBox_PatronInformation63_startItem_BP_o.Text = request63.startItem_BP_o;
-                this.textBox_PatronInformation63_endItem_BQ_o.Text = request63.endItem_BQ_o;
+                this.textBox_PatronInformation63_patronPassword_AD_o.Text = request63.PatronPassword_AD_o;
+                this.textBox_PatronInformation63_startItem_BP_o.Text = request63.StartItem_BP_o;
+                this.textBox_PatronInformation63_endItem_BQ_o.Text = request63.EndItem_BQ_o;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_ItemInformation17)
             {
@@ -330,11 +331,11 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 ItemInformation_17 request17 = (ItemInformation_17)request;
-                this.textBox_ItemInformation17_transactionDate_18.Text = request17.transactionDate_18;
+                this.textBox_ItemInformation17_transactionDate_18.Text = request17.TransactionDate_18;
 
-                this.textBox_ItemInformation17_institutionId_AO_r.Text = request17.institutionId_AO_r;
-                this.textBox_ItemInformation17_itemIdentifier_AB_r.Text = request17.itemIdentifier_AB_r;
-                this.textBox_ItemInformation17_terminalPassword_AC_o.Text = request17.terminalPassword_AC_o;
+                this.textBox_ItemInformation17_institutionId_AO_r.Text = request17.InstitutionId_AO_r;
+                this.textBox_ItemInformation17_itemIdentifier_AB_r.Text = request17.ItemIdentifier_AB_r;
+                this.textBox_ItemInformation17_terminalPassword_AC_o.Text = request17.TerminalPassword_AC_o;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Renew29)
             {
@@ -346,23 +347,23 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 Renew_29 request29 = (Renew_29)request;
-                this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.thirdPartyAllowed_1;
-                this.textBox_Renew29_noBlock_1.Text = request29.noBlock_1;
-                this.textBox_Renew29_transactionDate_18.Text = request29.transactionDate_18;
+                this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.ThirdPartyAllowed_1;
+                this.textBox_Renew29_noBlock_1.Text = request29.NoBlock_1;
+                this.textBox_Renew29_transactionDate_18.Text = request29.TransactionDate_18;
 
-                this.textBox_Renew29_nbDueDate_18.Text = request29.nbDueDate_18;
-                this.textBox_Renew29_institutionId_AO_r.Text = request29.institutionId_AO_r;
-                this.textBox_Renew29_patronIdentifier_AA_r.Text = request29.patronIdentifier_AA_r;
+                this.textBox_Renew29_nbDueDate_18.Text = request29.NbDueDate_18;
+                this.textBox_Renew29_institutionId_AO_r.Text = request29.InstitutionId_AO_r;
+                this.textBox_Renew29_patronIdentifier_AA_r.Text = request29.PatronIdentifier_AA_r;
 
                 //AD	AB AJ
-                this.textBox_Renew29_patronPassword_AD_o.Text = request29.patronPassword_AD_o;
-                this.textBox_Renew29_itemIdentifier_AB_o.Text = request29.itemIdentifier_AB_o;
-                this.textBox_Renew29_titleIdentifier_AJ_o.Text = request29.titleIdentifier_AJ_o;
+                this.textBox_Renew29_patronPassword_AD_o.Text = request29.PatronPassword_AD_o;
+                this.textBox_Renew29_itemIdentifier_AB_o.Text = request29.ItemIdentifier_AB_o;
+                this.textBox_Renew29_titleIdentifier_AJ_o.Text = request29.TitleIdentifier_AJ_o;
 
                 //AC	CH	BO
-                this.textBox_Renew29_terminalPassword_AC_o.Text = request29.terminalPassword_AC_o;
-                this.textBox_Renew29_itemProperties_CH_o.Text = request29.itemProperties_CH_o;
-                this.textBox_Renew29_feeAcknowledged_BO_1_o.Text = request29.feeAcknowledged_BO_1_o;
+                this.textBox_Renew29_terminalPassword_AC_o.Text = request29.TerminalPassword_AC_o;
+                this.textBox_Renew29_itemProperties_CH_o.Text = request29.ItemProperties_CH_o;
+                this.textBox_Renew29_feeAcknowledged_BO_1_o.Text = request29.FeeAcknowledged_BO_1_o;
             }
             return;
 

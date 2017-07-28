@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DigitalPlatform.SIP2.SIP2Entity
+namespace DigitalPlatform.SIP2.Request
 {
     public class SCRequestFactory
     {
