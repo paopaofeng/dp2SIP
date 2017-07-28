@@ -1102,20 +1102,6 @@ namespace DigitalPlatform.SIP2.SIP2Entity
     }
 
     /*
- 2.00 End Patron Session
- This message will be sent when a patron has completed all of their transactions.  The ACS may, upon receipt of this command, close any open files or deallocate data structures pertaining to that patron. The ACS should respond with an End Session Response message.
- 35<transaction date><institution id><patron identifier><terminal password><patron password>
-     */
-    public class EndPatronSession_35 : BaseRequest
-    {
-        public string transactionDate_18 = "";//18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string institutionId_AO_r = "";// variable-length required field
-        public string patronIdentifier_AA_r = "";// variable-length required field.
-        public string terminalPassword_AC_o = "";// variable-length optional field
-        public string patronPassword_AD_o = "";// variable-length optional field
-    }
-
-    /*
     Item Information
     This message may be used to request item information.  The ACS should respond with the Item Information Response message.
     17<transaction date><institution id>< item identifier ><terminal password>
@@ -1546,6 +1532,20 @@ namespace DigitalPlatform.SIP2.SIP2Entity
 
             return text;
         }
+    }
+
+    /*
+2.00 End Patron Session
+This message will be sent when a patron has completed all of their transactions.  The ACS may, upon receipt of this command, close any open files or deallocate data structures pertaining to that patron. The ACS should respond with an End Session Response message.
+35<transaction date><institution id><patron identifier><terminal password><patron password>
+ */
+    public class EndPatronSession_35 : BaseRequest
+    {
+        public string transactionDate_18 = "";//18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+        public string institutionId_AO_r = "";// variable-length required field
+        public string patronIdentifier_AA_r = "";// variable-length required field.
+        public string terminalPassword_AC_o = "";// variable-length optional field
+        public string patronPassword_AD_o = "";// variable-length optional field
     }
 
     /*
