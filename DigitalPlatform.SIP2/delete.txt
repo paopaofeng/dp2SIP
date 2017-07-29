@@ -7,6 +7,115 @@ namespace DigitalPlatform.SIP2.SIP2Entity
 {
     public abstract class SIP2Message
     {
+#region 常量
+        public const string C_FIELD_TERMINATOR = "|";
+
+        public const string C_MESSAGE_TERMINATOR = "\n";
+
+        public const string C_LANGUAGE_UNKNOWN = "000";
+
+        public const string C_LANGUAGE_ENGLISH = "001";
+
+        public const string C_LANGUAGE_FRENCH = "002";
+
+        public const string LANGUAGE_GERMAN = "003";
+
+        public const string LANGUAGE_ITALIAN = "004";
+
+        public const string LANGUAGE_DUTCH = "005";
+
+        public const string LANGUAGE_SWEDISH = "006";
+
+        public const string LANGUAGE_FINNISH = "007";
+
+        public const string LANGUAGE_SPANISH = "008";
+
+        public const string LANGUAGE_DANISH = "009";
+
+        public const string LANGUAGE_PORTUGUESE = "010";
+
+        public const string LANGUAGE_CANADIAN_FRENCH = "011";
+
+        public const string LANGUAGE_NORWEGIAN = "012";
+
+        public const string LANGUAGE_HEBREW = "013";
+
+        public const string LANGUAGE_JAPANESE = "014";
+
+        public const string LANGUAGE_RUSSIAN = "015";
+
+        public const string LANGUAGE_ARABIC = "016";
+
+        public const string LANGUAGE_POLISH = "017";
+
+        public const string LANGUAGE_GREEK = "018";
+
+        public const string LANGUAGE_CHINESE = "019";
+
+        public const string LANGUAGE_KOREAN = "020";
+
+        public const string LANGUAGE_NORTH_AMERICAN_SPANISH = "021";
+
+        public const string LANGUAGE_TAMIL = "022";
+
+        public const string LANGUAGE_MALAY = "023";
+
+        public const string LANGUAGE_UNITED_KINGDOM = "024";
+
+        public const string LANGUAGE_ICELANDIC = "025";
+
+        public const string LANGUAGE_BELGIAN = "026";
+
+        public const string LANGUAGE_TAIWANESE = "027";
+
+        public const string MEDIA_TYPE_OTHER = "000";
+
+        public const string MEDIA_TYPE_BOOK = "001";
+
+        public const string MEDIA_TYPE_ZINE = "002";
+
+        public const string MEDIA_TYPE_BOUND_JOURNAL = "003";
+
+        public const string MEDIA_TYPE_AUDIO_TAPE = "004";
+
+        public const string MEDIA_TYPE_VIDEO_TAPE = "005";
+
+        public const string MEDIA_TYPE_CD = "006";
+
+        public const string MEDIA_TYPE_DISKETTE = "007";
+
+        public const string MEDIA_TYPE_BOOK_WITH_DISKETTE = "008";
+
+        public const string MEDIA_TYPE_BOOK_WITH_CD = "009";
+
+        public const string MEDIA_TYPE_BOOK_WITH_AUDIO_TAPE = "010";
+
+        public const string PAYMENT_TYPE_CASH = "00";
+
+        public const string PAYMENT_TYPE_VISA = "01";
+
+        public const string PAYMENT_TYPE_CREDIT_CARD = "02";
+
+        public const string CURRENCY_TYPE_USD = "USD";
+
+        public const string CURRENCY_TYPE_CAD = "CAD";
+
+        public const string CURRENCY_TYPE_GBP = "GBP";
+
+        public const string CURRENCY_TYPE_FRF = "FRF";
+
+        public const string CURRENCY_TYPE_DEM = "DEM";
+
+        public const string CURRENCY_TYPE_ITL = "ITL";
+
+        public const string CURRENCY_TYPE_ESP = "ESP";
+
+        public const string CURRENCY_TYPE_JPY = "JPY";
+
+        public const int MSIP_NO_ERROR = 0;
+
+        public static int ACS_CHAR_SET = 850;
+#endregion
 
         public string MessageIdentifier;
 

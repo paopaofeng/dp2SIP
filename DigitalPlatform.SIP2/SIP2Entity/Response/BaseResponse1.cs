@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DigitalPlatform.SIP2.SIP2Entity
 {
-    public abstract class BaseResponse : SIP2Message
+    public abstract class BaseResponse1 : SIP2Message
     {
         protected void ResponseInit(string command)
         {
@@ -13,7 +13,7 @@ namespace DigitalPlatform.SIP2.SIP2Entity
             {
                 string[] fields = command.Split(new string[]
                 {
-                    VARIABLE_LENGTH_FIELD_TERMINATOR
+                    SIPUtility.C_FIELD_TERMINATOR
                 },
                 StringSplitOptions.RemoveEmptyEntries);
                 foreach (string field in fields)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DigitalPlatform.SIP2.SIP2Entity
 {
-    public class CheckInResponse : BaseResponse
+    public class CheckInResponse : BaseResponse1
     {
         public char OK
         {
@@ -194,11 +194,11 @@ namespace DigitalPlatform.SIP2.SIP2Entity
             sb.Append(this._ok.ToString()).Append(this._resensitize.ToString());
             sb.Append(this._magneticMedia.ToString()).Append(this._alert.ToString());
             sb.Append(this._transactionDate);
-            sb.Append("AO").Append(this._institutionId).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
-            sb.Append("AA").Append(this._patronIdentifier).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
-            sb.Append("AB").Append(this._itemIdentifier).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
-            sb.Append("AJ").Append(this._titleIdentifier).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
-            sb.Append("AQ").Append(this._permanentLocation).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
+            sb.Append("AO").Append(this._institutionId).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AA").Append(this._patronIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AB").Append(this._itemIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AJ").Append(this._titleIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AQ").Append(this._permanentLocation).Append(SIPUtility.C_FIELD_TERMINATOR);
 
             /*
              * sort bin            CL    variable-length optional field
@@ -207,8 +207,8 @@ namespace DigitalPlatform.SIP2.SIP2Entity
              * item properties     CH    variable-length optional field
              */
 
-            sb.Append("AF").Append(this._screenMessage).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
-            sb.Append("AG").Append(this._printLine).Append(VARIABLE_LENGTH_FIELD_TERMINATOR);
+            sb.Append("AF").Append(this._screenMessage).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AG").Append(this._printLine).Append(SIPUtility.C_FIELD_TERMINATOR);
             return sb.ToString();
         }
 
