@@ -10,7 +10,7 @@ namespace DigitalPlatform.SIP2.Response
     The ACS should send this message in response to a Renew All message from the SC.
     66<ok ><renewed count><unrenewed count><transaction date><institution id><renewed items><unrenewed items><screen message><print line>
     */
-    public class RenewAllResponse_66 : BaseResponse
+    public class RenewAllResponse_66 : BaseMessage
     {
         //1-char, fixed-length required field:  0 or 1
         public string Ok_1 { get; set; }

@@ -12,47 +12,22 @@ namespace DigitalPlatform.SIP2.Request
     Whether to use this message or to use some other mechanism to login to the ACS is configurable on the SC.  When this message is used, it will be the first message sent to the ACS.
     93<UID algorithm><PWD algorithm><login user id><login password><location code>
      */
-    public class Login_93 : BaseRequest
+    public class Login_93 : BaseMessage
     {
         // 1-char, fixed-length required field; the algorithm used to encrypt the user id.
-        private string _UIDAlgorithm_1 = "";
-        public string UIDAlgorithm_1
-        {
-            get { return _UIDAlgorithm_1; }
-            set { _UIDAlgorithm_1 = value; }
-        }
+        public string UIDAlgorithm_1{ get; set; }
 
         // 1-char, fixed-length required field; the algorithm used to encrypt the password.
-        private string _PWDAlgorithm_1 = "";
-        public string PWDAlgorithm_1
-        {
-            get { return _PWDAlgorithm_1; }
-            set { _PWDAlgorithm_1 = value; }
-        }
+        public string PWDAlgorithm_1{ get; set; }
 
         // variable-length required field
-        private string _loginUserId_CN_r = null;
-        public string LoginUserId_CN_r
-        {
-            get { return _loginUserId_CN_r; }
-            set { _loginUserId_CN_r = value; }
-        }
+        public string LoginUserId_CN_r{ get; set; }
 
         // variable-length required field
-        private string _loginPassword_CO_r = null;
-        public string LoginPassword_CO_r
-        {
-            get { return _loginPassword_CO_r; }
-            set { _loginPassword_CO_r = value; }
-        }
+        public string LoginPassword_CO_r{ get; set; }
 
         // variable-length optional field; the SC location.
-        private string _locationCode_CP_o = null;
-        public string LocationCode_CP_o
-        {
-            get { return _locationCode_CP_o; }
-            set { _locationCode_CP_o = value; }
-        }
+        public string LocationCode_CP_o{ get; set; }
 
         // 构造函数
         public Login_93()

@@ -10,80 +10,34 @@ namespace DigitalPlatform.SIP2.Request
     This message is a superset of the Patron Status Request message.  It should be used to request patron information.  The ACS should respond with the Patron Information Response message.
     63<language><transaction date><summary><institution id><patron identifier><terminal password><patron password><start item><end item>
      */
-    public class PatronInformation_63 : BaseRequest
+    public class PatronInformation_63 : BaseMessage
     {
         //3-char, fixed-length required field
-        private string _language_3 = "";
-        public string Language_3
-        {
-            get { return _language_3; }
-            set { _language_3 = value; }
-        }
+        public string Language_3{ get; set; }
 
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _transactionDate_18 = "";
-        public string TransactionDate_18
-        {
-            get { return _transactionDate_18; }
-            set { _transactionDate_18 = value; }
-        }
+        public string TransactionDate_18{ get; set; }
 
         //10-char, fixed-length required field
-        private string _summary_10 = "";
-        public string Summary_10
-        {
-            get { return _summary_10; }
-            set { _summary_10 = value; }
-        }
+        public string Summary_10{ get; set; }
 
         // variable-length required field
-        private string _institutionId_AO_r = "";
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         // variable-length required field
-        private string _patronIdentifier_AA_r = "";
-        public string PatronIdentifier_AA_r
-        {
-            get { return _patronIdentifier_AA_r; }
-            set { _patronIdentifier_AA_r = value; }
-        }
+        public string PatronIdentifier_AA_r{ get; set; }
 
         // variable-length optional fiel d
-        private string _terminalPassword_AC_o = "";
-        public string TerminalPassword_AC_o
-        {
-            get { return _terminalPassword_AC_o; }
-            set { _terminalPassword_AC_o = value; }
-        }
+        public string TerminalPassword_AC_o{ get; set; }
 
         // variable-length optional field
-        private string _patronPassword_AD_o = "";
-        public string PatronPassword_AD_o
-        {
-            get { return _patronPassword_AD_o; }
-            set { _patronPassword_AD_o = value; }
-        }
+        public string PatronPassword_AD_o{ get; set; }
 
         // variable-length optional field
-        private string _startItem_BP_o = "";
-        public string StartItem_BP_o
-        {
-            get { return _startItem_BP_o; }
-            set { _startItem_BP_o = value; }
-        }
+        public string StartItem_BP_o{ get; set; }
 
         //variable-length optional field
-        private string _endItem_BQ_o = "";
-        public string EndItem_BQ_o
-        {
-            get { return _endItem_BQ_o; }
-            set { _endItem_BQ_o = value; }
-        }
-
+        public string EndItem_BQ_o{ get; set; }
 
         // 构造函数
         public PatronInformation_63()

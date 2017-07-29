@@ -10,7 +10,7 @@ namespace DigitalPlatform.SIP2.Response
      The ACS should send this message in response to the Patron Enable message from the SC.
      26<patron status><language><transaction date><institution id><patron identifier><personal name><valid patron><valid patron password><screen message><print line>
      */
-    public class PatronEnableResponse_26 : BaseResponse
+    public class PatronEnableResponse_26 : BaseMessage
     {
         //14-char, fixed-length required field
         public string PatronStatus_14 { get; set; }

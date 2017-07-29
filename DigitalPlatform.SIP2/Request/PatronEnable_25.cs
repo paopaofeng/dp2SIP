@@ -10,47 +10,22 @@ namespace DigitalPlatform.SIP2.Request
     This message can be used by the SC to re-enable canceled patrons.  It should only be used for system testing and validation.  The ACS should respond with a Patron Enable Response message.
     25<transaction date><institution id><patron identifier><terminal password><patron password>
      */
-    public class PatronEnable_25 : BaseRequest
+    public class PatronEnable_25 : BaseMessage
     {
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _transaction_Date_18 = "";
-        public string Transaction_Date_18
-        {
-            get { return _transaction_Date_18; }
-            set { _transaction_Date_18 = value; }
-        }
+        public string Transaction_Date_18{ get; set; }
 
         //variable-length required field
-        private string _institutionId_AO_r = "";
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         //variable-length required field
-        private string _patronIdentifier_AA_r = "";
-        public string PatronIdentifier_AA_r
-        {
-            get { return _patronIdentifier_AA_r; }
-            set { _patronIdentifier_AA_r = value; }
-        }
+        public string PatronIdentifier_AA_r{ get; set; }
 
         //variable-length optional field
-        private string _terminalPassword_AC_o = "";
-        public string TerminalPassword_AC_o
-        {
-            get { return _terminalPassword_AC_o; }
-            set { _terminalPassword_AC_o = value; }
-        }
+        public string TerminalPassword_AC_o{ get; set; }
 
         //variable-length optional field
-        private string _patronPassword_AD_o = "";
-        public string PatronPassword_AD_o
-        {
-            get { return _patronPassword_AD_o; }
-            set { _patronPassword_AD_o = value; }
-        }
+        public string PatronPassword_AD_o{ get; set; }
 
     }
 }

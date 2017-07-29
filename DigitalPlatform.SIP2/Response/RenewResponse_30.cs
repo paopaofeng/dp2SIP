@@ -11,7 +11,7 @@ namespace DigitalPlatform.SIP2.Response
     30<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
     See the description of the Checkout Response message for how the ok, renewal ok, desensitize, and fee amount fields will be interpreted.
     */
-    public class RenewResponse_30 : BaseResponse
+    public class RenewResponse_30 : BaseMessage
     {
         //1-char, fixed-length required field:  0 or 1.
         public string Ok_1 { get; set; }

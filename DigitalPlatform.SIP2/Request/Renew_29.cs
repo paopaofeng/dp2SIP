@@ -11,104 +11,44 @@ namespace DigitalPlatform.SIP2.Request
    This message is used to renew an item.  The ACS should respond with a Renew Response message. Either or both of the “item identifier” and “title identifier” fields must be present for the message to be useful.
    29<third party allowed><no block><transaction date><nb due date><institution id><patron identifier><patron password><item identifier><title identifier><terminal password><item properties><fee acknowledged>
     */
-    public class Renew_29 : BaseRequest
+    public class Renew_29 : BaseMessage
     {
         //1-char, fixed-length required field:  Y or N.
-        private string _thirdPartyAllowed_1 = "";
-        public string ThirdPartyAllowed_1
-        {
-            get { return _thirdPartyAllowed_1; }
-            set { _thirdPartyAllowed_1 = value; }
-        }
+        public string ThirdPartyAllowed_1{ get; set; }
 
         //1-char, fixed-length required field:  Y or N.
-        private string _noBlock_1 = "";
-        public string NoBlock_1
-        {
-            get { return _noBlock_1; }
-            set { _noBlock_1 = value; }
-        }
+        public string NoBlock_1{ get; set; }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _transactionDate_18 = "";
-        public string TransactionDate_18
-        {
-            get { return _transactionDate_18; }
-            set { _transactionDate_18 = value; }
-        }
+        public string TransactionDate_18{ get; set; }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _nbDueDate_18 = "";
-        public string NbDueDate_18
-        {
-            get { return _nbDueDate_18; }
-            set { _nbDueDate_18 = value; }
-        }
+        public string NbDueDate_18{ get; set; }
 
         //variable-length required field
-        private string _institutionId_AO_r = "";
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         //variable-length required field
-        private string _patronIdentifier_AA_r = "";
-        public string PatronIdentifier_AA_r
-        {
-            get { return _patronIdentifier_AA_r; }
-            set { _patronIdentifier_AA_r = value; }
-        }
+        public string PatronIdentifier_AA_r{ get; set; }
 
 
         //variable-length optional field
-        private string _patronPassword_AD_o = "";
-        public string PatronPassword_AD_o
-        {
-            get { return _patronPassword_AD_o; }
-            set { _patronPassword_AD_o = value; }
-        }
+        public string PatronPassword_AD_o{ get; set; }
 
         //variable-length optional field
-        private string _itemIdentifier_AB_o = "";
-        public string ItemIdentifier_AB_o
-        {
-            get { return _itemIdentifier_AB_o; }
-            set { _itemIdentifier_AB_o = value; }
-        }
+        public string ItemIdentifier_AB_o{ get; set; }
 
         //variable-length optional field
-        private string _titleIdentifier_AJ_o = "";
-        public string TitleIdentifier_AJ_o
-        {
-            get { return _titleIdentifier_AJ_o; }
-            set { _titleIdentifier_AJ_o = value; }
-        }
+        public string TitleIdentifier_AJ_o{ get; set; }
 
         //variable-length optional field
-        private string _terminalPassword_AC_o = "";
-        public string TerminalPassword_AC_o
-        {
-            get { return _terminalPassword_AC_o; }
-            set { _terminalPassword_AC_o = value; }
-        }
+        public string TerminalPassword_AC_o{ get; set; }
 
         //variable-length optional field
-        private string _itemProperties_CH_o = "";
-        public string ItemProperties_CH_o
-        {
-            get { return _itemProperties_CH_o; }
-            set { _itemProperties_CH_o = value; }
-        }
+        public string ItemProperties_CH_o{ get; set; }
 
         //1-char, optional field: Y or N.
-        private string _feeAcknowledged_BO_1_o = "";
-        public string FeeAcknowledged_BO_1_o
-        {
-            get { return _feeAcknowledged_BO_1_o; }
-            set { _feeAcknowledged_BO_1_o = value; }
-        }
+        public string FeeAcknowledged_BO_1_o{ get; set; }
 
         // 构造函数
         public Renew_29()

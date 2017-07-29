@@ -10,40 +10,19 @@ namespace DigitalPlatform.SIP2.Request
     This message may be used to request item information.  The ACS should respond with the Item Information Response message.
     17<transaction date><institution id>< item identifier ><terminal password>
     */
-    public class ItemInformation_17 : BaseRequest
+    public class ItemInformation_17 : BaseMessage
     {
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _transactionDate_18 = "";
-        public string TransactionDate_18
-        {
-            get { return _transactionDate_18; }
-            set { _transactionDate_18 = value; }
-        }
+        public string TransactionDate_18{ get; set; }
 
         // variable-length required field
-        private string _institutionId_AO_r = "";
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         // variable-length required field.
-        private string _itemIdentifier_AB_r = "";
-        public string ItemIdentifier_AB_r
-        {
-            get { return _itemIdentifier_AB_r; }
-            set { _itemIdentifier_AB_r = value; }
-        }
+        public string ItemIdentifier_AB_r{ get; set; }
 
         // variable-length optional fiel d
-        private string _terminalPassword_AC_o = "";
-        public string TerminalPassword_AC_o
-        {
-            get { return _terminalPassword_AC_o; }
-            set { _terminalPassword_AC_o = value; }
-        }
-
+        public string TerminalPassword_AC_o{ get; set; }
 
         // 构造函数
         public ItemInformation_17()

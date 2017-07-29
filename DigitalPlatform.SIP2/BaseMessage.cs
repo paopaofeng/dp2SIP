@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DigitalPlatform.SIP2.Request
+namespace DigitalPlatform.SIP2
 {
-    public class BaseRequest
+    public class BaseMessage
     {
         //The sequence number is a single ASCII digit, '0' to '9'.  
         //When error detection is enabled, the SC will increment the sequence number field for each new message it transmits. 

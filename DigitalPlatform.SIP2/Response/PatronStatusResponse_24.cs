@@ -10,7 +10,7 @@ namespace DigitalPlatform.SIP2.Response
  The ACS must send this message in response to a Patron Status Request message as well as in response to a Block Patron message.
  24<patron status><language><transaction date><institution id><patron identifier><personal name><valid patron><valid patron password><currency type><fee amount><screen message><print line>
      */
-    public class PatronStatusResponse_24 : BaseResponse
+    public class PatronStatusResponse_24 : BaseMessage
     {
         //14-char, fixed-length required field
         public string PatronStatus_14 { get; set; }

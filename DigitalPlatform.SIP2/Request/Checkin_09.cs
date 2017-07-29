@@ -12,79 +12,35 @@ namespace DigitalPlatform.SIP2.Request
      The ACS must respond to this command with a Checkin Response message.
      09<no block><transaction date><return date><current location><institution id><item identifier><terminal password><item properties><cancel>
      */
-    public class Checkin_09 : BaseRequest
+    public class Checkin_09 : BaseMessage
     {
         //1-char, fixed-length required field:  Y or N.
-        private string _noBlock_1 = "";             
-        public string NoBlock_1
-        {
-            get { return _noBlock_1; }
-            set { _noBlock_1 = value; }
-        }
+        public string NoBlock_1{ get; set; }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _transactionDate_18 = "";  
-        public string TransactionDate_18
-        {
-            get { return _transactionDate_18; }
-            set { _transactionDate_18 = value; }
-        }
+        public string TransactionDate_18{ get; set; }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        private string _returnDate_18 = "";         
-        public string ReturnDate_18
-        {
-            get { return _returnDate_18; }
-            set { _returnDate_18 = value; }
-        }
+        public string ReturnDate_18{ get; set; }
 
         //variable-length required field
-        private string _currentLocation_AP_r = "";
-        public string CurrentLocation_AP_r
-        {
-            get { return _currentLocation_AP_r; }
-            set { _currentLocation_AP_r = value; }
-        }
+        public string CurrentLocation_AP_r{ get; set; }
 
         //variable-length required field
-        private string _institutionId_AO_r = "";     
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         //variable-length required field
-        private string _itemIdentifier_AB_r = "";     
-        public string ItemIdentifier_AB_r
-        {
-            get { return _itemIdentifier_AB_r; }
-            set { _itemIdentifier_AB_r = value; }
-        }
+        public string ItemIdentifier_AB_r{ get; set; }
 
         //variable-length required field
-        private string _terminalPassword_AC_r = "";
-        public string TerminalPassword_AC_r
-        {
-            get { return _terminalPassword_AC_r; }
-            set { _terminalPassword_AC_r = value; }
-        }
+        public string TerminalPassword_AC_r{ get; set; }
 
         //variable-length optional field
-        private string _itemProperties_CH_o = "";    
-        public string ItemProperties_CH_o
-        {
-            get { return _itemProperties_CH_o; }
-            set { _itemProperties_CH_o = value; }
-        }
+        public string ItemProperties_CH_o{ get; set; }
 
         //1-char, optional field: Y or N
-        private string _cancel_BI_1_o = "";                 
-        public string Cancel_BI_1_o
-        {
-            get { return _cancel_BI_1_o; }
-            set { _cancel_BI_1_o = value; }
-        }
+        public string Cancel_BI_1_o{ get; set; }
+
 
         // 构造函数
         public Checkin_09()

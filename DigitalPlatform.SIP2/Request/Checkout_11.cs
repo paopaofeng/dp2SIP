@@ -11,50 +11,25 @@ namespace DigitalPlatform.SIP2.Request
     11<SC renewal policy><no block><transaction date><nb due date><institution id><patron identifier><item identifier><terminal password><patron password><item properties><fee acknowledged><cancel>
 11	1-char	1-char	18-char	18-char	AO	AA	AB	AC AD	CH	BO	BI
      */
-    public class Checkout_11 : BaseRequest
+    public class Checkout_11 : BaseMessage
     {
         //1-char,fixed-length required field:  Y or N.
-        private string _SCRenewalPolicy_1 = ""; 
-        public string SCRenewalPolicy_1
-        {
-            get { return _SCRenewalPolicy_1; }
-            set { _SCRenewalPolicy_1 = value; }
-        }
+        public string SCRenewalPolicy_1{ get; set; }
 
         //1-char, fixed-length required field:  Y or N.
-        private string _noBlock_1 = "";            
-        public string NoBlock_1
-        {
-            get { return _noBlock_1; }
-            set { _noBlock_1 = value; }
-        }
+        public string NoBlock_1{ get; set; }
 
         //The date and time that the patron checked out the item at the SC unit.
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS.  
-        private string _transactionDate_18 = ""; 
-        public string TransactionDate_18
-        {
-            get { return _transactionDate_18; }
-            set { _transactionDate_18 = value; }
-        }
+        public string TransactionDate_18{ get; set; }
 
         //18-char,fixed-length required field:  YYYYMMDDZZZZHHMMSS
         //当noBlock为N时，该值为空。
-        private string _nbDueDate_18 = "";       
-        public string NbDueDate_18
-        {
-            get { return _nbDueDate_18; }
-            set { _nbDueDate_18 = value; }
-        }
+        public string NbDueDate_18{ get; set; }
 
         //图书馆的机构ID,目前传的dp2Library
         //variable-length required field
-        private string _institutionId_AO_r = ""; 
-        public string InstitutionId_AO_r
-        {
-            get { return _institutionId_AO_r; }
-            set { _institutionId_AO_r = value; }
-        }
+        public string InstitutionId_AO_r{ get; set; }
 
         //读者证条码号
         //variable-length required field 
@@ -67,58 +42,30 @@ namespace DigitalPlatform.SIP2.Request
 
         //册条码号
         //variable-length required field
-        private string _itemIdentifier_AB_r = "";   
-        public string ItemIdentifier_AB_r
-        {
-            get { return _itemIdentifier_AB_r; }
-            set { _itemIdentifier_AB_r = value; }
-        }
+        public string ItemIdentifier_AB_r{ get; set; }
 
         //This is the password for the SC unit.  目前该字段传空值
         //variable-length required field
-        private string _terminalPassword_AC_r = "";
-        public string TerminalPassword_AC_r
-        {
-            get { return _terminalPassword_AC_r; }
-            set { _terminalPassword_AC_r = value; }
-        }
+        public string TerminalPassword_AC_r{ get; set; }
 
         //In current applications, this field is not used. 目前不传这个字段
         //variable-length optional field
-        private string _itemProperties_CH_o = "";
-        public string ItemProperties_CH_o
-        {
-            get { return _itemProperties_CH_o; }
-            set { _itemProperties_CH_o = value; }
-        }
+        public string ItemProperties_CH_o{ get; set; }
 
         // 读者密码，目前不传这个字段
         //variable-length optional field
-        private string _patronPassword_AD_o = "";
-        public string PatronPassword_AD_o
-        {
-            get { return _patronPassword_AD_o; }
-            set { _patronPassword_AD_o = value; }
-        }
+        public string PatronPassword_AD_o{ get; set; }
 
         //目前传的N
         //1-char, optional field: Y or N
-        private string _feeAcknowledged_BO_1_o = "";
-        public string FeeAcknowledged_BO_1_o
-        {
-            get { return _feeAcknowledged_BO_1_o; }
-            set { _feeAcknowledged_BO_1_o = value; }
-        }
+        public string FeeAcknowledged_BO_1_o{ get; set; }
 
         // 当Checkout此参数传Y时，则取消上一个错误的Checkin
         //当Checkin此参数传Y时，则取消上一个错误的Checkout
         //普通的Checkout与Checkin，此参数都就传N。
-        private string _cancel_BI_1_o = ""; //1-char,optional field: Y or N
-        public string Cancel_BI_1_o
-        {
-            get { return _cancel_BI_1_o; }
-            set { _cancel_BI_1_o = value; }
-        }
+        //1-char,optional field: Y or N
+        public string Cancel_BI_1_o{ get; set; }
+
 
         // 构造函数
         public Checkout_11()

@@ -10,31 +10,16 @@ namespace DigitalPlatform.SIP2.Request
     The SC status message sends SC status to the ACS.  It requires an ACS Status Response message reply from the ACS. This message will be the first message sent by the SC to the ACS once a connection has been established (exception: the Login Message may be sent first to login to an ACS server program). The ACS will respond with a message that establishes some of the rules to be followed by the SC and establishes some parameters needed for further communication.
     99<status code><max print width><protocol version>
      */
-    public class SCStatus_99 : BaseRequest
+    public class SCStatus_99 : BaseMessage
     {
         // 1-char, fixed-length required field: 0 or 1 or 2
-        private string _statusCode_1 = "";
-        public string StatusCode_1
-        {
-            get { return _statusCode_1; }
-            set { _statusCode_1 = value; }
-        }
+        public string StatusCode_1{ get; set; }
 
         // 3-char, fixed-length required field
-        private string _maxPrintWidth_3 = "";
-        public string MaxPrintWidth_3
-        {
-            get { return _maxPrintWidth_3; }
-            set { _maxPrintWidth_3 = value; }
-        }
+        public string MaxPrintWidth_3{ get; set; }
 
         // 4-char, fixed-length required field:  x.xx
-        private string _protocolVersion_4 = "";
-        public string ProtocolVersion_4
-        {
-            get { return _protocolVersion_4; }
-            set { _protocolVersion_4 = value; }
-        }
+        public string ProtocolVersion_4{ get; set; }
 
         // 构造函数
         public SCStatus_99()

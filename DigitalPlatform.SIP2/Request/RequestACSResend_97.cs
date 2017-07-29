@@ -11,6 +11,6 @@ namespace DigitalPlatform.SIP2.Request
     It is sent by the SC to the ACS when the checksum in a received message does not match the value calculated by the SC.  The ACS should respond by re-transmitting its last message,  This message should never include a “sequence number” field, even when error detection is enabled, (see “Checksums and Sequence Numbers” below) but would include a “checksum” field since checksums are in use.
     97
     */
-    public class RequestACSResend_97 : BaseRequest
+    public class RequestACSResend_97 : BaseMessage
     { }
 }

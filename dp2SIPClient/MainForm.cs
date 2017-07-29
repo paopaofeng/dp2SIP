@@ -108,7 +108,7 @@ namespace dp2SIPClient
         //发送消息
         private void toolStripLabel_send_Click(object sender, EventArgs e)
         {
-            BaseRequest request = null;
+            BaseMessage request = null;
             try
             {
                 if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
@@ -223,30 +223,30 @@ namespace dp2SIPClient
 
             string error = "";
             bool bRet = false;
-            BaseRequest request = null;
+            //BaseRequest request = null;
             string text = "";
             if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
             {
                 text = "93  CNsupervisor|CO1|CPC00|AY0AZFB58";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                Login_93 request93 = new Login_93();
+                bRet = request93.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                Login_93 request93 = (Login_93)request;
                 this.textBox_Login93_UIDAlgorithm_1.Text = request93.UIDAlgorithm_1;
                 this.textBox_Login93_PWDAlgorithm_1.Text = request93.PWDAlgorithm_1;
-                this.textBox_Login93_loginUserId_CN_r.Text = request93.LoginUserId_CN_r;//"null" ? null : this.textBox_Login93_loginUserId_CN_r.Text,
-                this.textBox_Login93_loginPassword_CO_r.Text = request93.LoginPassword_CO_r;//"null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
-                this.textBox_Login93_locationCode_CP_o.Text = request93.LocationCode_CP_o;//"null" ? null : this.textBox_Login93_locationCode_CP_o.Text
+                this.textBox_Login93_loginUserId_CN_r.Text = request93.LoginUserId_CN_r;
+                this.textBox_Login93_loginPassword_CO_r.Text = request93.LoginPassword_CO_r;
+                this.textBox_Login93_locationCode_CP_o.Text = request93.LocationCode_CP_o;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_SCStatus99)
             {
                 text = "9900302.00";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                SCStatus_99 request99 = new SCStatus_99();
+                bRet = request99.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                SCStatus_99 request99 = (SCStatus_99)request;
                 this.textBox_SCStatus99_statusCode_1.Text = request99.StatusCode_1;
                 this.textBox_SCStatus99_maxPrintWidth_3.Text = request99.MaxPrintWidth_3;
                 this.textBox_SCStatus99_protocolVersion_4.Text = request99.ProtocolVersion_4;
@@ -255,26 +255,26 @@ namespace dp2SIPClient
             {
                 //20170630    141135
                 text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AAFZXP00001|ABDPB000051|AC|BON|BIN|";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                Checkout_11 request11 = new Checkout_11();
+                bRet = request11.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                Checkout_11 request11 = (Checkout_11)request;
                 this.textBox_Checkout11_SCRenewalPolicy_1.Text = request11.SCRenewalPolicy_1;
                 this.textBox_Checkout11_noBlock_1.Text = request11.NoBlock_1;
                 this.textBox_Checkout11_transactionDate_18.Text = request11.TransactionDate_18;
 
                 this.textBox_Checkout11_nbDueDate_18.Text = request11.NbDueDate_18;
-                this.textBox_Checkout11_institutionId_AO_r.Text = request11.InstitutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
-                this.textBox_Checkout11_patronIdentifier_AA_r.Text = request11.PatronIdentifier_AA_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+                this.textBox_Checkout11_institutionId_AO_r.Text = request11.InstitutionId_AO_r;
+                this.textBox_Checkout11_patronIdentifier_AA_r.Text = request11.PatronIdentifier_AA_r;
 
-                this.textBox_Checkout11_itemIdentifier_AB_r.Text = request11.ItemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
-                this.textBox_Checkout11_terminalPassword_AC_r.Text = request11.TerminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
-                this.textBox_Checkout11_itemProperties_CH_o.Text = request11.ItemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
+                this.textBox_Checkout11_itemIdentifier_AB_r.Text = request11.ItemIdentifier_AB_r;
+                this.textBox_Checkout11_terminalPassword_AC_r.Text = request11.TerminalPassword_AC_r;
+                this.textBox_Checkout11_itemProperties_CH_o.Text = request11.ItemProperties_CH_o;
 
-                this.textBox_Checkout11_patronPassword_AD_o.Text = request11.PatronPassword_AD_o;//= "null" ? null : this.textBox_Checkout11_patronPassword_AD_o.Text,
-                this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.FeeAcknowledged_BO_1_o;//= "null" ? null : this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text,
-                this.textBox_Checkout11_cancel_BI_1_o.Text = request11.Cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+                this.textBox_Checkout11_patronPassword_AD_o.Text = request11.PatronPassword_AD_o;
+                this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.FeeAcknowledged_BO_1_o;
+                this.textBox_Checkout11_cancel_BI_1_o.Text = request11.Cancel_BI_1_o;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkin09)
             {
@@ -282,33 +282,33 @@ namespace dp2SIPClient
                 string transactionDate = SIPUtility.NowDateTime;
                 string returnDate = SIPUtility.NowDateTime;
                 text = "09N"+transactionDate+returnDate+"AP|AOdp2Library|ABDPB000051|AC|BIN|";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                Checkin_09 request09 = new Checkin_09();
+                bRet = request09.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                Checkin_09 request09 = (Checkin_09)request;
                 this.textBox_Checkin09_noBlock_1.Text = request09.NoBlock_1;
                 this.textBox_Checkin09_transactionDate_18.Text = request09.TransactionDate_18;
                 this.textBox_Checkin09_returnDate_18.Text = request09.ReturnDate_18;
 
-                this.textBox_Checkin09_currentLocation_AP_r.Text = request09.CurrentLocation_AP_r;// = "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
-                this.textBox_Checkin09_institutionId_AO_r.Text = request09.InstitutionId_AO_r;//= "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
-                this.textBox_Checkin09_itemIdentifier_AB_r.Text = request09.ItemIdentifier_AB_r;//= "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                this.textBox_Checkin09_currentLocation_AP_r.Text = request09.CurrentLocation_AP_r;
+                this.textBox_Checkin09_institutionId_AO_r.Text = request09.InstitutionId_AO_r;
+                this.textBox_Checkin09_itemIdentifier_AB_r.Text = request09.ItemIdentifier_AB_r;
                 
-                this.textBox_Checkin09_terminalPassword_AC_r.Text = request09.TerminalPassword_AC_r;//= "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text,
-                this.textBox_Checkin09_itemProperties_CH_o.Text = request09.ItemProperties_CH_o;//= "null" ? null : this.textBox_Checkout11_itemProperties_CH_o.Text,
-                this.textBox_Checkin09_cancel_BI_1_o.Text = request09.Cancel_BI_1_o;//= "null" ? null : this.textBox_Checkout11_cancel_BI_1_o.Text
+                this.textBox_Checkin09_terminalPassword_AC_r.Text = request09.TerminalPassword_AC_r;
+                this.textBox_Checkin09_itemProperties_CH_o.Text = request09.ItemProperties_CH_o;
+                this.textBox_Checkin09_cancel_BI_1_o.Text = request09.Cancel_BI_1_o;
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_PatronInformation63)
             {
                 //6301920170630    090808  Y       AOdp2Library|AAA005312|
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "63019" + transactionDate + "  Y       AOdp2Library|AAFZXP00001|";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                PatronInformation_63 request63 = new PatronInformation_63();
+                bRet = request63.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                PatronInformation_63 request63 = (PatronInformation_63)request;
                 this.textBox_PatronInformation63_language_3.Text = request63.Language_3;
                 this.textBox_PatronInformation63_transactionDate_18.Text = request63.TransactionDate_18;
                 this.textBox_PatronInformation63_summary_10.Text = request63.Summary_10;
@@ -326,11 +326,11 @@ namespace dp2SIPClient
                 //1720170623    151645AOdp2Library|AB700635|
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "17"+transactionDate+"AOdp2Library|ABDPB000051|";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                ItemInformation_17 request17 = new ItemInformation_17();
+                bRet = request17.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                ItemInformation_17 request17 = (ItemInformation_17)request;
                 this.textBox_ItemInformation17_transactionDate_18.Text = request17.TransactionDate_18;
 
                 this.textBox_ItemInformation17_institutionId_AO_r.Text = request17.InstitutionId_AO_r;
@@ -342,11 +342,11 @@ namespace dp2SIPClient
                 //29NN20170630    144419                  AOdp2Library|AAL905071|AB510105|BON|
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "29NN" + transactionDate + "                  AOdp2Library|AAFZXP00001|ABDPB000051|BON|";
-                bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                Renew_29 request29 = new Renew_29();
+                bRet = request29.parse(text, out error);
                 if (bRet == false)
                     goto ERROR1;
 
-                Renew_29 request29 = (Renew_29)request;
                 this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.ThirdPartyAllowed_1;
                 this.textBox_Renew29_noBlock_1.Text = request29.NoBlock_1;
                 this.textBox_Renew29_transactionDate_18.Text = request29.TransactionDate_18;
@@ -419,9 +419,9 @@ namespace dp2SIPClient
 
 
                 // 命令参数检查
-                BaseRequest request = null;
+                BaseMessage request = null;
                 string error="";
-                bool bRet = SCRequestFactory.ParseRequest(text, out request, out error);
+                bool bRet = SIPUtility.ParseRequest(text, out request, out error);
                 if (bRet == false)
                 {
                     this.Print("error-s:" + error);

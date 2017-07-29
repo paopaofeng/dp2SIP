@@ -14,7 +14,7 @@ namespace DigitalPlatform.SIP2.Response
      <valid patron><valid patron password><currency type><fee amount><fee limit><items>
      <home address><e-mail address><home phone number><screen message><print line>
     */
-    public class PatronInformationResponse_64 : BaseResponse
+    public class PatronInformationResponse_64 : BaseMessage
     {
         //14-char, fixed-length required field
         public string PatronStatus_14 { get; set; }
