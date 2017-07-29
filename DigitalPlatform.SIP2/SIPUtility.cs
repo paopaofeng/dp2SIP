@@ -77,7 +77,7 @@ namespace DigitalPlatform.SIP2
             }
 
             string cmdIdentifiers = text.Substring(0, 2);
-            text = text.Substring(2);
+            //text = text.Substring(2);
             switch (cmdIdentifiers)
             {
                 case "93":

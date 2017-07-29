@@ -96,29 +96,32 @@ namespace DigitalPlatform.SIP2.Request
         {
             error = "";
 
-            if (text == null || text.Length == 0)
+            if (text == null || text.Length < 2)
             {
-                error = "命令字符串为null或长度为0。";
-                goto ERROR1;
+                error = "命令字符串为null或长度小于2位";
+                return false;
             }
+            string cmdIdentifiers = text.Substring(0, 2);
+            text = text.Substring(2);
+
 
             //处理定长字段
             string rest = text;
             while (rest.Length > 0)
             {
-                if (this.NoBlock_1 == "")
+                if (String.IsNullOrEmpty(this.NoBlock_1)==true)
                 {
                     this.NoBlock_1 = rest.Substring(0, 1);
                     rest = rest.Substring(1);
                     continue;
                 }
-                if (this.TransactionDate_18 == "")
+                if (String.IsNullOrEmpty(this.TransactionDate_18)==true)
                 {
                     this.TransactionDate_18 = rest.Substring(0, 18);
                     rest = rest.Substring(18);
                     continue;
                 }
-                if (this.ReturnDate_18 == "")
+                if (String.IsNullOrEmpty(this.ReturnDate_18 )==true)
                 {
                     this.ReturnDate_18 = rest.Substring(0, 18);
                     rest = rest.Substring(18);
@@ -180,9 +183,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return true;
 
-        ERROR1:
-
-            return false;
         }
 
         // 校验对象的各参数是否合法

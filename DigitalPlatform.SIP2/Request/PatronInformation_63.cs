@@ -90,29 +90,31 @@ namespace DigitalPlatform.SIP2.Request
         {
             error = "";
 
-            if (text == null || text.Length == 0)
+            if (text == null || text.Length < 2)
             {
-                error = "命令字符串为null或长度为0。";
-                goto ERROR1;
+                error = "命令字符串为null或长度小于2位";
+                return false;
             }
+            string cmdIdentifiers = text.Substring(0, 2);
+            text = text.Substring(2);
 
             //处理定长字段
             string rest = text;
             while (rest.Length > 0)
             {
-                if (this.Language_3 == "")
+                if (String.IsNullOrEmpty(this.Language_3)==true)
                 {
                     this.Language_3 = rest.Substring(0, 3);
                     rest = rest.Substring(3);
                     continue;
                 }
-                if (this.TransactionDate_18 == "")
+                if (String.IsNullOrEmpty(this.TransactionDate_18)==true)
                 {
                     this.TransactionDate_18 = rest.Substring(0, 18);
                     rest = rest.Substring(18);
                     continue;
                 }
-                if (this.Summary_10 == "")
+                if (String.IsNullOrEmpty(this.Summary_10)==true)
                 {
                     this.Summary_10 = rest.Substring(0, 10);
                     rest = rest.Substring(10);
@@ -160,7 +162,7 @@ namespace DigitalPlatform.SIP2.Request
                 else
                 {
                     error = "不支持的字段:" + part;
-                    goto ERROR1;
+                    return false;
                 }
             }
 
@@ -171,9 +173,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return true;
 
-        ERROR1:
-
-            return false;
         }
 
         // 校验对象的各参数是否合法
