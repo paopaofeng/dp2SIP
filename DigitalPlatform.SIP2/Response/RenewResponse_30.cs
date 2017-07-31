@@ -8,9 +8,11 @@ namespace DigitalPlatform.SIP2.Response
     /*
     2.00 Renew Response
     This message must be sent by the ACS in response to a Renew message by the SC.
-    30<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
-    See the description of the Checkout Response message for how the ok, renewal ok, desensitize, and fee amount fields will be interpreted.
-    */
+    30<ok><renewal ok><magnetic media><desensitize><transaction date>
+    30	1-char	1-char	1-char	1-char	18-char
+     <institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
+    AO	AA	AB	AJ  AH  BT	CI	BH	BV	CK	CH	BK	AF	AG
+     */
     public class RenewResponse_30 : BaseMessage
     {
         public RenewResponse_30()
@@ -18,10 +20,35 @@ namespace DigitalPlatform.SIP2.Response
             this.CommandIdentifier = "30";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //30<ok><renewal ok><magnetic media><desensitize><transaction date>
+            //30	1-char	1-char	1-char	1-char	18-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Ok, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_RenewalOk, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_MagneticMedia, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Desensitize, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<institution id><patron identifier><item identifier><title identifier><due date><fee type>
+            //AO	AA	AB	AJ  AH  BT
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AH_DueDate, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BT_FeeType, false));
+
+            //<security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
+            //CI	BH	BV	CK ---	CH	BK	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CI_SecurityInhibit, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BH_CurrencyType, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BV_FeeAmount, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CK_MediaType, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BK_TransactionId, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
         }
 
         /*

@@ -9,7 +9,8 @@ namespace DigitalPlatform.SIP2.Response
     Checkout Response
     This message must be sent by the ACS in response to a Checkout message from the SC.
     12<ok><renewal ok><magnetic media><desensitize><transaction date><institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
-    */
+    12	1-char	1-char	1-char	1-char	18-char	AO	AA	AB	AJ	AH BT	CI	BH	BV	CK	CH	BK	AF	AG
+     */
     public class CheckoutResponse_12 : BaseMessage
     {
         public CheckoutResponse_12()
@@ -17,10 +18,34 @@ namespace DigitalPlatform.SIP2.Response
             this.CommandIdentifier = "12";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //<ok><renewal ok><magnetic media><desensitize><transaction date>
+            //1-char	1-char	1-char	1-char	18-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Ok, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_RenewalOk, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_MagneticMedia, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Desensitize, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<institution id><patron identifier><item identifier><title identifier><due date><fee type><security inhibit><currency type><fee amount><media type><item properties><transaction id><screen message><print line>
+            //	AO	AA	AB	---AJ	    AH  BT	---CI	BH	BV	---CK	CH	BK	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AH_DueDate, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BT_FeeType, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CI_SecurityInhibit, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BH_CurrencyType, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BV_FeeAmount, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CK_MediaType, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BK_TransactionId, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
         }
 
         /*

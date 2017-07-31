@@ -8,8 +8,9 @@ namespace DigitalPlatform.SIP2.Response
     /*
     2.00 Item Information Response
     The ACS must send this message in response to the Item Information message. 
-    18<circulation status><hold queue length><security marker><fee type><transaction date><due date><recall date><hold pickup date><item identifier><title identifier><owner><currency type><fee amount><media type><permanent location><current location><item properties><screen message><print line>
-    */
+    18<circulation status><security marker><fee type><transaction date><hold queue length><due date><recall date><hold pickup date><item identifier><title identifier><owner><currency type><fee amount><media type><permanent location><current location><item properties><screen message><print line>
+    18	2-char	2-char	2-char	18-char	CF	AF	CJ	CM	AB AJ	BG	BH	BV	CK	AQ	AP	CH	AF	AG
+     */
     public class ItemInformationResponse_18 : BaseMessage
     {
         public ItemInformationResponse_18()
@@ -17,10 +18,40 @@ namespace DigitalPlatform.SIP2.Response
             this.CommandIdentifier = "18";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //<circulation status><security marker><fee type><transaction date>
+            //2-char	2-char	2-char	18-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_CirculationStatus, 2));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_SecurityMarker, 2));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_BT_FeeType, 2));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<hold queue length><due date><recall date><hold pickup date>
+            //CF	AF	CJ	CM
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CF_HoldQueueLength, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AH_DueDate, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CJ_RecallDate, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CM_HoldPickupDate, false ));
+
+            //<item identifier><title identifier><owner><currency type>
+            //AB AJ	BG	BH	
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BG_Owner, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BH_CurrencyType, false ));
+
+            //<fee amount><media type><permanent location><current location>
+            //BV	CK	AQ	AP	
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BV_FeeAmount, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CK_MediaType, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AQ_PermanentLocation, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AP_CurrentLocation, false ));
+
+            //<item properties><screen message><print line>
+            //CH	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
         }
 
         /*

@@ -8,7 +8,7 @@ namespace DigitalPlatform.SIP2.Response
     /*
      Checkin Response
      This message must be sent by the ACS in response to a SC Checkin message.
-     10<ok><resensitize><magnetic media><alert><transaction date>
+     10<ok><resensitize><magnetic media><alert><transaction date><institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
      10	1-char	1-char	1-char 1-char	18-char	AO	AB	AQ	AJ	CL AA	CK	CH	AF	AG
     */
     public class CheckinResponse_10 : BaseMessage

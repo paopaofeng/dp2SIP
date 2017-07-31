@@ -9,6 +9,7 @@ namespace DigitalPlatform.SIP2.Response
      2.00 End Session Response
      The ACS must send this message in response to the End Patron Session message.
      36<end session>< transaction date >< institution id >< patron identifier ><screen message><print line>
+     36	1-char	18-char	AO	AA	AF	AG
      */
     public class EndSessionResponse_36 : BaseMessage
     {
@@ -17,10 +18,18 @@ namespace DigitalPlatform.SIP2.Response
             this.CommandIdentifier = "36";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //<end session>< transaction date >
+            //1-char	18-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_EndSession, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //< institution id >< patron identifier ><screen message><print line>
+            //AO	AA	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
         }
 
         /*

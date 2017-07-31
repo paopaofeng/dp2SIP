@@ -187,9 +187,9 @@ namespace DigitalPlatform.SIP2
         //fee type BT
         public const string F_BT_FeeType = "BT";
         //recall items BU
-        public const string F_AD_RecallItems = "BU";
+        public const string F_BU_RecallItems = "BU";
         //fee amount BV
-        public const string F_BV_FeeAmount_BV = "BV";
+        public const string F_BV_FeeAmount = "BV";
         //expiration date BW
         public const string F_BW_ExpirationDate = "BW";
         //supported messages BX
