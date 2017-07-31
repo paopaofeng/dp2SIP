@@ -8,7 +8,8 @@ namespace DigitalPlatform.SIP2.Response
     /*
      Checkin Response
      This message must be sent by the ACS in response to a SC Checkin message.
-     10<ok><resensitize><magnetic media><alert><transaction date><institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
+     10<ok><resensitize><magnetic media><alert><transaction date>
+     10	1-char	1-char	1-char 1-char	18-char	AO	AB	AQ	AJ	CL AA	CK	CH	AF	AG
     */
     public class CheckinResponse_10 : BaseMessage
     {
@@ -16,11 +17,30 @@ namespace DigitalPlatform.SIP2.Response
         {
             this.CommandIdentifier = "10";
 
-            //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //==前面的定长字段 
+            //<ok><resensitize><magnetic media><alert><transaction date><institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
+            //1-char	1-char	1-char	1-char 18-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Ok, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Resensitize, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_MagneticMedia, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Alert, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<institution id><item identifier><permanent location><title identifier><sort bin><patron identifier><media type><item properties><screen message><print line>
+            //AO	AB	AQ	---AJ CL AA	---	CK CH	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AQ_PermanentLocation, true));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CL_SortBin, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CK_MediaType, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
         }
         /*
         //OK should be set to 1 if the ACS checked in the item. should be set to 0 if the ACS did not check in the item.

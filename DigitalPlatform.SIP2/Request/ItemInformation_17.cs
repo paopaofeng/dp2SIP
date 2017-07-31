@@ -9,6 +9,7 @@ namespace DigitalPlatform.SIP2.Request
     Item Information
     This message may be used to request item information.  The ACS should respond with the Item Information Response message.
     17<transaction date><institution id>< item identifier ><terminal password>
+    17	18-char	AO	AB	AC
     */
     public class ItemInformation_17 : BaseMessage
     {
@@ -18,10 +19,12 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "17";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, false));
         }
 
         /*

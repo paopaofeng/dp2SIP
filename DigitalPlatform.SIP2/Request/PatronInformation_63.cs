@@ -9,7 +9,8 @@ namespace DigitalPlatform.SIP2.Request
     2.00 Patron Information
     This message is a superset of the Patron Status Request message.  It should be used to request patron information.  The ACS should respond with the Patron Information Response message.
     63<language><transaction date><summary><institution id><patron identifier><terminal password><patron password><start item><end item>
-     */
+   63	3-char	18-char	10-char	AO	AA	AC	AD	BP  BQ
+     * */
     public class PatronInformation_63 : BaseMessage
     {
 
@@ -18,10 +19,18 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "63";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Language, 3));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Summary, 10));
 
-            //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //==后面变长字段 AO	AA	AC	AD	BP  BQ
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BP_StartItem, false));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BQ_EmailAddress, false ));
         }
         /*
 

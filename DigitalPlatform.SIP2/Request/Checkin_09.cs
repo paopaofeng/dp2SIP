@@ -44,10 +44,10 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, true));
 
             // 2.00 item properties CH variable-length optional field
-            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false));
 
             //2.00 cancel BI 1-char, optional field: Y or N
-            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, false));
 
 
         }

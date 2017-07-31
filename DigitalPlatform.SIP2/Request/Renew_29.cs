@@ -10,7 +10,8 @@ namespace DigitalPlatform.SIP2.Request
    2.00 Renew
    This message is used to renew an item.  The ACS should respond with a Renew Response message. Either or both of the “item identifier” and “title identifier” fields must be present for the message to be useful.
    29<third party allowed><no block><transaction date><nb due date><institution id><patron identifier><patron password><item identifier><title identifier><terminal password><item properties><fee acknowledged>
-    */
+   29	1-char	1-char	18-char	18-char	AO	AA	AD	AB AJ	AC	CH	BO
+     */
     public class Renew_29 : BaseMessage
     {
         public Renew_29()
@@ -18,10 +19,21 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "29";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ThirdPartyAllowed, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NbDueDate, 18));
 
-            //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //==后面变长字段 AO	AA	AD	AB AJ	AC	CH	BO
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, false ));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BO_FeeAcknowledged, false ));
         }
 
 

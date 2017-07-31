@@ -11,6 +11,7 @@ namespace DigitalPlatform.SIP2.Response
      * ACS Status
      * The ACS must send this message in response to a SC Status message.This message will be the first message sent by the ACS to the SC, since it establishes some of the rules to be followed by the SC and establishes some parameters needed for further communication (exception: the Login Response Message may be sent first to complete login of the SC).
      * 98<on-line status><checkin ok><checkout ok><ACS renewal policy><status update ok><off-line ok><timeout period><retries allowed><date / time sync><protocol version><institution id><library name><supported messages ><terminal location><screen message><print line>
+     98	1-char	1-char	1-char	1-char	1-char	1-char	3-char	3-char  18-char	4-char	AO	AM	BX	AN	AF	AG
      */
     public class ACSStatus_98 : BaseMessage
     {
@@ -20,10 +21,33 @@ namespace DigitalPlatform.SIP2.Response
             this.CommandIdentifier = "98";
 
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //98<on-line status><checkin ok><checkout ok><ACS renewal policy><status update ok><off-line ok>
+            //98	1-char	1-char	1-char	---1-char	1-char	1-char
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_OnlineStatus, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_CheckinOk, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_CheckoutOk, 1));
+
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ACSRenewalPolicy, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_StatusUpdateOk, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_OfflineOk, 1));
+
+            //<timeout period><retries allowed><date / time sync><protocol version>
+            //3-char	3-char  18-char	4-char	
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TimeoutPeriod, 3));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_RetriesAllowed, 3));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_DatetimeSync, 18));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ProtocolVersion, 4));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<institution id><library name><supported messages ><terminal location><screen message><print line>
+            //AO	AM	BX	AN	AF	AG
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AM_LibraryName, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BX_SupportedMessages, true));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AN_TerminalLocation, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false));
         }
 
         /*

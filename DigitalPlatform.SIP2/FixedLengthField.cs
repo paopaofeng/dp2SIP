@@ -21,7 +21,7 @@ namespace DigitalPlatform.SIP2
                 if (value == null)
                     throw new Exception("value值不能为null");
                 if (value.Length != Length)
-                    throw new Exception("value的长度与字段定义的长度 不符");
+                    throw new Exception("value["+value+"]的长度与字段定义的长度["+this.Length+"] 不符");
                 this._value = value;
             }
         }

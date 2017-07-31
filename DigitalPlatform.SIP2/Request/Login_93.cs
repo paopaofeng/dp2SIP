@@ -21,20 +21,15 @@ namespace DigitalPlatform.SIP2.Request
 
             // 1-char, fixed-length required field; the algorithm used to encrypt the user id.
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_UIDAlgorithm, 1));
-
             // 1-char, fixed-length required field; the algorithm used to encrypt the password.
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_PWDAlgorithm, 1));
 
             // variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CN_LoginUserId, true));
-
             // variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CO_LoginPassword, true));
-
             // variable-length optional field; the SC location.
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CP_LocationCode, false));
-
-
             // 校验码相关，todo
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
         }

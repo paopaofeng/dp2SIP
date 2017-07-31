@@ -9,7 +9,7 @@ namespace DigitalPlatform.SIP2.Request
     Checkout
     This message is used by the SC to request to check out an item, and also to cancel a Checkin request that did not successfully complete.  The ACS must respond to this command with a Checkout Response message.
     11<SC renewal policy><no block><transaction date><nb due date><institution id><patron identifier><item identifier><terminal password><patron password><item properties><fee acknowledged><cancel>
-11	1-char	1-char	18-char	18-char	AO	AA	AB	AC AD	CH	BO	BI
+11	1-char	1-char	18-char	18-char	
      */
     public class Checkout_11 : BaseMessage
     {
@@ -19,10 +19,21 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "11";
 
             //==前面的定长字段
-            //this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_SCRenewalPolicy, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NbDueDate, 18));
 
-            //==后面变长字段
-            //this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //==后面变长字段 AO	AA	AB	AC      AD	CH	BO	BI
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, true));
+
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false));            
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BO_FeeAcknowledged, false));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, false));
         }
 
         /*

@@ -17,7 +17,6 @@ namespace DigitalPlatform.SIP2
         //When error detection is enabled, the ACS response to a message should include a sequence number field also, where the sequence number field’s value matches the sequence number value from the message being responded to.
         private string _sequenceNumber_AY { get; set; }
 
-
         //The checksum is four ASCII character digits representing the binary sum of the characters including the first character of the transmission and up to and including the checksum field identifier characters.
         //To calculate the checksum add each character as an unsigned binary number, take the lower 16 bits of the total and perform a 2's complement.  The checksum field is the result represented by four hex digits.
         //To verify the correct checksum on received data, simply add all the hex values including the checksum.  It should equal zero.
