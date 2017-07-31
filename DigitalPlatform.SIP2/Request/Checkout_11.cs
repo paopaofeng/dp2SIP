@@ -13,8 +13,22 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class Checkout_11 : BaseMessage
     {
+        // 构造函数
+        public Checkout_11()
+        {
+            this.CommandIdentifier = "11";
+
+            //==前面的定长字段
+            //this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            //this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //1-char,fixed-length required field:  Y or N.
         public string SCRenewalPolicy_1{ get; set; }
+
 
         //1-char, fixed-length required field:  Y or N.
         public string NoBlock_1{ get; set; }
@@ -67,9 +81,7 @@ namespace DigitalPlatform.SIP2.Request
         public string Cancel_BI_1_o{ get; set; }
 
 
-        // 构造函数
-        public Checkout_11()
-        { }
+
 
         public Checkout_11(string p_SCRenewalPolicy_1
             , string p_noBlock_1
@@ -336,6 +348,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
-
+        */
     }
 }

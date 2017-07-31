@@ -12,6 +12,19 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class FeePaid_37 : BaseMessage
     {
+        public FeePaid_37()
+        {
+            this.CommandIdentifier = "37";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+
+        /*
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string TransactionDate_18{ get; set; }
 
@@ -44,6 +57,6 @@ namespace DigitalPlatform.SIP2.Request
 
         // variable-length optional field; a transaction id assigned by the payment device.
         public string TransactionId_BK_o{ get; set; }
-
+        */
     }
 }

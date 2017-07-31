@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class PatronEnable_25 : BaseMessage
     {
+        public PatronEnable_25()
+        {
+            this.CommandIdentifier = "25";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string Transaction_Date_18{ get; set; }
 
@@ -26,6 +38,6 @@ namespace DigitalPlatform.SIP2.Request
 
         //variable-length optional field
         public string PatronPassword_AD_o{ get; set; }
-
+        */
     }
 }

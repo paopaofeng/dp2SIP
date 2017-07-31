@@ -194,11 +194,11 @@ namespace DigitalPlatform.SIP2.SIP2Entity
             sb.Append(this._ok.ToString()).Append(this._resensitize.ToString());
             sb.Append(this._magneticMedia.ToString()).Append(this._alert.ToString());
             sb.Append(this._transactionDate);
-            sb.Append("AO").Append(this._institutionId).Append(SIPUtility.C_FIELD_TERMINATOR);
-            sb.Append("AA").Append(this._patronIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
-            sb.Append("AB").Append(this._itemIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
-            sb.Append("AJ").Append(this._titleIdentifier).Append(SIPUtility.C_FIELD_TERMINATOR);
-            sb.Append("AQ").Append(this._permanentLocation).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AO").Append(this._institutionId).Append(SIPConst.FIELD_TERMINATOR);
+            sb.Append("AA").Append(this._patronIdentifier).Append(SIPConst.FIELD_TERMINATOR);
+            sb.Append("AB").Append(this._itemIdentifier).Append(SIPConst.FIELD_TERMINATOR);
+            sb.Append("AJ").Append(this._titleIdentifier).Append(SIPConst.FIELD_TERMINATOR);
+            sb.Append("AQ").Append(this._permanentLocation).Append(SIPConst.FIELD_TERMINATOR);
 
             /*
              * sort bin            CL    variable-length optional field
@@ -207,8 +207,8 @@ namespace DigitalPlatform.SIP2.SIP2Entity
              * item properties     CH    variable-length optional field
              */
 
-            sb.Append("AF").Append(this._screenMessage).Append(SIPUtility.C_FIELD_TERMINATOR);
-            sb.Append("AG").Append(this._printLine).Append(SIPUtility.C_FIELD_TERMINATOR);
+            sb.Append("AF").Append(this._screenMessage).Append(SIPConst.FIELD_TERMINATOR);
+            sb.Append("AG").Append(this._printLine).Append(SIPConst.FIELD_TERMINATOR);
             return sb.ToString();
         }
 

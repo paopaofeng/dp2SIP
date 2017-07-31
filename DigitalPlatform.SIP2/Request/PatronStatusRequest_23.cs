@@ -13,6 +13,18 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class PatronStatusRequest_23 : BaseMessage
     {
+        public PatronStatusRequest_23()
+        {
+            this.CommandIdentifier = "23";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         // 3-char, fixed-length required field，Chinese 019
         public string Language_3{ get; set; }
 
@@ -30,5 +42,6 @@ namespace DigitalPlatform.SIP2.Request
 
         // variable-length required field
         public string PatronPassword_AD_r{ get; set; }
+         */
     }
 }

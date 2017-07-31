@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class ItemStatusUpdate_19 : BaseMessage
     {
+        public ItemStatusUpdate_19()
+        {
+            this.CommandIdentifier = "19";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string TransactionDate_18{ get; set; }
 
@@ -26,6 +38,6 @@ namespace DigitalPlatform.SIP2.Request
 
         //  variable-length required field
         public string ItemProperties_CH_r{ get; set; }
-
+        */
     }
 }

@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class Hold_15 : BaseMessage
     {
+        public Hold_15()
+        {
+            this.CommandIdentifier = "15";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         // 1-char, fixed-length required field  '+'/'-'/'*'  Add, delete, change
         public string HoldMode_1{ get; set; }
 
@@ -47,6 +59,6 @@ namespace DigitalPlatform.SIP2.Request
 
         //1-char, optional field: Y or N.
         public string FeeAcknowledged_BO_o{ get; set; }
-
+        */
     }
 }

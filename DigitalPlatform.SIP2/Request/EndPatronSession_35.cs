@@ -12,6 +12,17 @@ This message will be sent when a patron has completed all of their transactions.
  */
     public class EndPatronSession_35 : BaseMessage
     {
+        public EndPatronSession_35()
+        {
+            this.CommandIdentifier = "35";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        /*
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string TransactionDate_18{ get; set; }
 
@@ -26,6 +37,6 @@ This message will be sent when a patron has completed all of their transactions.
 
         // variable-length optional field
         public string PatronPassword_AD_o{ get; set; }
-
+        */
     }
 }

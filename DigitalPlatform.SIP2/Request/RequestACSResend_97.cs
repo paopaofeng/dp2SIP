@@ -12,5 +12,10 @@ namespace DigitalPlatform.SIP2.Request
     97
     */
     public class RequestACSResend_97 : BaseMessage
-    { }
+    {
+        public RequestACSResend_97()
+        {
+            this.CommandIdentifier = "97";
+        }
+    }
 }

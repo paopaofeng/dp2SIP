@@ -13,6 +13,18 @@ namespace DigitalPlatform.SIP2.Response
     */
     public class FeePaidResponse_38 : BaseMessage
     {
+        public FeePaidResponse_38()
+        {
+            this.CommandIdentifier = "38";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //1-char, fixed-length required field:  Y or N.
         public string PaymentAccepted_1{ get; set; }
 
@@ -34,6 +46,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o{ get; set; }
-
+        */
     }
 }

@@ -11,5 +11,10 @@ namespace DigitalPlatform.SIP2.Response
      96
      */
     public class RequestSCResend_96 : BaseMessage
-    { }
+    {
+        public RequestSCResend_96()
+        {
+            this.CommandIdentifier = "96";
+        }
+    }
 }

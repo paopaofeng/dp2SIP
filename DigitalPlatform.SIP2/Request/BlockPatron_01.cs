@@ -12,6 +12,16 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class BlockPatron_01 : BaseMessage
     {
+        public BlockPatron_01()
+        {
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        
+        /*
         // 1-char, fixed-length required field:  Y or N.
         public string CardRetained_1{ get; set; }
 
@@ -35,7 +45,7 @@ namespace DigitalPlatform.SIP2.Request
         // variable-length required field
         public string TerminalPassword_AC_r{ get; set; }
 
-
+        */
 
     }
 }

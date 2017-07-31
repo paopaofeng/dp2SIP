@@ -12,6 +12,17 @@ namespace DigitalPlatform.SIP2.Response
     */
     public class CheckinResponse_10 : BaseMessage
     {
+        public CheckinResponse_10()
+        {
+            this.CommandIdentifier = "10";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        /*
         //OK should be set to 1 if the ACS checked in the item. should be set to 0 if the ACS did not check in the item.
         //1-char, fixed-length required field:  0 or 1.
         public string Ok_1{ get; set; }
@@ -58,5 +69,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o{ get; set; }
+         */
     }
 }

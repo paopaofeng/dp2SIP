@@ -12,6 +12,19 @@ namespace DigitalPlatform.SIP2.Request
     */
     public class ItemInformation_17 : BaseMessage
     {
+        // 构造函数
+        public ItemInformation_17()
+        {
+            this.CommandIdentifier = "17";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string TransactionDate_18{ get; set; }
 
@@ -24,9 +37,7 @@ namespace DigitalPlatform.SIP2.Request
         // variable-length optional fiel d
         public string TerminalPassword_AC_o{ get; set; }
 
-        // 构造函数
-        public ItemInformation_17()
-        { }
+
 
         public ItemInformation_17(string p_transactionDate_18
             , string p_institutionId_AO_r
@@ -166,5 +177,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
+         */
     }
 }

@@ -13,6 +13,19 @@ namespace DigitalPlatform.SIP2.Request
     */
     public class Renew_29 : BaseMessage
     {
+        public Renew_29()
+        {
+            this.CommandIdentifier = "29";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+
+        /*
         //1-char, fixed-length required field:  Y or N.
         public string ThirdPartyAllowed_1{ get; set; }
 
@@ -299,5 +312,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
+         */
     }
 }

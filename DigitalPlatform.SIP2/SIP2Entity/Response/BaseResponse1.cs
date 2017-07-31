@@ -13,7 +13,7 @@ namespace DigitalPlatform.SIP2.SIP2Entity
             {
                 string[] fields = command.Split(new string[]
                 {
-                    SIPUtility.C_FIELD_TERMINATOR
+                    SIPConst.FIELD_TERMINATOR
                 },
                 StringSplitOptions.RemoveEmptyEntries);
                 foreach (string field in fields)

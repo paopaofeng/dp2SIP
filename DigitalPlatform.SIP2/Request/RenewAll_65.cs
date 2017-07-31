@@ -12,6 +12,17 @@ namespace DigitalPlatform.SIP2.Request
     */
     public class RenewAll_65 : BaseMessage
     {
+        public RenewAll_65()
+        {
+            this.CommandIdentifier = "65";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
         public string TransactionDate_18{ get; set; }
 

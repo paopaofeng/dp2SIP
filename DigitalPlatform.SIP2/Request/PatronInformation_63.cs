@@ -12,6 +12,19 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class PatronInformation_63 : BaseMessage
     {
+
+        public PatronInformation_63()
+        {
+            this.CommandIdentifier = "63";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        /*
+
         //3-char, fixed-length required field
         public string Language_3{ get; set; }
 
@@ -248,5 +261,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
+         */
     }
 }

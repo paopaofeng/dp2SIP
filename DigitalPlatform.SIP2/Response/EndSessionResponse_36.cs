@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Response
      */
     public class EndSessionResponse_36 : BaseMessage
     {
+        public EndSessionResponse_36()
+        {
+            this.CommandIdentifier = "36";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //1-char, fixed-length required field:  Y or N.
         public string EndSession_1{ get; set; }
 
@@ -29,6 +41,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o{ get; set; }
-
+        */
     }
 }

@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Response
     */
     public class CheckoutResponse_12 : BaseMessage
     {
+        public CheckoutResponse_12()
+        {
+            this.CommandIdentifier = "12";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //OK should be set to 1 if the ACS checked out the item to the patron. should be set to 0 if the ACS did not check out the item to the patron.
         //1-char, fixed-length required field:  0 or 1.
         public string Ok_1{ get; set; }
@@ -72,6 +84,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o{ get; set; }
-
+        */
     }
 }

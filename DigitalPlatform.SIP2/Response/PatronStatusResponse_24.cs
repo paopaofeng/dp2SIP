@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Response
      */
     public class PatronStatusResponse_24 : BaseMessage
     {
+        public PatronStatusResponse_24()
+        {
+            this.CommandIdentifier = "24";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //14-char, fixed-length required field
         public string PatronStatus_14 { get; set; }
 
@@ -47,5 +59,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o { get; set; }
+         */
     }
 }

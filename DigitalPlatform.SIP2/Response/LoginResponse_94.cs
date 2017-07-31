@@ -12,7 +12,19 @@ namespace DigitalPlatform.SIP2.Response
      */
     public class LoginResponse_94 : BaseMessage
     {
+        public LoginResponse_94()
+        {
+            this.CommandIdentifier = "94";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        /*
         //1-char, fixed-length required field:  0 or 1.
         public string Ok_1 { get; set; }
+         */
     }
 }

@@ -14,25 +14,32 @@ namespace DigitalPlatform.SIP2.Request
      */
     public class Login_93 : BaseMessage
     {
-        // 1-char, fixed-length required field; the algorithm used to encrypt the user id.
-        public string UIDAlgorithm_1{ get; set; }
-
-        // 1-char, fixed-length required field; the algorithm used to encrypt the password.
-        public string PWDAlgorithm_1{ get; set; }
-
-        // variable-length required field
-        public string LoginUserId_CN_r{ get; set; }
-
-        // variable-length required field
-        public string LoginPassword_CO_r{ get; set; }
-
-        // variable-length optional field; the SC location.
-        public string LocationCode_CP_o{ get; set; }
-
         // 构造函数
         public Login_93()
-        { }
+        {
+            this.CommandIdentifier = "93";
 
+            // 1-char, fixed-length required field; the algorithm used to encrypt the user id.
+            FixedLengthFields.Add(new FixedLengthField(SIPConst.F_UIDAlgorithm, 1));
+
+            // 1-char, fixed-length required field; the algorithm used to encrypt the password.
+            FixedLengthFields.Add(new FixedLengthField(SIPConst.F_PWDAlgorithm, 1));
+
+            // variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CN_LoginUserId, true));
+
+            // variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CO_LoginPassword, true));
+
+            // variable-length optional field; the SC location.
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CP_LocationCode, false));
+
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
+        }
+
+        /*
         public Login_93(string p_UIDAlgorithm_1
             , string p_PWDAlgorithm_1
             , string p_loginUserId_CN_r
@@ -57,7 +64,9 @@ namespace DigitalPlatform.SIP2.Request
 
             this.LocationCode_CP_o = p_locationCode_CP_o;
         }
+         */
 
+        /*
         // 解析字符串命令为对象
         public override bool parse(string text, out string error)
         {
@@ -118,10 +127,10 @@ namespace DigitalPlatform.SIP2.Request
                 {
                     this.LocationCode_CP_o = value;
                 }
-                else if (fieldId == "AY")
-                {
-                    this._AYAZ = part;
-                }
+                //else if (fieldId == "AY")
+                //{
+                //    this._AYAZ = part;
+                //}
                 else
                 {
                     error = "不支持的字段:" + part;
@@ -138,7 +147,9 @@ namespace DigitalPlatform.SIP2.Request
             return true;
 
         }
-
+         */
+        
+        /*
         // 校验对象的各参数是否合法
         public override bool Verify(out string error)
         {
@@ -191,6 +202,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
-
+        */
     }
 }

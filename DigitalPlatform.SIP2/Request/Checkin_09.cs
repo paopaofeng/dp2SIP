@@ -11,9 +11,48 @@ namespace DigitalPlatform.SIP2.Request
      This message is used by the SC to request to check in an item, and also to cancel a Checkout request that did not successfully complete.  
      The ACS must respond to this command with a Checkin Response message.
      09<no block><transaction date><return date><current location><institution id><item identifier><terminal password><item properties><cancel>
+     09	1-char	18-char	18-char	AP	AO	AB	AC	CH	BI
      */
     public class Checkin_09 : BaseMessage
     {
+        // 构造函数
+        public Checkin_09()
+        {
+            this.CommandIdentifier = "09";
+
+            //==前面的定长字段
+            //1-char, fixed-length required field:  Y or N.
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
+
+            //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
+
+            //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ReturnDate, 18));
+
+            //==后面变长字段AP	AO	AB	AC	CH	BI
+            //<current location> variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AP_CurrentLocation, true));
+
+            //institution id AO variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+
+            //item identifier AB variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
+
+            //terminal password AC variable-length required field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, true));
+
+            // 2.00 item properties CH variable-length optional field
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, true));
+
+            //2.00 cancel BI 1-char, optional field: Y or N
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, true));
+
+
+        }
+
+        /*
         //1-char, fixed-length required field:  Y or N.
         public string NoBlock_1{ get; set; }
 
@@ -42,9 +81,7 @@ namespace DigitalPlatform.SIP2.Request
         public string Cancel_BI_1_o{ get; set; }
 
 
-        // 构造函数
-        public Checkin_09()
-        { }
+
 
         public Checkin_09(string p_noBlock_1
             , string p_transactionDate_18
@@ -105,8 +142,8 @@ namespace DigitalPlatform.SIP2.Request
             text = text.Substring(2);
 
 
-            //处理定长字段
             string rest = text;
+            //处理定长字段
             while (rest.Length > 0)
             {
                 if (String.IsNullOrEmpty(this.NoBlock_1)==true)
@@ -166,14 +203,11 @@ namespace DigitalPlatform.SIP2.Request
                 {
                     this.Cancel_BI_1_o = value;
                 }
-
-                /*
                 else
                 {
                     error = "不支持的字段:" + part;
-                    goto ERROR1;
+                    return false;
                 }
-                */
             }
 
             // 校验;
@@ -269,6 +303,6 @@ namespace DigitalPlatform.SIP2.Request
 
             return text;
         }
-
+        */
     }
 }

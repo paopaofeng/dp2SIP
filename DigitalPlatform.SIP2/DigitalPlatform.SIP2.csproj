@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="VariableLengthField .cs" />
+    <Compile Include="FixedLengthField.cs" />
     <Compile Include="Request\BlockPatron_01.cs" />
     <Compile Include="Request\Checkin_09.cs" />
     <Compile Include="Request\Checkout_11.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="SIP2Entity\Response\CheckInResponse.cs" />
     <Compile Include="SIP2Entity\SIP2Message.cs" />
     <Content Include="delete.txt" />
+    <Compile Include="SIPConst.cs" />
     <Compile Include="SIPUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseMessage.cs" />

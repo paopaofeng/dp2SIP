@@ -12,6 +12,18 @@ namespace DigitalPlatform.SIP2.Response
     */
     public class ItemInformationResponse_18 : BaseMessage
     {
+        public ItemInformationResponse_18()
+        {
+            this.CommandIdentifier = "18";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+
+        /*
         //2-char, fixed-length required field (00 thru 99)
         public string CirculationStatus_2{ get; set; }
 
@@ -70,6 +82,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field    
         public string PrintLine_AG_o{ get; set; }
-
+        */
     }
 }

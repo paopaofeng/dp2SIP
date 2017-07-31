@@ -12,6 +12,17 @@ namespace DigitalPlatform.SIP2.Response
     */
     public class RenewAllResponse_66 : BaseMessage
     {
+        public RenewAllResponse_66()
+        {
+            this.CommandIdentifier = "66";
+
+            //==前面的定长字段
+            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+
+            //==后面变长字段
+            this.VariableLengthFields.Add(new VariableLengthField("", true));
+        }
+        /*
         //1-char, fixed-length required field:  0 or 1
         public string Ok_1 { get; set; }
 
@@ -38,5 +49,6 @@ namespace DigitalPlatform.SIP2.Response
 
         //variable-length optional field
         public string PrintLine_AG_o { get; set; }
+         */
     }
 }
