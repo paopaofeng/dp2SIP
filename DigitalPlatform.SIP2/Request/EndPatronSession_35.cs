@@ -26,6 +26,9 @@ This message will be sent when a patron has completed all of their transactions.
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, false));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false));
 
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
         /*
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS

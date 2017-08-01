@@ -30,6 +30,7 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CO_LoginPassword, true));
             // variable-length optional field; the SC location.
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CP_LocationCode, false));
+
             // 校验码相关，todo
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
         }

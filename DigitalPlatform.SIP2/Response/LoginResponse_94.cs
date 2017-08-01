@@ -18,6 +18,10 @@ namespace DigitalPlatform.SIP2.Response
 
             //==前面的定长字段
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_Ok, 1));
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
         /*
         //1-char, fixed-length required field:  0 or 1.

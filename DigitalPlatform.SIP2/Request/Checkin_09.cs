@@ -49,6 +49,8 @@ namespace DigitalPlatform.SIP2.Request
             //2.00 cancel BI 1-char, optional field: Y or N
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, false));
 
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
 

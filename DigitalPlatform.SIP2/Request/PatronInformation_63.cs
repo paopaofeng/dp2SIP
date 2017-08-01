@@ -31,6 +31,10 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false ));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BP_StartItem, false));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BQ_EmailAddress, false ));
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
         /*
 

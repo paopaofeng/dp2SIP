@@ -19,6 +19,10 @@ namespace DigitalPlatform.SIP2.Request
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_StatusCode,1));// 1-char, fixed-length required field: 0 or 1 or 2
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_MaxPrintWidth, 3));// 3-char, fixed-length required field
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ProtocolVersion, 4));// 4-char, fixed-length required field:  x.xx
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
 
 

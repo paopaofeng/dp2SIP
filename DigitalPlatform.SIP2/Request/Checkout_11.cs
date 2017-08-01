@@ -34,6 +34,10 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BO_FeeAcknowledged, false));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, false));
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
 
         /*

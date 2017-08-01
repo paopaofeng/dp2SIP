@@ -16,6 +16,8 @@ namespace DigitalPlatform.SIP2.Request
         public RequestACSResend_97()
         {
             this.CommandIdentifier = "97";
+
+
         }
     }
 }

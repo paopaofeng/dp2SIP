@@ -46,5 +46,41 @@ namespace dp2SIPClient.Properties {
                 this["SIPServerPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost/dp2library/rest/demo/")]
+        public string dp2ServerUrl {
+            get {
+                return ((string)(this["dp2ServerUrl"]));
+            }
+            set {
+                this["dp2ServerUrl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("supervisor")]
+        public string dp2Username {
+            get {
+                return ((string)(this["dp2Username"]));
+            }
+            set {
+                this["dp2Username"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public string dp2Password {
+            get {
+                return ((string)(this["dp2Password"]));
+            }
+            set {
+                this["dp2Password"] = value;
+            }
+        }
     }
 }

@@ -46,6 +46,10 @@ namespace DigitalPlatform.SIP2.Response
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BK_TransactionId, false ));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AF_ScreenMessage, false ));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AG_PrintLine, false ));
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
+
         }
 
         /*

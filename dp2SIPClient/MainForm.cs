@@ -694,6 +694,9 @@ namespace dp2SIPClient
             //配上相关馆藏地
 
             //配上流通权限
+
+            Form_CreateTestEnv dlg = new Form_CreateTestEnv();
+            dlg.ShowDialog(this);
         }
 
 

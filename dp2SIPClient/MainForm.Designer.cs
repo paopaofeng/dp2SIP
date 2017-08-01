@@ -36,6 +36,7 @@
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.清空信息区ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.实用工具ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.初始化测试环境ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel_send = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -160,7 +161,6 @@
             this.textBox_Renew29_thirdPartyAllowed_1 = new System.Windows.Forms.TextBox();
             this.label51 = new System.Windows.Forms.Label();
             this.tabPage_EndPatronSession35 = new System.Windows.Forms.TabPage();
-            this.初始化测试环境ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -224,7 +224,7 @@
             // 参数配置ToolStripMenuItem
             // 
             this.参数配置ToolStripMenuItem.Name = "参数配置ToolStripMenuItem";
-            this.参数配置ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.参数配置ToolStripMenuItem.Size = new System.Drawing.Size(209, 38);
             this.参数配置ToolStripMenuItem.Text = "参数配置";
             this.参数配置ToolStripMenuItem.Click += new System.EventHandler(this.参数配置ToolStripMenuItem_Click);
             // 
@@ -251,6 +251,13 @@
             this.实用工具ToolStripMenuItem1.Size = new System.Drawing.Size(281, 38);
             this.实用工具ToolStripMenuItem1.Text = "实用工具";
             this.实用工具ToolStripMenuItem1.Click += new System.EventHandler(this.实用工具ToolStripMenuItem1_Click);
+            // 
+            // 初始化测试环境ToolStripMenuItem
+            // 
+            this.初始化测试环境ToolStripMenuItem.Name = "初始化测试环境ToolStripMenuItem";
+            this.初始化测试环境ToolStripMenuItem.Size = new System.Drawing.Size(281, 38);
+            this.初始化测试环境ToolStripMenuItem.Text = "初始化测试环境";
+            this.初始化测试环境ToolStripMenuItem.Click += new System.EventHandler(this.初始化测试环境ToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -450,7 +457,7 @@
             this.tabPage_SCStatus99.Location = new System.Drawing.Point(8, 39);
             this.tabPage_SCStatus99.Name = "tabPage_SCStatus99";
             this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_SCStatus99.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_SCStatus99.Size = new System.Drawing.Size(969, 654);
             this.tabPage_SCStatus99.TabIndex = 1;
             this.tabPage_SCStatus99.Text = "SCStatus99";
             this.tabPage_SCStatus99.UseVisualStyleBackColor = true;
@@ -531,7 +538,7 @@
             this.tabPage_Checkout11.Controls.Add(this.label8);
             this.tabPage_Checkout11.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Checkout11.Name = "tabPage_Checkout11";
-            this.tabPage_Checkout11.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Checkout11.Size = new System.Drawing.Size(969, 654);
             this.tabPage_Checkout11.TabIndex = 2;
             this.tabPage_Checkout11.Text = "Checkout11";
             this.tabPage_Checkout11.UseVisualStyleBackColor = true;
@@ -750,7 +757,7 @@
             this.tabPage_Checkin09.Controls.Add(this.label28);
             this.tabPage_Checkin09.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Checkin09.Name = "tabPage_Checkin09";
-            this.tabPage_Checkin09.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Checkin09.Size = new System.Drawing.Size(969, 654);
             this.tabPage_Checkin09.TabIndex = 3;
             this.tabPage_Checkin09.Text = "Checkin09";
             this.tabPage_Checkin09.UseVisualStyleBackColor = true;
@@ -921,7 +928,7 @@
             this.tabPage_PatronInformation63.Controls.Add(this.label35);
             this.tabPage_PatronInformation63.Location = new System.Drawing.Point(8, 39);
             this.tabPage_PatronInformation63.Name = "tabPage_PatronInformation63";
-            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(969, 654);
             this.tabPage_PatronInformation63.TabIndex = 4;
             this.tabPage_PatronInformation63.Text = "PatronInformation63";
             this.tabPage_PatronInformation63.UseVisualStyleBackColor = true;
@@ -1082,7 +1089,7 @@
             this.tabPage_ItemInformation17.Controls.Add(this.label38);
             this.tabPage_ItemInformation17.Location = new System.Drawing.Point(8, 39);
             this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
-            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(969, 654);
             this.tabPage_ItemInformation17.TabIndex = 6;
             this.tabPage_ItemInformation17.Text = "ItemInformation17";
             this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
@@ -1179,7 +1186,7 @@
             this.tabPage_Renew29.Controls.Add(this.label51);
             this.tabPage_Renew29.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Renew29.Name = "tabPage_Renew29";
-            this.tabPage_Renew29.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Renew29.Size = new System.Drawing.Size(969, 654);
             this.tabPage_Renew29.TabIndex = 7;
             this.tabPage_Renew29.Text = "Renew29";
             this.tabPage_Renew29.UseVisualStyleBackColor = true;
@@ -1380,17 +1387,10 @@
             // 
             this.tabPage_EndPatronSession35.Location = new System.Drawing.Point(8, 39);
             this.tabPage_EndPatronSession35.Name = "tabPage_EndPatronSession35";
-            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(969, 654);
             this.tabPage_EndPatronSession35.TabIndex = 5;
             this.tabPage_EndPatronSession35.Text = "EndPatronSession35";
             this.tabPage_EndPatronSession35.UseVisualStyleBackColor = true;
-            // 
-            // 初始化测试环境ToolStripMenuItem
-            // 
-            this.初始化测试环境ToolStripMenuItem.Name = "初始化测试环境ToolStripMenuItem";
-            this.初始化测试环境ToolStripMenuItem.Size = new System.Drawing.Size(281, 38);
-            this.初始化测试环境ToolStripMenuItem.Text = "初始化测试环境";
-            this.初始化测试环境ToolStripMenuItem.Click += new System.EventHandler(this.初始化测试环境ToolStripMenuItem_Click);
             // 
             // MainForm
             // 
