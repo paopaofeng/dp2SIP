@@ -1,7 +1,6 @@
 ﻿using DigitalPlatform;
 using DigitalPlatform.SIP2;
 using DigitalPlatform.SIP2.Request;
-using DigitalPlatform.SIP2.SIP2Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

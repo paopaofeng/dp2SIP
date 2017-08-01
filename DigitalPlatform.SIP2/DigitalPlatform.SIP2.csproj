@@ -72,14 +72,14 @@
     <Compile Include="Response\RenewAllResponse_66.cs" />
     <Compile Include="Response\RenewResponse_30.cs" />
     <Compile Include="Response\RequestSCResend_96.cs" />
-    <Compile Include="SIP2Entity\Response\CheckInResponse.cs" />
-    <Compile Include="SIP2Entity\SIP2Message.cs" />
+    <Content Include="SIP2Entity\Response\CheckInResponse.txt" />
+    <Content Include="SIP2Entity\SIP2Message.txt" />
     <Content Include="delete.txt" />
     <Compile Include="SIPConst.cs" />
     <Compile Include="SIPUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseMessage.cs" />
-    <Compile Include="SIP2Entity\Response\BaseResponse1.cs" />
+    <Content Include="SIP2Entity\Response\BaseResponse1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
