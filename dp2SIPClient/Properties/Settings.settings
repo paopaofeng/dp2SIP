@@ -9,7 +9,7 @@
       <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="dp2ServerUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://localhost/dp2library/rest/demo/</Value>
+      <Value Profile="(Default)">http://localhost/dp2library/demo/</Value>
     </Setting>
     <Setting Name="dp2Username" Type="System.String" Scope="User">
       <Value Profile="(Default)">supervisor</Value>

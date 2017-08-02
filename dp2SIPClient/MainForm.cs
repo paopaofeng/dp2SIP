@@ -694,7 +694,7 @@ namespace dp2SIPClient
 
             //配上流通权限
 
-            Form_CreateTestEnv dlg = new Form_CreateTestEnv();
+            Form_test dlg = new Form_test();
             dlg.ShowDialog(this);
         }
 

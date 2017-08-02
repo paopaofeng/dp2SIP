@@ -49,7 +49,7 @@ namespace dp2SIPClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost/dp2library/rest/demo/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost/dp2library/demo/")]
         public string dp2ServerUrl {
             get {
                 return ((string)(this["dp2ServerUrl"]));

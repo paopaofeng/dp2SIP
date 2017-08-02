@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +51,12 @@
     </Compile>
     <Compile Include="Form_checksum.Designer.cs">
       <DependentUpon>Form_checksum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_test.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_test.Designer.cs">
+      <DependentUpon>Form_test.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_CreateTestEnv.cs">
       <SubType>Form</SubType>
@@ -69,10 +76,14 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ManageHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form_checksum.resx">
       <DependentUpon>Form_checksum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_test.resx">
+      <DependentUpon>Form_test.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_CreateTestEnv.resx">
       <DependentUpon>Form_CreateTestEnv.cs</DependentUpon>
@@ -111,6 +122,14 @@
     <ProjectReference Include="..\DigitalPlatform.LibraryClient\DigitalPlatform.LibraryClient.csproj">
       <Project>{3541ec0b-82f5-4829-afc3-5ef48254175d}</Project>
       <Name>DigitalPlatform.LibraryClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DigitalPlatform.MarcKernel\DigitalPlatform.MarcKernel.csproj">
+      <Project>{74242530-ef96-457e-852d-5c21a3ea8449}</Project>
+      <Name>DigitalPlatform.MarcKernel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DigitalPlatform.MarcQuery\DigitalPlatform.MarcQuery.csproj">
+      <Project>{57fe2fb1-4134-409b-876c-8a1c0776b498}</Project>
+      <Name>DigitalPlatform.MarcQuery</Name>
     </ProjectReference>
     <ProjectReference Include="..\DigitalPlatform.Range\DigitalPlatform.Range.csproj">
       <Project>{aa6c5e6a-252b-4e2a-a883-0e4e739f8701}</Project>

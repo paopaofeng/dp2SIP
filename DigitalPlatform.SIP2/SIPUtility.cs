@@ -1,4 +1,5 @@
 ﻿using DigitalPlatform.SIP2.Request;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ namespace DigitalPlatform.SIP2
 {
     public class SIPUtility
     {
+        public static ILog Logger = LogManager.GetLogger("dp2SIP2");
 
 
         public static string NowDateTime

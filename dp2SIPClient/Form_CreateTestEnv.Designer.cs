@@ -32,9 +32,9 @@
             this.button_createPatronRecord = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button_createEntity = new System.Windows.Forms.Button();
             this.button_createBiblioDb = new System.Windows.Forms.Button();
             this.button_importBiblio = new System.Windows.Forms.Button();
-            this.button_createEntity = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -45,6 +45,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.button_login = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -91,6 +92,15 @@
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
+            // button_createEntity
+            // 
+            this.button_createEntity.Location = new System.Drawing.Point(473, 34);
+            this.button_createEntity.Name = "button_createEntity";
+            this.button_createEntity.Size = new System.Drawing.Size(190, 46);
+            this.button_createEntity.TabIndex = 2;
+            this.button_createEntity.Text = "创建册记录";
+            this.button_createEntity.UseVisualStyleBackColor = true;
+            // 
             // button_createBiblioDb
             // 
             this.button_createBiblioDb.Location = new System.Drawing.Point(20, 34);
@@ -108,15 +118,6 @@
             this.button_importBiblio.TabIndex = 1;
             this.button_importBiblio.Text = "导入书目记录";
             this.button_importBiblio.UseVisualStyleBackColor = true;
-            // 
-            // button_createEntity
-            // 
-            this.button_createEntity.Location = new System.Drawing.Point(473, 34);
-            this.button_createEntity.Name = "button_createEntity";
-            this.button_createEntity.Size = new System.Drawing.Size(190, 46);
-            this.button_createEntity.TabIndex = 2;
-            this.button_createEntity.Text = "创建册记录";
-            this.button_createEntity.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -150,6 +151,7 @@
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.button_login);
             this.groupBox4.Controls.Add(this.textBox_dp2password);
             this.groupBox4.Controls.Add(this.textBox_dp2username);
             this.groupBox4.Controls.Add(this.textBox_dp2serverUrl);
@@ -220,6 +222,16 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "服务器地址：";
             // 
+            // button_login
+            // 
+            this.button_login.Location = new System.Drawing.Point(485, 139);
+            this.button_login.Name = "button_login";
+            this.button_login.Size = new System.Drawing.Size(135, 46);
+            this.button_login.TabIndex = 6;
+            this.button_login.Text = "登录";
+            this.button_login.UseVisualStyleBackColor = true;
+            this.button_login.Click += new System.EventHandler(this.button_login_Click);
+            // 
             // Form_CreateTestEnv
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
@@ -261,5 +273,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button_login;
     }
 }

@@ -241,22 +241,22 @@
             // 清空信息区ToolStripMenuItem
             // 
             this.清空信息区ToolStripMenuItem.Name = "清空信息区ToolStripMenuItem";
-            this.清空信息区ToolStripMenuItem.Size = new System.Drawing.Size(281, 38);
+            this.清空信息区ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.清空信息区ToolStripMenuItem.Text = "清空信息区";
             this.清空信息区ToolStripMenuItem.Click += new System.EventHandler(this.清空信息区ToolStripMenuItem_Click);
             // 
             // 实用工具ToolStripMenuItem1
             // 
             this.实用工具ToolStripMenuItem1.Name = "实用工具ToolStripMenuItem1";
-            this.实用工具ToolStripMenuItem1.Size = new System.Drawing.Size(281, 38);
+            this.实用工具ToolStripMenuItem1.Size = new System.Drawing.Size(269, 38);
             this.实用工具ToolStripMenuItem1.Text = "实用工具";
             this.实用工具ToolStripMenuItem1.Click += new System.EventHandler(this.实用工具ToolStripMenuItem1_Click);
             // 
             // 初始化测试环境ToolStripMenuItem
             // 
             this.初始化测试环境ToolStripMenuItem.Name = "初始化测试环境ToolStripMenuItem";
-            this.初始化测试环境ToolStripMenuItem.Size = new System.Drawing.Size(281, 38);
-            this.初始化测试环境ToolStripMenuItem.Text = "初始化测试环境";
+            this.初始化测试环境ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.初始化测试环境ToolStripMenuItem.Text = "自动测试";
             this.初始化测试环境ToolStripMenuItem.Click += new System.EventHandler(this.初始化测试环境ToolStripMenuItem_Click);
             // 
             // toolStrip1
