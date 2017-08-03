@@ -21,69 +21,163 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "09";
 
             //==前面的定长字段
-            //1-char, fixed-length required field:  Y or N.
+            //09<no block><transaction date><return date>
+            //09	1-char	18-char	18-char
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
-
-            //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
-
-            //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ReturnDate, 18));
 
-            //==后面变长字段AP	AO	AB	AC	CH	BI
-            //<current location> variable-length required field
+            //==后面变长字段
+            //<current location><institution id><item identifier><terminal password><item properties><cancel>
+            //AP	AO	AB	AC	CH	BI
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AP_CurrentLocation, true));
-
-            //institution id AO variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
-
-            //item identifier AB variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
-
-            //terminal password AC variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, true));
-
-            // 2.00 item properties CH variable-length optional field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CH_ItemProperties, false));
-
-            //2.00 cancel BI 1-char, optional field: Y or N
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BI_Cancel, false));
 
             // 校验码相关，todo
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
-
         }
 
-        /*
+        
         //1-char, fixed-length required field:  Y or N.
-        public string NoBlock_1{ get; set; }
+        public string NoBlock_1
+        { 
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NoBlock);
+            }
+            set
+            {
+                if(string.IsNullOrEmpty(value)==true)
+                {
+                    this.SetFixedFieldValue(SIPConst.F_NoBlock,"N");
+                }
+                else
+                {
+                    if(value !="Y" && value !="N")
+                        throw new Exception("no block参数不合法，必须为Y/N。");
+
+                    this.SetFixedFieldValue(SIPConst.F_NoBlock,value);
+                }
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        { 
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+              set
+              {
+                    if(value.Length!=18)
+                        throw new Exception("transaction date参数长度须为18位。");
+                  
+                  this.SetFixedFieldValue(SIPConst.F_TransactionDate,value);
+              }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string ReturnDate_18{ get; set; }
+        public string ReturnDate_18
+        { 
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_ReturnDate);
+            }
+            set
+            {
+                if(value.Length!=18)
+                    throw new Exception("return date参数长度须为18位。");
+              
+                this.SetFixedFieldValue(SIPConst.F_ReturnDate,value);
+            }
+        }
 
         //variable-length required field
-        public string CurrentLocation_AP_r{ get; set; }
+        public string AP_CurrentLocation_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AP_CurrentLocation);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AP_CurrentLocation, value);
+            }
+        }
+
 
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field
-        public string ItemIdentifier_AB_r{ get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string TerminalPassword_AC_r{ get; set; }
+        public string AC_TerminalPassword_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemProperties_CH_o{ get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         //1-char, optional field: Y or N
-        public string Cancel_BI_1_o{ get; set; }
+        public string BI_Cancel_1_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BI_Cancel);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BI_Cancel, value);
+            }
+        }
 
 
-
+        /*
 
         public Checkin_09(string p_noBlock_1
             , string p_transactionDate_18

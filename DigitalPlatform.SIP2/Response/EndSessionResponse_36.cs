@@ -36,24 +36,90 @@ namespace DigitalPlatform.SIP2.Response
 
         }
 
-        /*
+        
         //1-char, fixed-length required field:  Y or N.
-        public string EndSession_1{ get; set; }
+        public string EndSession_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_EndSession);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("end session参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_EndSession, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field.
-        public string PatronIdentifier_AA_r{ get; set; }
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o{ get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field
-        public string PrintLine_AG_o{ get; set; }
-        */
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
+        
     }
 }

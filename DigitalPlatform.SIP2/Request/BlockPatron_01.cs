@@ -15,37 +15,113 @@ namespace DigitalPlatform.SIP2.Request
         public BlockPatron_01()
         {
             //==前面的定长字段
-            this.FixedLengthFields.Add(new FixedLengthField("", 1));
+            //<card retained><transaction date>
+            //1-char	18-char	
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_CardRetained, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
 
             //==后面变长字段
-            this.VariableLengthFields.Add(new VariableLengthField("", true));
+            //<institution id><blocked card msg><patron identifier><terminal password>
+            //AO	AL  AA	AC
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AL_BlockedCardMsg, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AC_TerminalPassword, true));
+
+            // 校验码相关，todo
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
         }
         
-        /*
         // 1-char, fixed-length required field:  Y or N.
-        public string CardRetained_1{ get; set; }
+        public string CardRetained_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NoBlock);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("card retained参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_NoBlock, value);
+            }
+        }
 
 
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
 
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
 
         // variable-length required field
-        public string BlockedCardMsg_AL_r{ get; set; }
+        public string AL_BlockedCardMsg_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AL_BlockedCardMsg);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AL_BlockedCardMsg, value);
+            }
+        }
 
 
         // variable-length required field
-        public string PatronIdentifier_AA_r{ get; set; }
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
 
         // variable-length required field
-        public string TerminalPassword_AC_r{ get; set; }
+        public string AC_TerminalPassword_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
-        */
+
 
     }
 }

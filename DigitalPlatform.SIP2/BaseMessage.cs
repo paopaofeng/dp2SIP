@@ -32,7 +32,7 @@ namespace DigitalPlatform.SIP2
         #region 定长字段
 
         // 获取某个定长字段
-        public FixedLengthField GetFixedField(string name)
+        protected FixedLengthField GetFixedField(string name)
         {
             foreach (FixedLengthField field in this.FixedLengthFields)
             {
@@ -42,7 +42,7 @@ namespace DigitalPlatform.SIP2
             return null;
         }
 
-        public string GetFixedFieldValue(string name)
+        protected string GetFixedFieldValue(string name)
         {
             FixedLengthField field = this.GetFixedField(name);
             if (field == null)
@@ -52,7 +52,7 @@ namespace DigitalPlatform.SIP2
         }
 
         // 设置某个定长字段的值
-        public void SetFixedFieldValue(string name, string value)
+        protected void SetFixedFieldValue(string name, string value)
         {
             FixedLengthField field = this.GetFixedField(name);
             if (field == null)
@@ -64,8 +64,10 @@ namespace DigitalPlatform.SIP2
 
         #region 变长字段
 
+
+
         // 获取某个定长字段
-        public VariableLengthField GetVariableField(string id)
+        protected VariableLengthField GetVariableField(string id)
         {
             foreach (VariableLengthField field in this.VariableLengthFields)
             {
@@ -75,7 +77,7 @@ namespace DigitalPlatform.SIP2
             return null;
         }
 
-        public string GetVariableFieldValue(string id)
+        protected string GetVariableFieldValue(string id)
         {
             VariableLengthField field = this.GetVariableField(id);
             if (field == null)
@@ -85,7 +87,7 @@ namespace DigitalPlatform.SIP2
         }
 
         // 设置某个定长字段的值
-        public void SetVariableFieldValue(string id, string value)
+        protected void SetVariableFieldValue(string id, string value)
         {
             VariableLengthField field = this.GetVariableField(id);
             if (field == null)
@@ -93,6 +95,47 @@ namespace DigitalPlatform.SIP2
 
             field.Value = value;
         }
+
+        protected List<VariableLengthField> GetVariableFieldList(string id)
+        {
+            List<VariableLengthField> list = new List<VariableLengthField>();
+            foreach (VariableLengthField field in this.VariableLengthFields)
+            {
+                if (field.ID == id)
+                {
+                    list.Add(field);
+                }
+            }
+            return list;
+        }
+
+        protected void SetVariableFieldList(string id, List<VariableLengthField> list)
+        {
+            if (string.IsNullOrEmpty(id) == true)
+                throw new Exception("id参数不能为空");
+
+            //传入数组字段必须与id同名
+            foreach (VariableLengthField field in list)
+            {
+                if (field.ID != id)
+                    throw new Exception("数组中有个字段名为"+field.ID+",与指定的字段名"+id+"不符。");
+            }
+
+            // 先删除原来已存在的同名字段
+            List<VariableLengthField> oldList = this.GetVariableFieldList(id);
+            foreach (VariableLengthField field in oldList)
+            {
+                this.VariableLengthFields.Remove(field);
+            }
+
+            // 再增加新的字段
+            foreach (VariableLengthField field in list)
+            {
+                this.VariableLengthFields.Add(field);
+            }
+
+        }
+
         #endregion
 
         // 解析字符串命令为对象

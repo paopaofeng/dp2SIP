@@ -19,5 +19,13 @@ namespace DigitalPlatform.SIP2
             this.IsRequired = required;
         }
 
+        public VariableLengthField(string id, bool required,string value)
+        {
+            //this.Name = name;
+            this.ID = id;
+            this.IsRequired = required;
+            this.Value = value;
+        }
+
     }
 }

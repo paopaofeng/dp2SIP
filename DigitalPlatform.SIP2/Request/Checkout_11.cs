@@ -9,7 +9,7 @@ namespace DigitalPlatform.SIP2.Request
     Checkout
     This message is used by the SC to request to check out an item, and also to cancel a Checkin request that did not successfully complete.  The ACS must respond to this command with a Checkout Response message.
     11<SC renewal policy><no block><transaction date><nb due date><institution id><patron identifier><item identifier><terminal password><patron password><item properties><fee acknowledged><cancel>
-11	1-char	1-char	18-char	18-char	
+11	1-char	1-char	18-char	18-char	 AO	AA	AB	AC      AD	CH	BO	BI
      */
     public class Checkout_11 : BaseMessage
     {
@@ -19,12 +19,16 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "11";
 
             //==前面的定长字段
+            //<SC renewal policy><no block><transaction date><nb due date>
+            //1-char	1-char	18-char	18-char
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_SCRenewalPolicy, 1));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NbDueDate, 18));
 
-            //==后面变长字段 AO	AA	AB	AC      AD	CH	BO	BI
+            //==后面变长字段 
+            //<institution id><patron identifier><item identifier><terminal password><patron password><item properties><fee acknowledged><cancel>
+            //AO	AA	AB	AC      AD	CH	BO	BI
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
@@ -40,63 +44,191 @@ namespace DigitalPlatform.SIP2.Request
 
         }
 
-        /*
+
         //1-char,fixed-length required field:  Y or N.
-        public string SCRenewalPolicy_1{ get; set; }
+        public string SCRenewalPolicy_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_SCRenewalPolicy);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("SC renewal policy参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_SCRenewalPolicy, value);
+            }
+        }
 
 
         //1-char, fixed-length required field:  Y or N.
-        public string NoBlock_1{ get; set; }
+        public string NoBlock_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NoBlock);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("no block参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_NoBlock, value);
+            }
+        }
 
         //The date and time that the patron checked out the item at the SC unit.
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS.  
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //18-char,fixed-length required field:  YYYYMMDDZZZZHHMMSS
         //当noBlock为N时，该值为空。
-        public string NbDueDate_18{ get; set; }
+        public string NbDueDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NbDueDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("Nb due date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_NbDueDate, value);
+            }
+        }
 
         //图书馆的机构ID,目前传的dp2Library
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //读者证条码号
         //variable-length required field 
-        private string _patronIdentifier_AA_r = ""; 
-        public string PatronIdentifier_AA_r
+        public string AA_PatronIdentifier_r
         {
-            get { return _patronIdentifier_AA_r; }
-            set { _patronIdentifier_AA_r = value; }
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
         }
 
         //册条码号
         //variable-length required field
-        public string ItemIdentifier_AB_r{ get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         //This is the password for the SC unit.  目前该字段传空值
         //variable-length required field
-        public string TerminalPassword_AC_r{ get; set; }
+        public string AC_TerminalPassword_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
         //In current applications, this field is not used. 目前不传这个字段
         //variable-length optional field
-        public string ItemProperties_CH_o{ get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         // 读者密码，目前不传这个字段
         //variable-length optional field
-        public string PatronPassword_AD_o{ get; set; }
+        public string AD_PatronPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AD_PatronPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AD_PatronPassword, value);
+            }
+        }
 
         //目前传的N
         //1-char, optional field: Y or N
-        public string FeeAcknowledged_BO_1_o{ get; set; }
+        public string BO_FeeAcknowledged_1_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged, value);
+            }
+        }
+
 
         // 当Checkout此参数传Y时，则取消上一个错误的Checkin
         //当Checkin此参数传Y时，则取消上一个错误的Checkout
         //普通的Checkout与Checkin，此参数都就传N。
         //1-char,optional field: Y or N
-        public string Cancel_BI_1_o{ get; set; }
+        public string BI_Cancel_1_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BI_Cancel);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BI_Cancel, value);
+            }
+        }
 
 
-
+        /*
 
         public Checkout_11(string p_SCRenewalPolicy_1
             , string p_noBlock_1

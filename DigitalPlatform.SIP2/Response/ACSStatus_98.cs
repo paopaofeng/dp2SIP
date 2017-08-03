@@ -54,59 +54,251 @@ namespace DigitalPlatform.SIP2.Response
 
         }
 
-        /*
+        
         // 1-char, fixed-length required field:  Y or N.
-        public string OnlineStatus_1{ get; set; }
+        public string OnlineStatus_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_OnlineStatus);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("online status参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_OnlineStatus, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N.
-        public string CheckinOk_1{ get; set; }
+        public string CheckinOk_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_CheckinOk);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("checkin ok参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_CheckinOk, value);
+            }
+        }
+
 
         //1-char, fixed-length required field:  Y or N.
-        public string CheckoutOk_1{ get; set; }
+        public string CheckoutOk_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_CheckoutOk);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("checkout ok参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_CheckoutOk, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N.
-        public string ACSRenewalPolicy_1{ get; set; }
+        public string ACSRenewalPolicy_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_ACSRenewalPolicy);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("ACS renewal policy参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_ACSRenewalPolicy, value);
+            }
+        }
 
         //===
 
         //1-char, fixed-length required field:  Y or N.
-        public string StatusUpdateOk_1{ get; set; }
+        public string StatusUpdateOk_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_StatusUpdateOk);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("status update ok参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_StatusUpdateOk, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N.
-        public string OfflineOk_1{ get; set; }
+        public string OfflineOk_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_OfflineOk);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("offline ok参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_OfflineOk, value);
+            }
+        }
 
         //3-char, fixed-length required field
-        public string TimeoutPeriod_3{ get; set; }
+        public string TimeoutPeriod_3
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TimeoutPeriod);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("timeout period参数长度须为3位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TimeoutPeriod, value);
+            }
+        }
+
 
         //3-char, fixed-length required field
-        public string RetriesAllowed_3{ get; set; }
+        public string RetriesAllowed_3
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_RetriesAllowed);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("retries allowed参数长度须为3位。");
+
+                this.SetFixedFieldValue(SIPConst.F_RetriesAllowed, value);
+            }
+        }
 
         //===
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string DatetimeSync_18{ get; set; }
+        public string DatetimeSync_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("date/time sync参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //4-char, fixed-length required field:  x.xx
-        public string ProtocolVersion_4{ get; set; }
+        public string ProtocolVersion_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_ProtocolVersion);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("protocol version参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_ProtocolVersion, value);
+            }
+        }
 
         // variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length optional field
-        public string LibraryName_AM_o{ get; set; }
+        public string AM_LibraryName_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AM_LibraryName);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AM_LibraryName, value);
+            }
+        }
 
         //variable-length required field
-        public string SupportedMessages_BX_r{ get; set; }
+        public string BX_SupportedMessages_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BX_SupportedMessages);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BX_SupportedMessages, value);
+            }
+        }
 
         //variable-length optional field
-        public string TerminalLocation_AN_o{ get; set; }
+        public string AN_TerminalLocation_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AN_TerminalLocation);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AN_TerminalLocation, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o{ get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field
-        public string PrintLine_AG_o{ get; set; }
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
 
-
+        /*
          // 构造函数
         public ACSStatus_98()
         {

@@ -82,100 +82,440 @@ namespace DigitalPlatform.SIP2.Response
 
         }
 
-        /*
+        
         //14-char, fixed-length required field
-        public string PatronStatus_14 { get; set; }
+        public string PatronStatus_14
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_PatronStatus);
+            }
+            set
+            {
+                if (value.Length != 14)
+                    throw new Exception("patron status参数长度须为14位。");
+
+                this.SetFixedFieldValue(SIPConst.F_PatronStatus, value);
+            }
+        }
+
 
         //3-char, fixed-length required field
-        public string Language_3 { get; set; }
+        public string Language_3
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Language);
+            }
+            set
+            {
+                if (value.Length != 3)
+                    throw new Exception("language参数长度须为3位。");
+
+                this.SetFixedFieldValue(SIPConst.F_Language, value);
+            }
+        }
+
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18 { get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //4-char, fixed-length required field
-        public string HoldItemsCount_4 { get; set; }
+        public string HoldItemsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_HoldItemsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("hold items count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_HoldItemsCount, value);
+            }
+        }
 
         //4-char, fixed-length required field
-        public string OverdueItemsCount_4 { get; set; }
+        public string OverdueItemsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_OverdueItemsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("overdueI items count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_OverdueItemsCount, value);
+            }
+        }
+
 
         //4-char, fixed-length required field
-        public string ChargedItemsCount_4 { get; set; }
+        public string ChargedItemsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_ChargedItemsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("charged items count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_ChargedItemsCount, value);
+            }
+        }
 
         //4-char, fixed-length required field
-        public string FineItemsCount_4 { get; set; }
+        public string FineItemsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_FineItemsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("fine items count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_FineItemsCount, value);
+            }
+        }
 
         //4-char, fixed-length required field
-        public string RecallItemsCount_4 { get; set; }
+        public string RecallItemsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_RecallItemsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("recall items count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_RecallItemsCount, value);
+            }
+        }
 
         //4-char, fixed-length required field
-        public string UnavailableHoldsCount_4 { get; set; }
+        public string UnavailableHoldsCount_4
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_UnavailableHoldsCount);
+            }
+            set
+            {
+                if (value.Length != 4)
+                    throw new Exception("unavailable holds count参数长度须为4位。");
+
+                this.SetFixedFieldValue(SIPConst.F_UnavailableHoldsCount, value);
+            }
+        }
 
         //variable-length required field
-        public string InstitutionId_AO_r { get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field
-        public string PatronIdentifier_AA_r  {get;set;}
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string PersonalName_AE_r  {get;set;}
+        public string AE_PersonalName_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AE_PersonalName);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AE_PersonalName, value);
+            }
+        }
 
         //4-char, fixed-length optional field
-        public string HoldItemsLimit_BZ_o { get; set; }
+        public string BZ_HoldItemsLimit_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BZ_HoldItemsLimit);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BZ_HoldItemsLimit, value);
+            }
+        }
 
         //4-char, fixed-length optional field
-        public string OverdueItemsLimit_CA_o { get; set; }
+        public string CA_OverdueItemsLimit_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CA_OverdueItemsLimit);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CA_OverdueItemsLimit, value);
+            }
+        }
 
         //4-char, fixed-length optional field
-        public string ChargedItemsLimit_CB_o { get; set; }
+        public string CB_ChargedItemsLimit_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CB_ChargedItemsLimit);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CB_ChargedItemsLimit, value);
+            }
+        }
 
         //1-char, optional field:  Y or N
-        public string ValidPatron_BL_o { get; set; }
+        public string BL_ValidPatron_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BL_ValidPatron);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BL_ValidPatron, value);
+            }
+        }
 
         //1-char, optional field: Y or N
-        public string ValidPatronPassword_CQ_o { get; set; }
+        public string CQ_ValidPatronPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CQ_ValidPatronPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CQ_ValidPatronPassword, value);
+            }
+        }
 
         //3-char fixed-length optional field
-        public string CurrencyType_BH_3 { get; set; }
+        public string BH_CurrencyType_3
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BH_CurrencyType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BH_CurrencyType, value);
+            }
+        }
 
         //variable-length optional field.  The amount of fees owed by this patron.
-        public string feeAmount_BV_o { get; set; }
+        public string BV_feeAmount_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BV_FeeAmount);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BV_FeeAmount, value);
+            }
+        }
 
         //variable-length optional field.  The fee limit amount.
-        public string FeeLimit_CC_o { get; set; }
+        public string CC_FeeLimit_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CC_FeeLimit);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CC_FeeLimit, value);
+            }
+        }
 
 
         //item: zero or more instances of one of the following, based on “summary” field of the Patron Information message:
         //variable-length optional field  (this field should be sent for each hold item).
-        public string HoldItems_AS_o { get; set; }
+        public List<VariableLengthField> AS_HoldItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_AS_HoldItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_AS_HoldItems, value);
+            }
+        }
 
         //variable-length optional field  (this field should be sent for each overdue item).
-        public string OverdueItems_AT_o { get; set; }
+        public List<VariableLengthField> AT_OverdueItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_AT_OverdueItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_AT_OverdueItems, value);
+            }
+        }
 
         //variable-length optional field  (this field should be sent for each charged item).
-        public string ChargedItems_AU_o { get; set; }
+        public List<VariableLengthField> AU_ChargedItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_AU_ChargedItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_AU_ChargedItems, value);
+            }
+        }
 
         //variable-length optional field  (this field should be sent for each fine item).
-        public string FineItems_AV_o { get; set; }
+        public List<VariableLengthField> AV_FineItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_AV_FineItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_AV_FineItems, value);
+            }
+        }
 
         //variable-length optional field  (this field should be sent for each recall item). 
-        public string RecallItems_BU_o { get; set; }
+        public List<VariableLengthField> BU_RecallItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_BU_RecallItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_BU_RecallItems, value);
+            }
+        }
 
         //variable-length optional field  (this field should be sent for each unavailable hold item).
-        public string UnavailableHoldItems_CD_o { get; set; }
+        public List<VariableLengthField> CD_UnavailableHoldItems_o
+        {
+            get
+            {
+                return this.GetVariableFieldList(SIPConst.F_CD_UnavailableHoldItems);
+            }
+            set
+            {
+                this.SetVariableFieldList(SIPConst.F_CD_UnavailableHoldItems, value);
+            }
+        }
 
         //variable-length optional field
-        public string HomeAddress_BD_o { get; set; }
+        public string BD_HomeAddress_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BD_HomeAddress);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BD_HomeAddress, value);
+            }
+        }
 
         //variable-length optional field
-        public string EmailAddress_BE_o { get; set; }
+        public string BE_EmailAddress_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BE_EmailAddress);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BE_EmailAddress, value);
+            }
+        }
 
         //variable-length optional field
-        public string HomePhoneNumber_BF_o { get; set; }
+        public string BF_HomePhoneNumber_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BF_HomePhoneNumbers);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BF_HomePhoneNumbers, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o { get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field
-        public string PrintLine_AG_o { get; set; }
-         */
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
+         
     }
 }

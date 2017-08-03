@@ -31,21 +31,64 @@ namespace DigitalPlatform.SIP2.Request
 
         }
 
-        /*
+        
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         // variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         // variable-length required field.
-        public string ItemIdentifier_AB_r{ get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         // variable-length optional fiel d
-        public string TerminalPassword_AC_o{ get; set; }
+        public string AC_TerminalPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
 
-
+        /*
         public ItemInformation_17(string p_transactionDate_18
             , string p_institutionId_AO_r
             , string p_itemIdentifier_AB_r

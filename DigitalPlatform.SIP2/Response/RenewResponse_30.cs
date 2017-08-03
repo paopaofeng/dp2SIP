@@ -55,63 +55,268 @@ namespace DigitalPlatform.SIP2.Response
 
         }
 
-        /*
+        
         //1-char, fixed-length required field:  0 or 1.
-        public string Ok_1 { get; set; }
+        public string Ok_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Ok);
+            }
+            set
+            {
+                if (value != "0" && value != "1")
+                    throw new Exception("ok参数不合法，必须为0 or 1。");
+
+                this.SetFixedFieldValue(SIPConst.F_Ok, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N.
-        public string RenewalOk_1 { get; set; }
+        public string RenewalOk_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_RenewalOk);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("renewal ok参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_RenewalOk, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N or U.
-        public string MagneticMedia_1 { get; set; }
+        public string MagneticMedia_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_MagneticMedia);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("magnetic media参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_MagneticMedia, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N or U.
-        public string Desensitize_1 { get; set; }
+        public string Desensitize_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Desensitize);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("desensitize参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_Desensitize, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18 { get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //variable-length required field
-        public string InstitutionId_AO_r { get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field
-        public string PatronIdentifier_AA_r { get; set; }
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string ItemIdentifier_AB_r { get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string TitleIdentifier_AJ_r { get; set; }
+        public string AJ_TitleIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string DueDate_AH_r { get; set; }
+        public string AH_DueDate_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AH_DueDate);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AH_DueDate, value);
+            }
+        }
 
         //2-char, fixed-length optional field (01 thru 99).  The type of fee associated with renewing this item.
-        public string FeeType_BT_2_o { get; set; }
+        public string BT_FeeType_2_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BT_FeeType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BT_FeeType, value);
+            }
+        }
 
         //1-char, fixed-length optional field:  Y or N.
-        public string SecurityInhibit_CI_1_o { get; set; }
+        public string CI_SecurityInhibit_1_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CI_SecurityInhibit);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CI_SecurityInhibit, value);
+            }
+        }
 
         //3-char fixed-length optional field
-        public string CurrencyType_BH_3_o { get; set; }
+        public string BH_CurrencyType_3_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BH_CurrencyType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BH_CurrencyType, value);
+            }
+        }
 
         //variable-length optional field.  The amount of the fee associated with this item.
-        public string FeeAmount_BV_o { get; set; }
+        public string BV_FeeAmount_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BV_FeeAmount);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BV_FeeAmount, value);
+            }
+        }
 
         //3-char, fixed-length optional field
-        public string MediaType_CK_3_o { get; set; }
+        public string CK_MediaType_3_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CK_MediaType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CK_MediaType, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemProperties_CH_o { get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         //variable-length optional field.  May be assigned by the ACS when renewing the item involves a fee.
-        public string TransactionId_BK_o { get; set; }
+        public string BK_TransactionId_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BK_TransactionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BK_TransactionId, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o { get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field  
-        public string PrintLine_AG_o { get; set; } 
-         */
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
+         
     }
 }

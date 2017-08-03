@@ -11,6 +11,7 @@ namespace DigitalPlatform.SIP2.Request
     The ACS should respond with the Login Response message.  
     Whether to use this message or to use some other mechanism to login to the ACS is configurable on the SC.  When this message is used, it will be the first message sent to the ACS.
     93<UID algorithm><PWD algorithm><login user id><login password><location code>
+    93	1-char	1-char	CN	CO	CP
      */
     public class Login_93 : BaseMessage
     {
@@ -19,21 +20,92 @@ namespace DigitalPlatform.SIP2.Request
         {
             this.CommandIdentifier = "93";
 
-            // 1-char, fixed-length required field; the algorithm used to encrypt the user id.
+            //==前面的定长字段
+            //<UID algorithm><PWD algorithm>
+            //1-char	1-char
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_UIDAlgorithm, 1));
-            // 1-char, fixed-length required field; the algorithm used to encrypt the password.
             FixedLengthFields.Add(new FixedLengthField(SIPConst.F_PWDAlgorithm, 1));
 
-            // variable-length required field
+            // <login user id><login password><location code>
+            // CN   	CO	CP
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CN_LoginUserId, true));
-            // variable-length required field
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CO_LoginPassword, true));
-            // variable-length optional field; the SC location.
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CP_LocationCode, false));
 
             // 校验码相关，todo
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
         }
+
+       
+        //2.00 UID algorithm 1-char, fixed-length required field; the algorithm used to encrypt the user id.
+        public string UIDAlgorithm_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_UIDAlgorithm);
+            }
+            set
+            {
+                if (value.Length != 1)
+                    throw new Exception("UID algorithm参数长度须为1位。");
+
+                this.SetFixedFieldValue(SIPConst.F_UIDAlgorithm, value);
+            }
+        }
+
+        //2.00 PWD algorithm 1-char, fixed-length required field; the algorithm used to encrypt the password.
+        public string PWDAlgorithm_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_PWDAlgorithm);
+            }
+            set
+            {
+                if (value.Length != 1)
+                    throw new Exception("PWD algorithm参数长度须为1位。");
+
+                this.SetFixedFieldValue(SIPConst.F_PWDAlgorithm, value);
+            }
+        }
+
+        //2.00 login user id CN variable-length required field
+        public string CN_LoginUserId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CN_LoginUserId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CN_LoginUserId, value);
+            }
+        }
+        //2.00 login password CO variable-length required field
+        public string CO_LoginPassword_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CO_LoginPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CO_LoginPassword, value);
+            }
+        }
+        //2.00 location code CP variable-length optional field; the SC location.
+        public string CP_LocationCode_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CP_LocationCode);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CP_LocationCode, value);
+            }
+        }
+         
 
         /*
         public Login_93(string p_UIDAlgorithm_1

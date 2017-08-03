@@ -23,9 +23,22 @@ namespace DigitalPlatform.SIP2.Response
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
-        /*
+
         //1-char, fixed-length required field:  0 or 1.
-        public string Ok_1 { get; set; }
-         */
+        public string Ok_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Ok);
+            }
+            set
+            {
+                if (value != "0" && value != "1")
+                    throw new Exception("ok参数不合法，必须为0 or 1。");
+
+                this.SetFixedFieldValue(SIPConst.F_Ok, value);
+            }
+        }
+
     }
 }

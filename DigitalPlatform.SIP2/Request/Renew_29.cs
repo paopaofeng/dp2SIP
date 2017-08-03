@@ -19,12 +19,16 @@ namespace DigitalPlatform.SIP2.Request
             this.CommandIdentifier = "29";
 
             //==前面的定长字段
+            //<third party allowed><no block><transaction date><nb due date>
+            //1-char	1-char	18-char	18-char
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_ThirdPartyAllowed, 1));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NoBlock, 1));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_NbDueDate, 18));
 
-            //==后面变长字段 AO	AA	AD	AB AJ	AC	CH	BO
+            //==后面变长字段 
+            //<institution id><patron identifier><patron password><item identifier><title identifier><terminal password><item properties><fee acknowledged>
+            //AO	AA	AD	AB AJ	AC	CH	BO
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AO_InstitutionId, true));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false ));
@@ -41,44 +45,179 @@ namespace DigitalPlatform.SIP2.Request
         }
 
 
-        /*
-        //1-char, fixed-length required field:  Y or N.
-        public string ThirdPartyAllowed_1{ get; set; }
 
         //1-char, fixed-length required field:  Y or N.
-        public string NoBlock_1{ get; set; }
+        public string ThirdPartyAllowed_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_ThirdPartyAllowed);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("third party allowed参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_ThirdPartyAllowed, value);
+            }
+        }
+
+        //1-char, fixed-length required field:  Y or N.
+        public string NoBlock_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NoBlock);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("no block参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_NoBlock, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string NbDueDate_18{ get; set; }
+        public string NbDueDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_NbDueDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("Nb due date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_NbDueDate, value);
+            }
+        }
 
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field
-        public string PatronIdentifier_AA_r{ get; set; }
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
 
         //variable-length optional field
-        public string PatronPassword_AD_o{ get; set; }
+        public string AD_PatronPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AD_PatronPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AD_PatronPassword, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemIdentifier_AB_o{ get; set; }
+        public string AB_ItemIdentifier_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
+
 
         //variable-length optional field
-        public string TitleIdentifier_AJ_o{ get; set; }
+        public string AJ_TitleIdentifier_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier, value);
+            }
+        }
+
 
         //variable-length optional field
-        public string TerminalPassword_AC_o{ get; set; }
+        public string AC_TerminalPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemProperties_CH_o{ get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         //1-char, optional field: Y or N.
-        public string FeeAcknowledged_BO_1_o{ get; set; }
+        public string BO_FeeAcknowledged_1_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged, value);
+            }
+        }
 
+        /*
         // 构造函数
         public Renew_29()
         { }

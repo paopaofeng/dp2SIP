@@ -58,65 +58,269 @@ namespace DigitalPlatform.SIP2.Response
 
         }
 
-        /*
+        
         //2-char, fixed-length required field (00 thru 99)
-        public string CirculationStatus_2{ get; set; }
+        public string CirculationStatus_2
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_CirculationStatus);
+            }
+            set
+            {
+                if (value.Length != 2)
+                    throw new Exception("circulation status参数长度须为2位。");
+
+                this.SetFixedFieldValue(SIPConst.F_CirculationStatus, value);
+            }
+        }
 
         //2-char, fixed-length required field (00 thru 99)
-        public string SecurityMarker_2{ get; set; }
+        public string SecurityMarker_2
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_SecurityMarker);
+            }
+            set
+            {
+                if (value.Length != 2)
+                    throw new Exception("security marker参数长度须为2位。");
+
+                this.SetFixedFieldValue(SIPConst.F_SecurityMarker, value);
+            }
+        }
 
         //2-char, fixed-length required field (01 thru 99).  The type of fee associated with checking out this item.
-        public string FeeType_2{ get; set; }
+        public string FeeType_2
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_BT_FeeType);
+            }
+            set
+            {
+                if (value.Length != 2)
+                    throw new Exception("fee type参数长度须为2位。");
+
+                this.SetFixedFieldValue(SIPConst.F_BT_FeeType, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //variable-length optional field
-        public string HoldQueueLength_CF_o{ get; set; }
+        public string CF_HoldQueueLength_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CF_HoldQueueLength);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CF_HoldQueueLength, value);
+            }
+        }
 
         //variable-length optional field.
-        public string DueDate_AH_o{ get; set; }
+        public string AH_DueDate_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AH_DueDate);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AH_DueDate, value);
+            }
+        }
+
+        //18-char, fixed-length optional field:  YYYYMMDDZZZZHHMMSS
+        public string CJ_RecallDate_18
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CJ_RecallDate);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CJ_RecallDate, value);
+            }
+        }
 
 
         //18-char, fixed-length optional field:  YYYYMMDDZZZZHHMMSS
-        public string RecallDate_CJ_18 { get; set; }
-
-
-        //18-char, fixed-length optional field:  YYYYMMDDZZZZHHMMSS
-        public string HoldPickupDate_CM_18{ get; set; }
+        public string CM_HoldPickupDate_18
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CM_HoldPickupDate);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CM_HoldPickupDate, value);
+            }
+        }
 
 
         //variable-length required field
-        public string ItemIdentifier_AB_r{ get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string TitleIdentifier_AJ_r{ get; set; }
+        public string AJ_TitleIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier, value);
+            }
+        }
 
         //variable-length optional field
-        public string Owner_BG_o{ get; set; }
+        public string BG_Owner_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BG_Owner);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BG_Owner, value);
+            }
+        }
 
         //3 char, fixed-length optional field
-        public string CurrencyType_BH_o{ get; set; }
+        public string BH_CurrencyType_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BH_CurrencyType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BH_CurrencyType, value);
+            }
+        }
+
 
         //variable-length optional field.  The amount of the fee associated with this item.
-        public string FeeAmount_BV_o{ get; set; }
+        public string BV_FeeAmount_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BV_FeeAmount);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BV_FeeAmount, value);
+            }
+        }
+
 
         //3-char, fixed-length optional field
-        public string MediaType_CK_o{ get; set; }
+        public string CK_MediaType_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CK_MediaType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CK_MediaType, value);
+            }
+        }
 
         //variable-length optional field
-        public string PermanentLocation_AQ_o{ get; set; }
+        public string AQ_PermanentLocation_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AQ_PermanentLocation);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AQ_PermanentLocation, value);
+            }
+        }
 
         //variable-length optional field
-        public string CurrentLocation_AP_o{ get; set; }
+        public string AP_CurrentLocation_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AP_CurrentLocation);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AP_CurrentLocation, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemProperties_CH_o{ get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o{ get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field    
-        public string PrintLine_AG_o{ get; set; }
-        */
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
+        
     }
 }

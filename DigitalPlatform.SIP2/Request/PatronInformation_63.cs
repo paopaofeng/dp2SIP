@@ -30,41 +30,142 @@ namespace DigitalPlatform.SIP2.Request
 
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AD_PatronPassword, false ));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BP_StartItem, false));
-            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BQ_EmailAddress, false ));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BQ_EndItem, false ));
 
             // 校验码相关，todo
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
-        /*
+        
 
         //3-char, fixed-length required field
-        public string Language_3{ get; set; }
+        public string Language_3
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Language);
+            }
+            set
+            {
+                if (value.Length != 3)
+                    throw new Exception("language参数长度须为3位。");
+
+                this.SetFixedFieldValue(SIPConst.F_Language, value);
+            }
+        }
+
 
         // 18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //10-char, fixed-length required field
-        public string Summary_10{ get; set; }
+        public string Summary_10
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Summary);
+            }
+            set
+            {
+                if (value.Length != 10)
+                    throw new Exception("summary参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_Summary, value);
+            }
+        }
 
         // variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         // variable-length required field
-        public string PatronIdentifier_AA_r{ get; set; }
+        public string AA_PatronIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
         // variable-length optional fiel d
-        public string TerminalPassword_AC_o{ get; set; }
+        public string AC_TerminalPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
+            }
+        }
 
         // variable-length optional field
-        public string PatronPassword_AD_o{ get; set; }
+        public string AD_PatronPassword_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AD_PatronPassword);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AD_PatronPassword, value);
+            }
+        }
 
         // variable-length optional field
-        public string StartItem_BP_o{ get; set; }
+        public string BP_StartItem_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BP_StartItem);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BP_StartItem, value);
+            }
+        }
 
         //variable-length optional field
-        public string EndItem_BQ_o{ get; set; }
+        public string BQ_EndItem_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_BQ_EndItem);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_BQ_EndItem, value);
+            }
+        }
 
+        /*
         // 构造函数
         public PatronInformation_63()
         { }

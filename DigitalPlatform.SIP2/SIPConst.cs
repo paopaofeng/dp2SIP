@@ -179,7 +179,7 @@ namespace DigitalPlatform.SIP2
         //start item BP
         public const string F_BP_StartItem = "BP";
         //end item BQ
-        public const string F_BQ_EmailAddress = "BQ";
+        public const string F_BQ_EndItem= "BQ";
         //queue position BR
         public const string F_BR_QueuePosition = "BR";
         //pickup location BS

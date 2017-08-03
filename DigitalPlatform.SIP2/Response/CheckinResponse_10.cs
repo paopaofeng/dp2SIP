@@ -46,53 +46,218 @@ namespace DigitalPlatform.SIP2.Response
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
-        /*
+        
         //OK should be set to 1 if the ACS checked in the item. should be set to 0 if the ACS did not check in the item.
         //1-char, fixed-length required field:  0 or 1.
-        public string Ok_1{ get; set; }
+        public string Ok_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Ok);
+            }
+            set
+            {
+                if (value != "0" && value != "1")
+                    throw new Exception("ok参数不合法，必须为0 or 1。");
+
+                this.SetFixedFieldValue(SIPConst.F_Ok, value);
+            }
+        }
 
         //Resensitize should be set to Y if the SC should resensitize the article. should be set to N if the SC should not resensitize the article (for example, a closed reserve book, or the checkin was refused).
         //1-char, fixed-length required field:  Y or N.
-        public string Resensitize_1{ get; set; }
+        public string Resensitize_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Resensitize);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("resensitize参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_Resensitize, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N or U.
-        public string MagneticMedia_1{ get; set; }
+        public string MagneticMedia_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_MagneticMedia);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("magnetic media参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_MagneticMedia, value);
+            }
+        }
 
         //1-char, fixed-length required field:  Y or N.
-        public string Alert_1{ get; set; }
+        public string Alert_1
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_Alert);
+            }
+            set
+            {
+                if (value != "Y" && value != "N")
+                    throw new Exception("alert参数不合法，必须为Y/N。");
+
+                this.SetFixedFieldValue(SIPConst.F_Alert, value);
+            }
+        }
 
         //18-char, fixed-length required field:  YYYYMMDDZZZZHHMMSS
-        public string TransactionDate_18{ get; set; }
+        public string TransactionDate_18
+        {
+            get
+            {
+                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+            }
+            set
+            {
+                if (value.Length != 18)
+                    throw new Exception("transaction date参数长度须为18位。");
+
+                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+            }
+        }
 
         //variable-length required field
-        public string InstitutionId_AO_r{ get; set; }
+        public string AO_InstitutionId_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AO_InstitutionId, value);
+            }
+        }
 
         //variable-length required field
-        public string ItemIdentifier_AB_r{ get; set; }
+        public string AB_ItemIdentifier_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AB_ItemIdentifier, value);
+            }
+        }
 
         //variable-length required field
-        public string PermanentLocation_AQ_r{ get; set; }
+        public string AQ_PermanentLocation_r
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AQ_PermanentLocation);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AQ_PermanentLocation, value);
+            }
+        }
 
         //variable-length optional field
-        public string TitleIdentifier_AJ_o{ get; set; }
+        public string AJ_TitleIdentifier_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AJ_TitleIdentifier, value);
+            }
+        }
 
         //variable-length optional field
-        public string SortBin_CL_o{ get; set; }
+        public string CL_SortBin_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CL_SortBin);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CL_SortBin, value);
+            }
+        }
 
         //variable-length optional field.  ID of the patron who had the item checked out.
-        public string PatronIdentifier_AA_o{ get; set; }
+        public string AA_PatronIdentifier_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AA_PatronIdentifier);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AA_PatronIdentifier, value);
+            }
+        }
 
         //3-char, fixed-length optional field
-        public string MediaType_CK_e{ get; set; }
+        public string CK_MediaType_e
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CK_MediaType);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CK_MediaType, value);
+            }
+        }
 
         //variable-length optional field
-        public string ItemProperties_CH_o{ get; set; }
+        public string CH_ItemProperties_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_CH_ItemProperties, value);
+            }
+        }
 
         //variable-length optional field
-        public string ScreenMessage_AF_o{ get; set; }
+        public string AF_ScreenMessage_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AF_ScreenMessage);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AF_ScreenMessage, value);
+            }
+        }
 
         //variable-length optional field
-        public string PrintLine_AG_o{ get; set; }
-         */
+        public string AG_PrintLine_o
+        {
+            get
+            {
+                return this.GetVariableFieldValue(SIPConst.F_AG_PrintLine);
+            }
+            set
+            {
+                this.SetVariableFieldValue(SIPConst.F_AG_PrintLine, value);
+            }
+        }
+         
     }
 }
