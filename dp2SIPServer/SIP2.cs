@@ -209,7 +209,7 @@ namespace dp2SIPServer
                 Ok_1 = "0",
                 RenewalOk_1 = "N",
                 MagneticMedia_1 = "N",
-                Desensitize_1 = "Y",
+                Desensitize_1 = "N",
                 TransactionDate_18 = SIPUtility.NowDateTime,
                 AO_InstitutionId_r = "dp2Library",
             };
@@ -280,6 +280,7 @@ namespace dp2SIPServer
                 else
                 {
                     response.Ok_1 = "1";
+                    response.RenewalOk_1 = "Y";
 
                     string strBiblioSummary = String.Empty;
                     string strMarcSyntax = "";
