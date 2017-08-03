@@ -516,7 +516,7 @@ namespace dp2SIPServer
                                 LibraryChannel channel = this.GetChannel(this._username);
                                 try
                                 {
-                                    strBackMsg = sip.CheckIn(channel,strPackage);
+                                    strBackMsg = sip.Checkin(channel,strPackage);
                                 }
                                 finally
                                 {
@@ -526,7 +526,18 @@ namespace dp2SIPServer
                             }
                         case "11":
                             {
+                                /*
                                 strBackMsg = Borrow(false, strReaderBarcode, strItemBarcode, "auto_renew");
+                                */
+                                LibraryChannel channel = this.GetChannel(this._username);
+                                try
+                                {
+                                    strBackMsg = sip.Checkout(channel, strPackage);
+                                }
+                                finally
+                                {
+                                    this.ReturnChannel(channel);
+                                }
                                 break;
                             }
                         case "17":
@@ -536,9 +547,20 @@ namespace dp2SIPServer
                             }
                         case "29":
                             {
+                                /*
                                 strBackMsg = Borrow(true, // 续借
                                     "",  // 读者条码号为空，续借
                                     strItemBarcode);
+                                */
+                                LibraryChannel channel = this.GetChannel(this._username);
+                                try
+                                {
+                                    strBackMsg = sip.Renew(channel, strPackage);
+                                }
+                                finally
+                                {
+                                    this.ReturnChannel(channel);
+                                }
                                 break;
                             }
                         case "35":

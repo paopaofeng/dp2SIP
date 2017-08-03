@@ -69,9 +69,6 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SIP2.cs" />
-    <Compile Include="SIP2\CheckInRequest.cs" />
-    <Compile Include="SIP2\SIP2Message.cs" />
-    <Compile Include="SIP2\SIP2Request.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
