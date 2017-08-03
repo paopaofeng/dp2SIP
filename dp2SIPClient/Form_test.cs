@@ -808,7 +808,7 @@ namespace dp2SIPClient
 
                     info.NewRecord = itemDom.DocumentElement.OuterXml;
 
-
+                    barcordStart++;
                 }
 
                 EntityInfo[] errorinfos = null;
