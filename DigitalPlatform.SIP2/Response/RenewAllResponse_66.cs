@@ -113,28 +113,28 @@ namespace DigitalPlatform.SIP2.Response
         }
 
         //variable-length optional field  (this field sent for each renewed item)
-        public string BM_RenewedItems_o
+        public List<VariableLengthField> BM_RenewedItems_o
         {
             get
             {
-                return this.GetVariableFieldValue(SIPConst.F_BM_RenewedItems);
+                return this.GetVariableFieldList(SIPConst.F_BM_RenewedItems);
             }
             set
             {
-                this.SetVariableFieldValue(SIPConst.F_BM_RenewedItems, value);
+                this.SetVariableFieldList(SIPConst.F_BM_RenewedItems, value);
             }
         }
 
         //variable-length optional field  (this field sent for each unrenewed item)
-        public string BN_UnrenewedItems_o
+        public List<VariableLengthField> BN_UnrenewedItems_o
         {
             get
             {
-                return this.GetVariableFieldValue(SIPConst.F_BN_UnrenewedItems);
+                return this.GetVariableFieldList(SIPConst.F_BN_UnrenewedItems);
             }
             set
             {
-                this.SetVariableFieldValue(SIPConst.F_BN_UnrenewedItems, value);
+                this.SetVariableFieldList(SIPConst.F_BN_UnrenewedItems, value);
             }
         }
 
