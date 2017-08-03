@@ -4,6 +4,8 @@ using DigitalPlatform.LibraryClient;
 using DigitalPlatform.LibraryClient.localhost;
 using DigitalPlatform.Marc;
 using DigitalPlatform.SIP2;
+using DigitalPlatform.SIP2.Request;
+using DigitalPlatform.SIP2.Response;
 using DigitalPlatform.Xml;
 using System;
 using System.Collections.Generic;
@@ -712,6 +714,8 @@ namespace dp2SIPClient
         {
             strError = "";
 
+            int barcordStart = 1;
+
             for (int i = 0; i < 10; i++)
             {
                 string strTitle = "测试题名-" + i;
@@ -795,7 +799,7 @@ namespace dp2SIPClient
                     string strTargetBiblioRecID = GetRecordID(strOutputPath);
                     DomUtil.SetElementText(root,"parent", strTargetBiblioRecID);
 
-                    string barcode ="_B"+ i.ToString().PadLeft(2, '0')+j.ToString().PadLeft(3,'0');
+                    string barcode = "_B" + barcordStart.ToString().PadLeft(6, '0');// i.ToString().PadLeft(2, '0')+j.ToString().PadLeft(3,'0');
                     DomUtil.SetElementText(root, "barcode", barcode);
                     DomUtil.SetElementText(root, "location", C_Location);
                     DomUtil.SetElementText(root, "batchNo", "test001");
@@ -1053,6 +1057,73 @@ namespace dp2SIPClient
             MessageBox.Show(this, strError);
         }
 
+        private void btnCheckinCheckout_Click(object sender, EventArgs e)
+        {
+            string error="";
+            int nRet=0;
+
+            string info = "";
+
+            REDO:
+
+            for (int i = 0; i < 10; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+
+                for (int j = 1; j <= 100; j++)
+                {
+                    Application.DoEvents();
+
+                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+
+                    nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
+                    if (nRet == -2) //尚未登录的情况
+                    {
+
+                        nRet = SCHelper.Instance.Login("supervisor", "1", out error);
+                        if (nRet == 1)
+                        {
+                            goto REDO;
+                        }
+
+                        goto ERROR1;
+                    }
+
+                    this.Print(patronBarcode + "借" + itemBarcode + "...");
+
+
+                    if (nRet == -1)
+                    {
+                        Print("出错:" + error);
+                        continue;
+                    }
+
+                    if (nRet == 0)
+                    {
+                        Print("借出失败:" + error);
+                        continue;
+                    }
+
+                    this.Print("借书成功");
+                }
+
+            }
+
+        ERROR1:
+            this.Print(error);
+
+        }
+
+
+        private void Print(string text)
+        {
+            if (this.txtInfo.Text != "")
+                this.txtInfo.Text += "\r\n";
+            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + text;
+
+            //this.txtInfo.Text = text;
+        }
 
     }
 }

@@ -44,6 +44,18 @@ namespace DigitalPlatform.SIP2.Request
 
         }
 
+        public void SetDefaulValue()
+        {
+            SCRenewalPolicy_1 = "Y"; //默认设为Y,允许续借
+            NoBlock_1 = "N";
+            NbDueDate_18 = "".PadLeft(18, ' '); //默认为18个空格
+
+            AC_TerminalPassword_r = "";
+            BO_FeeAcknowledged_1_o = "N";
+            BI_Cancel_1_o = "N";
+        }
+
+
         //Y表示SC已由图书馆工作人员配置可以进行续借，N表示不可以续借。
         //1-char,fixed-length required field:  Y or N.
         public string SCRenewalPolicy_1
@@ -54,10 +66,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                // 如果未设该值,默认设为Y,允许续借
-                if (String.IsNullOrEmpty(value) == true)
-                    value = "Y";
-
                 if (value != "Y" && value != "N")
                     throw new Exception("SC renewal policy参数不合法，必须为Y/N。");
 
@@ -75,10 +83,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                // 如果未设该值,默认设为N
-                if (String.IsNullOrEmpty(value) == true)
-                    value = "N";
-
                 if (value != "Y" && value != "N")
                     throw new Exception("no block参数不合法，必须为Y/N。");
 
@@ -113,11 +117,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                // 如果未设该值,默认认为18个空格
-                if (String.IsNullOrEmpty(value) == true)
-                    value = "".PadLeft(18, ' ');
-
-
                 if (value.Length != 18)
                     throw new Exception("Nb due date参数长度须为18位。");
 
@@ -177,9 +176,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                if (value == null)
-                    value = "";
-
                 this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
             }
         }
@@ -224,10 +220,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                // 如果未设值,默认为N
-                if (string.IsNullOrEmpty(value) == true)
-                    value = "N";
-
                 this.SetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged, value);
             }
         }
@@ -245,10 +237,6 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
-                // 如果未设值,默认为N
-                if (string.IsNullOrEmpty(value) == true)
-                    value = "N";
-
                 this.SetVariableFieldValue(SIPConst.F_BI_Cancel, value);
             }
         }

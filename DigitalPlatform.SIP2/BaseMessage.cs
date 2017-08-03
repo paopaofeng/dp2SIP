@@ -139,14 +139,14 @@ namespace DigitalPlatform.SIP2
         #endregion
 
         // 解析字符串命令为对象
-        public virtual bool parse(string text, out string error)
+        public virtual int parse(string text, out string error)
         {
             error = "";
 
             if (text == null || text.Length < 2)
             {
                 error = "命令字符串为null或长度小于2位";
-                return false;
+                return -1;
             }
             this.CommandIdentifier = text.Substring(0, 2);  //命令指示符
             string conent = text.Substring(2); //内容
@@ -178,11 +178,11 @@ namespace DigitalPlatform.SIP2
             }
 
             // 校验;
-            bool ret = this.Verify(out error);
-            if (ret == false)
-                return false;
+            int ret = this.Verify(out error);
+            if (ret == -1)
+                return -1;
 
-            return true;
+            return 0;
         }
 
         // 将对象转换字符串命令
@@ -210,7 +210,7 @@ namespace DigitalPlatform.SIP2
         }
 
         // 校验对象的各参数是否合法
-        public virtual bool Verify(out string error)
+        public virtual int Verify(out string error)
         {
             error = "";
 
@@ -220,7 +220,7 @@ namespace DigitalPlatform.SIP2
                 if (field.Value == null || field.Value.Length != field.Length)
                 {
                     error = field.Name + "的值为null或者长度不符合要求的长度";
-                    return false;
+                    return -1;
                 }
             }
 
@@ -229,11 +229,11 @@ namespace DigitalPlatform.SIP2
                 if (field.IsRequired==true &&  field.Value == null)
                 {
                     error = field.ID + "是必备字段，必须有值";
-                    return false;
+                    return -1;
                 }
             }
 
-            return true;
+            return 0;
         }
     }
 }

@@ -79,6 +79,7 @@
     <Compile Include="ManageHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SCHelper.cs" />
     <EmbeddedResource Include="Form_checksum.resx">
       <DependentUpon>Form_checksum.cs</DependentUpon>
     </EmbeddedResource>

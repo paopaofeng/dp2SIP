@@ -33,14 +33,16 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.button_createRightsTable = new System.Windows.Forms.Button();
+            this.btnCheckinCheckout = new System.Windows.Forms.Button();
+            this.txtInfo = new System.Windows.Forms.TextBox();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_createTestEnv
             // 
-            this.button_createTestEnv.Location = new System.Drawing.Point(12, 23);
+            this.button_createTestEnv.Location = new System.Drawing.Point(12, 21);
             this.button_createTestEnv.Name = "button_createTestEnv";
-            this.button_createTestEnv.Size = new System.Drawing.Size(265, 49);
+            this.button_createTestEnv.Size = new System.Drawing.Size(254, 39);
             this.button_createTestEnv.TabIndex = 0;
             this.button_createTestEnv.Text = "一键初始化测试环境";
             this.button_createTestEnv.UseVisualStyleBackColor = true;
@@ -71,20 +73,45 @@
             // 
             // button_createRightsTable
             // 
-            this.button_createRightsTable.Location = new System.Drawing.Point(12, 556);
+            this.button_createRightsTable.Location = new System.Drawing.Point(761, 21);
             this.button_createRightsTable.Name = "button_createRightsTable";
-            this.button_createRightsTable.Size = new System.Drawing.Size(190, 46);
+            this.button_createRightsTable.Size = new System.Drawing.Size(175, 39);
             this.button_createRightsTable.TabIndex = 2;
             this.button_createRightsTable.Text = "创建流通权限";
             this.button_createRightsTable.UseVisualStyleBackColor = true;
             this.button_createRightsTable.Visible = false;
             this.button_createRightsTable.Click += new System.EventHandler(this.button_createRightsTable_Click);
             // 
+            // btnCheckinCheckout
+            // 
+            this.btnCheckinCheckout.Location = new System.Drawing.Point(296, 21);
+            this.btnCheckinCheckout.Name = "btnCheckinCheckout";
+            this.btnCheckinCheckout.Size = new System.Drawing.Size(179, 39);
+            this.btnCheckinCheckout.TabIndex = 3;
+            this.btnCheckinCheckout.Text = "自动测试借还";
+            this.btnCheckinCheckout.UseVisualStyleBackColor = true;
+            this.btnCheckinCheckout.Click += new System.EventHandler(this.btnCheckinCheckout_Click);
+            // 
+            // txtInfo
+            // 
+            this.txtInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtInfo.BackColor = System.Drawing.SystemColors.Info;
+            this.txtInfo.Location = new System.Drawing.Point(12, 81);
+            this.txtInfo.Multiline = true;
+            this.txtInfo.Name = "txtInfo";
+            this.txtInfo.ReadOnly = true;
+            this.txtInfo.Size = new System.Drawing.Size(924, 553);
+            this.txtInfo.TabIndex = 22;
+            // 
             // Form_test
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(948, 687);
+            this.Controls.Add(this.txtInfo);
+            this.Controls.Add(this.btnCheckinCheckout);
             this.Controls.Add(this.button_createRightsTable);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button_createTestEnv);
@@ -105,6 +132,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Button button_createRightsTable;
+        private System.Windows.Forms.Button btnCheckinCheckout;
+        private System.Windows.Forms.TextBox txtInfo;
 
     }
 }

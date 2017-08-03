@@ -36,7 +36,7 @@
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.清空信息区ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.实用工具ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.初始化测试环境ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.自动测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel_send = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -198,7 +198,7 @@
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(681, 748);
+            this.txtInfo.Size = new System.Drawing.Size(681, 747);
             this.txtInfo.TabIndex = 21;
             // 
             // menuStrip1
@@ -209,7 +209,7 @@
             this.关于ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1680, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(1680, 39);
             this.menuStrip1.TabIndex = 24;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -218,7 +218,7 @@
             this.文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.参数配置ToolStripMenuItem});
             this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(74, 38);
+            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(74, 35);
             this.文件ToolStripMenuItem.Text = "文件";
             // 
             // 参数配置ToolStripMenuItem
@@ -233,9 +233,9 @@
             this.关于ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.清空信息区ToolStripMenuItem,
             this.实用工具ToolStripMenuItem1,
-            this.初始化测试环境ToolStripMenuItem});
+            this.自动测试ToolStripMenuItem});
             this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
-            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(74, 38);
+            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(74, 35);
             this.关于ToolStripMenuItem.Text = "帮助";
             // 
             // 清空信息区ToolStripMenuItem
@@ -252,12 +252,12 @@
             this.实用工具ToolStripMenuItem1.Text = "实用工具";
             this.实用工具ToolStripMenuItem1.Click += new System.EventHandler(this.实用工具ToolStripMenuItem1_Click);
             // 
-            // 初始化测试环境ToolStripMenuItem
+            // 自动测试ToolStripMenuItem
             // 
-            this.初始化测试环境ToolStripMenuItem.Name = "初始化测试环境ToolStripMenuItem";
-            this.初始化测试环境ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.初始化测试环境ToolStripMenuItem.Text = "自动测试";
-            this.初始化测试环境ToolStripMenuItem.Click += new System.EventHandler(this.初始化测试环境ToolStripMenuItem_Click);
+            this.自动测试ToolStripMenuItem.Name = "自动测试ToolStripMenuItem";
+            this.自动测试ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.自动测试ToolStripMenuItem.Text = "自动测试";
+            this.自动测试ToolStripMenuItem.Click += new System.EventHandler(this.自动测试ToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -266,9 +266,9 @@
             this.toolStripLabel_send,
             this.toolStripSeparator1,
             this.toolStripLabel_sample});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 42);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 39);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1680, 34);
+            this.toolStrip1.Size = new System.Drawing.Size(1680, 38);
             this.toolStrip1.TabIndex = 25;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -312,7 +312,7 @@
             // splitContainer_main
             // 
             this.splitContainer_main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer_main.Location = new System.Drawing.Point(0, 76);
+            this.splitContainer_main.Location = new System.Drawing.Point(0, 77);
             this.splitContainer_main.Name = "splitContainer_main";
             // 
             // splitContainer_main.Panel1
@@ -323,7 +323,7 @@
             // splitContainer_main.Panel2
             // 
             this.splitContainer_main.Panel2.Controls.Add(this.txtInfo);
-            this.splitContainer_main.Size = new System.Drawing.Size(1680, 748);
+            this.splitContainer_main.Size = new System.Drawing.Size(1680, 747);
             this.splitContainer_main.SplitterDistance = 995;
             this.splitContainer_main.TabIndex = 27;
             // 
@@ -343,8 +343,9 @@
             this.tabControl_main.Location = new System.Drawing.Point(7, 44);
             this.tabControl_main.Name = "tabControl_main";
             this.tabControl_main.SelectedIndex = 0;
-            this.tabControl_main.Size = new System.Drawing.Size(985, 701);
+            this.tabControl_main.Size = new System.Drawing.Size(985, 700);
             this.tabControl_main.TabIndex = 19;
+            this.tabControl_main.SelectedIndexChanged += new System.EventHandler(this.tabControl_main_SelectedIndexChanged);
             // 
             // tabPage_Login93
             // 
@@ -361,7 +362,7 @@
             this.tabPage_Login93.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Login93.Name = "tabPage_Login93";
             this.tabPage_Login93.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Login93.Size = new System.Drawing.Size(969, 654);
+            this.tabPage_Login93.Size = new System.Drawing.Size(969, 653);
             this.tabPage_Login93.TabIndex = 0;
             this.tabPage_Login93.Text = "Login93";
             this.tabPage_Login93.UseVisualStyleBackColor = true;
@@ -1571,7 +1572,7 @@
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.TextBox textBox_Renew29_thirdPartyAllowed_1;
         private System.Windows.Forms.Label label51;
-        private System.Windows.Forms.ToolStripMenuItem 初始化测试环境ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 自动测试ToolStripMenuItem;
     }
 }
 

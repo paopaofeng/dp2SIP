@@ -19,17 +19,10 @@ namespace dp2SIPClient
 {
     public partial class MainForm : Form
     {
-        private TcpClient _client;
-        private NetworkStream _networkStream;
-
         public MainForm()
         {
             InitializeComponent();
         }
-
-        #region 连接 SIP2 Server
-
-
 
         public string SIPServerUrl
         {
@@ -39,7 +32,6 @@ namespace dp2SIPClient
             }
         }
 
-
         public int SIPServerPort
         {
             get
@@ -48,66 +40,37 @@ namespace dp2SIPClient
             }
         }
 
-        private void Connection()
+        // 窗体加载
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Enabled = false;
-            try
+            if (string.IsNullOrEmpty(this.SIPServerUrl))
             {
-                IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
-                string hostName = Dns.GetHostEntry(ipAddress).HostName;
-                _client = new TcpClient(hostName, this.SIPServerPort);
-
-
-                // 保存到一个变量上，方便使用
-                _networkStream = _client.GetStream();
-
-                //界面设置
-                this.toolStripStatusLabel_info.Text = "连接服务器成功。";
-                toolStripLabel_send.Enabled = true;
+                Form_setting dlg = new Form_setting();
+                if (dlg.ShowDialog(this) != DialogResult.OK)
+                {
+                    this.Close();
+                    return;
+                }
             }
-            catch (Exception ex)
+
+            // 连接服务器
+            this.ConnectionServer();
+        }
+
+        public void ConnectionServer()
+        {
+            string error = "";
+            bool bRet = SCHelper.Instance.Connection(this.SIPServerUrl, this.SIPServerPort, out error);
+            if (bRet == false)
             {
-                this.toolStripStatusLabel_info.Text = "连接服务器失败:" + ex.Message;
+                this.toolStripStatusLabel_info.Text = error;
                 return;
             }
-            finally
-            {
-                this.Enabled = true;
-            }
 
-
+            this.toolStripStatusLabel_info.Text = "连接SIP2服务器成功.";
+            this.toolStripLabel_send.Enabled = true;
         }
 
-        // 关闭连接
-        public void CloseSocket()
-        {
-            if (_client != null)
-            {
-                try
-                {
-                    this._networkStream.Close();
-                }
-                catch { }
-
-                try
-                {
-                    this._client.Close();
-                }
-                catch { }
-
-                this._client = null;
-            }
-        }
-
-        #endregion
-
-
-        #region 发送接收
-
-        private string getText(TextBox txtBox)
-        {
-            return txtBox.Text == "null" ? null : txtBox.Text;
-        }
 
         //发送消息
         private void toolStripLabel_send_Click(object sender, EventArgs e)
@@ -251,15 +214,15 @@ namespace dp2SIPClient
             this.txtMsg.Text = "";
 
             string error = "";
-            bool bRet = false;
+            int nRet = 0;
             //BaseRequest request = null;
             string text = "";
             if (this.tabControl_main.SelectedTab == this.tabPage_Login93)
             {
                 text = "93  CNsupervisor|CO1|CPC00|AY0AZFB58";
                 Login_93 request93 = new Login_93();
-                bRet = request93.parse(text, out error);
-                if (bRet == false)
+                nRet = request93.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
 
                 this.textBox_Login93_UIDAlgorithm_1.Text = request93.UIDAlgorithm_1;//.GetFixedFieldValue(SIPConst.F_UIDAlgorithm);
@@ -272,8 +235,8 @@ namespace dp2SIPClient
             {
                 text = "9900302.00";
                 SCStatus_99 request99 = new SCStatus_99();
-                bRet = request99.parse(text, out error);
-                if (bRet == false)
+                nRet = request99.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
 
                 this.textBox_SCStatus99_statusCode_1.Text = request99.StatusCode_1;//.GetFixedFieldValue(SIPConst.F_StatusCode);
@@ -285,8 +248,8 @@ namespace dp2SIPClient
                 //20170630    141135
                 text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AAFZXP00001|ABDPB000051|AC|BON|BIN|";
                 Checkout_11 request11 = new Checkout_11();
-                bRet = request11.parse(text, out error);
-                if (bRet == false)
+                nRet = request11.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
 
                 
@@ -315,8 +278,8 @@ namespace dp2SIPClient
                 string returnDate = SIPUtility.NowDateTime;
                 text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|ABDPB000051|AC|BIN|";
                 Checkin_09 request09 = new Checkin_09();
-                bRet = request09.parse(text, out error);
-                if (bRet == false)
+                nRet = request09.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
 
                 
@@ -340,8 +303,8 @@ namespace dp2SIPClient
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "63019" + transactionDate + "  Y       AOdp2Library|AAFZXP00001|";
                 PatronInformation_63 request63 = new PatronInformation_63();
-                bRet = request63.parse(text, out error);
-                if (bRet == false)
+                nRet = request63.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
                 
                 this.textBox_PatronInformation63_language_3.Text = request63.Language_3;//.GetFixedFieldValue(SIPConst.F_Language);
@@ -362,8 +325,8 @@ namespace dp2SIPClient
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "17" + transactionDate + "AOdp2Library|ABDPB000051|";
                 ItemInformation_17 request17 = new ItemInformation_17();
-                bRet = request17.parse(text, out error);
-                if (bRet == false)
+                nRet = request17.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
 
                 
@@ -381,10 +344,9 @@ namespace dp2SIPClient
                 string transactionDate = SIPUtility.NowDateTime;
                 text = "29NN" + transactionDate + "                  AOdp2Library|AAFZXP00001|ABDPB000051|BON|";
                 Renew_29 request29 = new Renew_29();
-                bRet = request29.parse(text, out error);
-                if (bRet == false)
+                nRet = request29.parse(text, out error);
+                if (nRet == -1)
                     goto ERROR1;
-
                 
                 this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.ThirdPartyAllowed_1;//.GetFixedFieldValue(SIPConst.F_ThirdPartyAllowed);//.ThirdPartyAllowed_1;
                 this.textBox_Renew29_noBlock_1.Text = request29.NoBlock_1;//.GetFixedFieldValue(SIPConst.F_NoBlock);//.NoBlock_1;
@@ -424,7 +386,7 @@ namespace dp2SIPClient
             }
         }
 
-        // 发送包装小函数
+        // 发送消息
         private void sendCmd()
         {
             // 发送信息不允许为空
@@ -435,214 +397,31 @@ namespace dp2SIPClient
                 return;
             }
 
-            string text = this.txtMsg.Text.Trim();
-            SendData(text);
+            string requestText = this.txtMsg.Text.Trim();
+            string responseText ="";
+            string error="";
+            this.Print("send:" + requestText);
+            BaseMessage response = null;
+            int nRet = SCHelper.Instance.SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+            {
+                MessageBox.Show(error);
+                this.Print("error:" + error);
+                return;
+            }
+
+            this.Print("recv:" + responseText);
+
         }
 
 
-        // 发送数据
-        private void SendData(string text)
+        private string getText(TextBox txtBox)
         {
-            this.Enabled = false;
-            try
-            {
-                if (this._networkStream.DataAvailable == true)
-                {
-                    MessageBox.Show("异常：发送前发现流中有未读的数据!");
-                    //this.RecvData();
-                    return;
-                }
-
-                // 刷新界面
-                this.Print("send:" + text);
-                //txtMsg.Text = "";  // 清空
-                this.txtMsg.SelectAll();
-
-
-                // 命令参数检查
-                BaseMessage request = null;
-                string error="";
-                bool bRet = SIPUtility.ParseRequest(text, out request, out error);
-                if (bRet == false)
-                {
-                    this.Print("error-s:" + error);
-                    return;
-                }
-
-                byte[] baPackage = this.Encoding.GetBytes(text);
-                this._networkStream.Write(baPackage, 0, baPackage.Length);
-                this._networkStream.Flush();//刷新当前数据流中的数据
-
-
-
-                // 调接收数据
-                string strRecv = "";
-                string strError = "";
-                int nRet = RecvTcpPackage(out strRecv, out strError);
-                if (nRet == -1)
-                {
-                    this.Print("error-r:" + strError);
-                    return;
-                }
-                this.Print("recv:" + strRecv);
-                //this.PrinteInfo("recv:" + strPackage);
-                //this.WriteToLog("Recv:" + strPackage);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message, "Client提示");
-            }
-            finally
-            {
-                this.Enabled = true;
-            }
-
+            return txtBox.Text == "null" ? null : txtBox.Text;
         }
-
-
-        // 接收数据
-        public int RecvTcpPackage(out string strPackage,
-            out string strError)
-        {
-            strError = "";
-            strPackage = "";
-
-            Debug.Assert(this._client != null, "client为空");
-
-            int offset = 0; //偏移量
-            int wRet = 0;
-
-
-            byte[] baPackage = new byte[1024];
-            int nOneLength = 1024; //COMM_BUFF_LEN;
-
-            while (offset < nOneLength)
-            {
-                if (this._client == null)
-                {
-                    strError = "通讯中断";
-                    goto ERROR1;
-                }
-
-                try
-                {
-                    wRet = this._networkStream.Read(baPackage,
-                        offset,
-                        baPackage.Length - offset);
-                }
-                catch (SocketException ex)
-                {
-                    // ??这个什么错误码
-                    if (ex.ErrorCode == 10035)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        continue;
-                    }
-
-                    // bool bRet = this.client.Connected;
-
-                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-                catch (Exception ex)
-                {
-                    //bool bRet = this.client.Connected;
-
-                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-
-                if (wRet == 0)
-                {
-                    return 0;
-                    //strError = "Closed by remote peer";
-                    //goto ERROR1;
-                }
-
-                // 得到包的长度
-                if (wRet >= 1 || offset >= 1)
-                {
-                    //没有找到结束符，继续读
-                    int nRet = Array.IndexOf(baPackage, (byte)this.Terminator);
-                    if (nRet != -1)
-                    {
-                        // nLen = nInLen + wRet;
-                        nOneLength = nRet;
-                        break;
-                    }
-
-                    if (this._networkStream.DataAvailable == false) //流中没有数据了
-                    {
-                        nOneLength = offset + wRet;
-                        break;
-                    }
-                }
-
-                offset += wRet;
-                if (offset >= baPackage.Length)
-                {
-                    // 扩大缓冲区
-                    byte[] temp = new byte[baPackage.Length + 1024];
-                    Array.Copy(baPackage, 0, temp, 0, offset);
-                    baPackage = temp;
-                    nOneLength = baPackage.Length;
-                }
-            }
-
-            // 最后规整缓冲区尺寸，如果必要的话
-            if (baPackage.Length > nOneLength)
-            {
-                byte[] temp = new byte[nOneLength];
-                Array.Copy(baPackage, 0, temp, 0, nOneLength);
-                baPackage = temp;
-            }
-
-            strPackage = this.Encoding.GetString(baPackage);
-            return 0;
-
-        ERROR1:
-            this.CloseSocket();
-            baPackage = null;
-            return -1;
-        }
-
-        #endregion
-
-
-        #region 一些参数信息
-
-        public Encoding Encoding
-        {
-            get
-            {
-                //string strEndodingName = Properties.Settings.Default.EncodingName;
-                //if (string.IsNullOrEmpty(strEndodingName))
-                //    strEndodingName = "UTF-8";
-
-                string strEndodingName = "UTF-8";
-
-                return Encoding.GetEncoding(strEndodingName);
-            }
-        }
-
-        // 命令结束符
-        char Terminator
-        {
-            get
-            {
-                //string strTerminator = Properties.Settings.Default.Terminator;
-                //if (strTerminator == "LF") //NewLine
-                //    return (char)10;
-                //else // if(strTerminator == "CR") //Return
-                return (char)13;
-            }
-        }
-        #endregion
-
-
-        #region 界面控件
-
-
 
         private void Print(string text)
         {
@@ -653,9 +432,6 @@ namespace dp2SIPClient
             //this.txtInfo.Text = text;
         }
 
-        #endregion
-
-
 
 
         private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -663,7 +439,7 @@ namespace dp2SIPClient
             Form_setting dlg = new Form_setting();
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                this.Connection();
+                this.ConnectionServer();
             }
         }
 
@@ -673,57 +449,22 @@ namespace dp2SIPClient
             dlg.ShowDialog(this);
         }
 
-
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(this.SIPServerUrl))
-            {
-                Form_setting dlg = new Form_setting();
-                if (dlg.ShowDialog(this) != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
-            }
-
-            this.Connection();
-
-
-           // this.toolStripStatusLabel_port.Text = "监听端口：" + this.Port;
-           // this.toolStripLabel_send.Enabled = true;
-        }
-
         private void 清空信息区ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.txtInfo.Text = "";
         }
 
-        private void 初始化测试环境ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tabControl_main_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //创建读者库
-
-            //生成几条读者数据
-
-            //创建书目库
-
-            // 导入marc
-
-            //创建册记录
-
-            //配上相关馆藏地
-
-            //配上流通权限
-
-            Form_test dlg = new Form_test();
-            dlg.ShowDialog(this);
+            this.txtMsg.Text = "";
         }
 
 
-
-
-
-
+        private void 自动测试ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_test dlg = new Form_test();
+            dlg.Show();
+        }
 
 
 

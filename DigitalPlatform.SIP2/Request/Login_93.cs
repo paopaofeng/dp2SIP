@@ -36,6 +36,12 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
         }
 
+        public void SetDefaulValue()
+        {
+            UIDAlgorithm_1 = " "; //默认设为1个空格
+            PWDAlgorithm_1 = " ";//默认设为1个空格
+        }
+
        
         //2.00 UID algorithm 1-char, fixed-length required field; the algorithm used to encrypt the user id.
         public string UIDAlgorithm_1

@@ -19,11 +19,14 @@ namespace DigitalPlatform.SIP2
         /// <summary>
         /// 将消息字符串 解析 成对应的消息对象
         /// </summary>
-        /// <param name="cmdText"></param>
-        /// <param name="message"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static bool ParseMessage(string cmdText, out BaseMessage message, out string error)
+        /// <param name="cmdText">消息字符串</param>
+        /// <param name="message">解析后的消息对象</param>
+        /// <param name="error">氏族</param>
+        /// <returns>
+        /// true 成功
+        /// false 出错
+        /// </returns>
+        public static int ParseMessage(string cmdText, out BaseMessage message, out string error)
         {
             message = new BaseMessage();
             error = "";
@@ -31,7 +34,7 @@ namespace DigitalPlatform.SIP2
             if (cmdText.Length < 2)
             {
                 error = "命令长度不够2位";
-                return false;
+                return -1;
             }
 
             string cmdIdentifiers = cmdText.Substring(0, 2);
@@ -120,15 +123,13 @@ namespace DigitalPlatform.SIP2
                     }
                 default:
                     error = "不支持的命令'" + cmdIdentifiers + "'";
-                    return false;
+                    return -1;
             }
 
             return message.parse(cmdText, out error);
 
         }
 
-
-        //public int Borrow()
 
         #region 通用函数
 
@@ -140,6 +141,15 @@ namespace DigitalPlatform.SIP2
             get
             {
                 return DateTime.Now.ToString("yyyyMMdd    HHmmss");
+            }
+        }
+
+        public static Encoding Encoding_UTF8
+        {
+            get
+            {
+                string strEndodingName = "UTF-8";
+                return Encoding.GetEncoding(strEndodingName);
             }
         }
 
