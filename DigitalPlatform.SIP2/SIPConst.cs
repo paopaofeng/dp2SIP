@@ -7,6 +7,8 @@ namespace DigitalPlatform.SIP2
 {
     public class SIPConst
     {
+
+        #region 字段名
         // 1-char, fixed-length field:  Y or N. 
         //A Y indicates that the SC is allowed by the ACS to process patron renewal requests as a policy.  
         //This field was called “renewal ok” in Version 1.00 of the protocol.
@@ -233,6 +235,7 @@ namespace DigitalPlatform.SIP2
         //valid patron password CQ
         public const string F_CQ_ValidPatronPassword = "CQ";
 
+        #endregion
 
         // 变长字段分隔符
         public const string FIELD_TERMINATOR = "|";
@@ -277,8 +280,9 @@ namespace DigitalPlatform.SIP2
         public const int MSIP_NO_ERROR = 0;
 
         // ACS字符集
-        public static int ACS_CHAR_SET = 850;
+        public const int ACS_CHAR_SET = 850;
 
-
+        // AO字段值
+        public const string AO_Value = "dp2Library";
     }
 }

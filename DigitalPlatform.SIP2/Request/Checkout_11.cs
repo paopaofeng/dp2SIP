@@ -44,7 +44,7 @@ namespace DigitalPlatform.SIP2.Request
 
         }
 
-
+        //Y表示SC已由图书馆工作人员配置可以进行续借，N表示不可以续借。
         //1-char,fixed-length required field:  Y or N.
         public string SCRenewalPolicy_1
         {
@@ -54,6 +54,10 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                // 如果未设该值,默认设为Y,允许续借
+                if (String.IsNullOrEmpty(value) == true)
+                    value = "Y";
+
                 if (value != "Y" && value != "N")
                     throw new Exception("SC renewal policy参数不合法，必须为Y/N。");
 
@@ -61,7 +65,7 @@ namespace DigitalPlatform.SIP2.Request
             }
         }
 
-
+        //当此字段为Y时，ACS不应阻止此事务，因为当ACS离线时,在SC该书已经被借或还。。
         //1-char, fixed-length required field:  Y or N.
         public string NoBlock_1
         {
@@ -71,6 +75,10 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                // 如果未设该值,默认设为N
+                if (String.IsNullOrEmpty(value) == true)
+                    value = "N";
+
                 if (value != "Y" && value != "N")
                     throw new Exception("no block参数不合法，必须为Y/N。");
 
@@ -105,6 +113,11 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                // 如果未设该值,默认认为18个空格
+                if (String.IsNullOrEmpty(value) == true)
+                    value = "".PadLeft(18, ' ');
+
+
                 if (value.Length != 18)
                     throw new Exception("Nb due date参数长度须为18位。");
 
@@ -164,6 +177,9 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                if (value == null)
+                    value = "";
+
                 this.SetVariableFieldValue(SIPConst.F_AC_TerminalPassword, value);
             }
         }
@@ -196,6 +212,8 @@ namespace DigitalPlatform.SIP2.Request
             }
         }
 
+        //如果该字段值为N，并且操作时发现一个待交费事项，则ACS应在返回消息里告诉SC有一个待交费事项且拒绝借出该书。
+        //如果SC与读者经过交互，且读者同意支付费用，则该字段将在第二个Checkout消息上设置为Y，向ACS表明读者已经确认该费用，并且该借书操作不应该被拒绝
         //目前传的N
         //1-char, optional field: Y or N
         public string BO_FeeAcknowledged_1_o
@@ -206,6 +224,10 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                // 如果未设值,默认为N
+                if (string.IsNullOrEmpty(value) == true)
+                    value = "N";
+
                 this.SetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged, value);
             }
         }
@@ -223,6 +245,10 @@ namespace DigitalPlatform.SIP2.Request
             }
             set
             {
+                // 如果未设值,默认为N
+                if (string.IsNullOrEmpty(value) == true)
+                    value = "N";
+
                 this.SetVariableFieldValue(SIPConst.F_BI_Cancel, value);
             }
         }
