@@ -192,13 +192,13 @@
             // 
             // txtInfo
             // 
-            this.txtInfo.BackColor = System.Drawing.SystemColors.Info;
+            this.txtInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtInfo.Location = new System.Drawing.Point(0, 0);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(681, 747);
+            this.txtInfo.Size = new System.Drawing.Size(681, 751);
             this.txtInfo.TabIndex = 21;
             // 
             // menuStrip1
@@ -268,7 +268,7 @@
             this.toolStripLabel_sample});
             this.toolStrip1.Location = new System.Drawing.Point(0, 39);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1680, 38);
+            this.toolStrip1.Size = new System.Drawing.Size(1680, 34);
             this.toolStrip1.TabIndex = 25;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -312,7 +312,7 @@
             // splitContainer_main
             // 
             this.splitContainer_main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer_main.Location = new System.Drawing.Point(0, 77);
+            this.splitContainer_main.Location = new System.Drawing.Point(0, 73);
             this.splitContainer_main.Name = "splitContainer_main";
             // 
             // splitContainer_main.Panel1
@@ -323,7 +323,7 @@
             // splitContainer_main.Panel2
             // 
             this.splitContainer_main.Panel2.Controls.Add(this.txtInfo);
-            this.splitContainer_main.Size = new System.Drawing.Size(1680, 747);
+            this.splitContainer_main.Size = new System.Drawing.Size(1680, 751);
             this.splitContainer_main.SplitterDistance = 995;
             this.splitContainer_main.TabIndex = 27;
             // 
@@ -343,7 +343,7 @@
             this.tabControl_main.Location = new System.Drawing.Point(7, 44);
             this.tabControl_main.Name = "tabControl_main";
             this.tabControl_main.SelectedIndex = 0;
-            this.tabControl_main.Size = new System.Drawing.Size(985, 700);
+            this.tabControl_main.Size = new System.Drawing.Size(985, 704);
             this.tabControl_main.TabIndex = 19;
             this.tabControl_main.SelectedIndexChanged += new System.EventHandler(this.tabControl_main_SelectedIndexChanged);
             // 
@@ -362,7 +362,7 @@
             this.tabPage_Login93.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Login93.Name = "tabPage_Login93";
             this.tabPage_Login93.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Login93.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Login93.Size = new System.Drawing.Size(969, 657);
             this.tabPage_Login93.TabIndex = 0;
             this.tabPage_Login93.Text = "Login93";
             this.tabPage_Login93.UseVisualStyleBackColor = true;

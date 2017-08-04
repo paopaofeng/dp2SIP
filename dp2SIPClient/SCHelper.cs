@@ -316,6 +316,49 @@ namespace dp2SIPClient
             return 1;
         }
 
+        // -1出错，0不在线，1正常
+        public int SCStatus(out ACSStatus_98 response98,
+            out string responseText,
+            out string error)
+        {
+            responseText = "";
+            response98 = null;
+            error = "";
+            int nRet = 0;
+
+            //text = "9900302.00";
+            SCStatus_99 request = new SCStatus_99()
+            {
+                StatusCode_1 = "0",
+                MaxPrintWidth_3 = "030",
+                ProtocolVersion_4 = "2.00",
+            };
+
+            // 发送和接收消息
+            string requestText = request.ToText();
+            BaseMessage response = null;
+            nRet = SCHelper.Instance.SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+                return -1;
+
+            response98 = response as ACSStatus_98;
+            if (response98 == null)
+            {
+                error = "返回的不是98消息";
+                return -1;
+            }
+
+            if (response98.OnlineStatus_1 != "Y")
+            {
+                error = "ACS当前不在线。";
+                return 0;
+            }
+            return 1;
+        }
+
         /// <summary>
         /// 借书
         /// </summary>
@@ -374,5 +417,58 @@ namespace dp2SIPClient
             return 1;
         }
 
+
+        /// <summary>
+        /// 还书
+        /// </summary>
+        /// <param name="itemBarcode"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int Checkin(string itemBarcode, out string error)
+        {
+            error = "";
+            int nRet = 0;
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
+            Checkin_09 request = new Checkin_09()
+            {
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                ReturnDate_18=SIPUtility.NowDateTime,
+                AB_ItemIdentifier_r = itemBarcode,
+                AO_InstitutionId_r = SIPConst.AO_Value,
+            };
+            request.SetDefaulValue();//设置其它默认值
+
+            // 发送和接收消息
+            string requestText = request.ToText();
+            string responseText = "";
+            BaseMessage response = null;
+            nRet = SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+                return -1;
+
+            CheckinResponse_10 response10 = response as CheckinResponse_10;
+            if (response10 == null)
+            {
+                error = "返回的不是10消息";
+                return -1;
+            }
+
+            if (response10.Ok_1 == "0")
+            {
+                return 0;
+            }
+
+            return 1;
+        }
+                    
     }
 }

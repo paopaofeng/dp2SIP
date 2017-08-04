@@ -41,6 +41,13 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
         }
 
+        public void SetDefaulValue()
+        {
+            NoBlock_1 = "N"; //默认设为N
+            AP_CurrentLocation_r = "";
+            AC_TerminalPassword_r = "";
+            BI_Cancel_1_o = "N";
+        }
         
         //1-char, fixed-length required field:  Y or N.
         public string NoBlock_1

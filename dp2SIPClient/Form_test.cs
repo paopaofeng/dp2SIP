@@ -1015,46 +1015,7 @@ namespace dp2SIPClient
 
         private void button_createRightsTable_Click(object sender, EventArgs e)
         {
-            string strError = "";
-            int nRet = 0;
-            LibraryChannel channel = this.GetChannel();
-            EnableControls(false);
-            try
-            {
-                // 获取流通权限
-                string strRightsTableXml = "";
-                nRet = GetRightsTableInfo(channel, out strRightsTableXml, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-                strRightsTableXml = "<rightsTable>" + strRightsTableXml + "</rightsTable>";
-                XmlDocument dom = new XmlDocument();
-                try
-                {
-                    dom.LoadXml(strRightsTableXml);
-                }
-                catch (Exception ex)
-                {
-                    strError = "strRightsTableXml装入XMLDOM时发生错误：" + ex.Message;
-                    goto ERROR1;
-                }
-
-                // 先删除原来测试自动增加权限
-                nRet = this.RemoveTestRightsTable(channel, dom, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-
-                //增加测试用权限
-                nRet = this.AddTestRightsTable(channel, dom, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-            }
-            finally
-            {
-                EnableControls(true);
-                this.ReturnChannel(channel);
-            }
-        ERROR1:
-            MessageBox.Show(this, strError);
+            
         }
 
         private void btnCheckinCheckout_Click(object sender, EventArgs e)
@@ -1062,7 +1023,6 @@ namespace dp2SIPClient
             string error="";
             int nRet=0;
 
-            string info = "";
 
             REDO:
 
@@ -1070,7 +1030,7 @@ namespace dp2SIPClient
             {
                 string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
 
-                for (int j = 1; j <= 100; j++)
+                for (int j = 1; j <= 50; j++)
                 {
                     Application.DoEvents();
 
@@ -1123,6 +1083,425 @@ namespace dp2SIPClient
             this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + text;
 
             //this.txtInfo.Text = text;
+        }
+
+        // 清空消息
+        public void ClearInfo()
+        {
+            this.txtInfo.Text = "";
+        }
+
+        private void 创建流通权限ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string strError = "";
+            int nRet = 0;
+            LibraryChannel channel = this.GetChannel();
+            EnableControls(false);
+            try
+            {
+                // 获取流通权限
+                string strRightsTableXml = "";
+                nRet = GetRightsTableInfo(channel, out strRightsTableXml, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+                strRightsTableXml = "<rightsTable>" + strRightsTableXml + "</rightsTable>";
+                XmlDocument dom = new XmlDocument();
+                try
+                {
+                    dom.LoadXml(strRightsTableXml);
+                }
+                catch (Exception ex)
+                {
+                    strError = "strRightsTableXml装入XMLDOM时发生错误：" + ex.Message;
+                    goto ERROR1;
+                }
+
+                // 先删除原来测试自动增加权限
+                nRet = this.RemoveTestRightsTable(channel, dom, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                //增加测试用权限
+                nRet = this.AddTestRightsTable(channel, dom, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+            }
+            finally
+            {
+                EnableControls(true);
+                this.ReturnChannel(channel);
+            }
+        ERROR1:
+            MessageBox.Show(this, strError);
+        }
+
+        //登录
+        private void button_login_Click(object sender, EventArgs e)
+        {
+            string error = "";
+            int nRet = SCHelper.Instance.Login("supervisor", "1", out error);
+            if (nRet == -1)
+            {
+                MessageBox.Show(this, "登录出错：" + error);
+                return;
+            }
+            if (nRet==0)
+            {
+                MessageBox.Show(this, "登录失败：" + error);
+                return;
+            }
+            MessageBox.Show(this, "登录成功");
+        }
+
+        //SC status
+        private void button_SCStatus_Click(object sender, EventArgs e)
+        {
+            string error = "";
+            ACSStatus_98 response98 = null;
+            string responseText = "";
+            int nRet = SCHelper.Instance.SCStatus(out response98,
+                out responseText, 
+                out error);
+            if (nRet == -1)
+            {
+                MessageBox.Show(this, "出错：" + error);
+                return;
+            }
+            if (nRet == 0)
+            {
+                MessageBox.Show(this, "ACS不在线");
+                return;
+            }
+            MessageBox.Show(this, "ACS在线状态");
+        }
+
+        public void CustomerCheckoutAndCheckin(int patrontNum, 
+            int itemNum,
+            int checkoutNum, 
+            int checkinNum)
+        {
+            //借还
+            if (checkoutNum > 0 && checkinNum > 0)
+            {
+
+            }
+            else if (checkoutNum > 0 && checkinNum==0)
+            {
+ 
+            }
+            else if (checkoutNum == 0 && checkinNum > 0)
+            {
+ 
+            }
+
+        }
+
+        //借书，或者借还书
+        public void CheckoutAndCheckin(int patrontNum,
+            int itemNum,
+            int checkoutNum,
+            int checkinNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+        REDO:
+            // 循环读者
+            for (int i = 0; i < patrontNum; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+
+                // 每人 itemNum 册
+                for (int j = (i + 1) * itemNum - (itemNum-1); j <= (i + 1) * itemNum; j++)
+                {
+                    Application.DoEvents();
+                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                    //执行借书
+                    for (int a = 0; a < checkoutNum; a++)
+                    {
+                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
+                        if (nRet == -2) //尚未登录的情况
+                        {
+                            nRet = SCHelper.Instance.Login("supervisor", "1", out error);
+                            if (nRet == 1) //登录成功，重新执行
+                                goto REDO;
+
+                            MessageBox.Show(this, "登录失败：" + error);
+                            return;
+                        }
+                        this.Print(patronBarcode + "借" + itemBarcode + "...");
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("借出失败:" + error);
+                            continue;
+                        }
+                        this.Print("借书成功");
+                    }
+
+                    //执行还书
+                    for (int a = 0; a < checkinNum; a++)
+                    {
+                        nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
+                        this.Print("还" + itemBarcode + "...");
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("还书失败:" + error);
+                            continue;
+                        }
+                        this.Print("还书成功");
+                    }
+
+                }
+            }
+
+            return;
+        }
+
+        public void Checkin(int itemNum, int checkinNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+            for (int j = 1; j <= itemNum; j++)
+            {
+                Application.DoEvents();
+                string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                //执行还书
+                for (int a = 0; a < checkinNum; a++)
+                {
+                    nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
+                    if (nRet == -2) //尚未登录的情况
+                    {
+                        MessageBox.Show(this, "尚未登录");
+                        return;
+                    }
+
+                    this.Print("还" + itemBarcode + "...");
+                    if (nRet == -1)
+                    {
+                        Print("出错:" + error);
+                        continue;
+                    }
+                    if (nRet == 0)
+                    {
+                        Print("还书失败:" + error);
+                        continue;
+                    }
+                    this.Print("还书成功");
+                }
+            }
+
+        }
+
+        //借书 10人*5册*1借
+        private void button_checkout_Click(object sender, EventArgs e)
+        {
+            this.CheckoutAndCheckin(10, 5, 1,0);
+            /*
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+        REDO:
+            // 10人
+            for (int i = 0; i < 10; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+
+                // 每人5册
+                for (int j = (i+1)*5-4; j <= (i+1)*5; j++)
+                {
+                    Application.DoEvents();
+
+                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                    nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
+                    if (nRet == -2) //尚未登录的情况
+                    {
+
+                        nRet = SCHelper.Instance.Login("supervisor", "1", out error);
+                        if (nRet == 1)
+                        {
+                            goto REDO;
+                        }
+
+                        goto ERROR1;
+                    }
+
+                    this.Print(patronBarcode + "借" + itemBarcode + "...");
+
+
+                    if (nRet == -1)
+                    {
+                        Print("出错:" + error);
+                        continue;
+                    }
+
+                    if (nRet == 0)
+                    {
+                        Print("借出失败:" + error);
+                        continue;
+                    }
+                    this.Print("借书成功");
+                }
+            }
+
+        return;
+
+        ERROR1:
+            this.Print(error);
+             */
+        }
+
+        //还书 50册*1还
+        private void button_checkin_Click(object sender, EventArgs e)
+        {
+            this.Checkin(50,1);
+        }
+
+        // 借还 10人*2册*1借*1还
+        private void button_checkoutin_Click(object sender, EventArgs e)
+        {
+            this.CheckoutAndCheckin(10, 2, 1, 1);
+
+        }
+
+        // 重复还 10册*2次
+        private void button_checkin_dup_Click(object sender, EventArgs e)
+        {
+            this.Checkin(10, 3);
+        }
+
+        // 重复借 10人*2册*3借
+        private void button_checkout_dup_Click(object sender, EventArgs e)
+        {
+            this.CheckoutAndCheckin(10, 2, 3, 0);
+        }
+
+        // 自定义借还
+        private void button_checkoutin_customer_Click(object sender, EventArgs e)
+        {
+            int patrontNum=0;
+            if (this.textBox_checkinout_patronNum.Text != "")
+            {
+                try
+                {
+                    patrontNum = Convert.ToInt32(this.textBox_checkinout_patronNum.Text);
+                }
+                catch
+                {
+                    MessageBox.Show(this, "读者人数必须是数字");
+                    return;
+                }
+            }
+            int itemNum=0;
+            if (this.textBox_checkinout_itemNum.Text != "")
+            {
+                try
+                {
+                    itemNum = Convert.ToInt32(this.textBox_checkinout_itemNum.Text);
+                }
+                catch
+                {
+                    MessageBox.Show(this, "图书册数必须是数字");
+                    return;
+                }
+            }
+            int checkoutNum=0;
+            if (this.textBox_checkinout_outNum.Text != "")
+            {
+                try
+                {
+                    itemNum = Convert.ToInt32(this.textBox_checkinout_outNum.Text);
+                }
+                catch
+                {
+                    MessageBox.Show(this, "借书次数必须是数字");
+                    return;
+                }
+            }
+            int checkinNum = 0;
+            if (this.textBox_checkinout_inNum.Text != "")
+            {
+                try
+                {
+                    itemNum = Convert.ToInt32(this.textBox_checkinout_inNum.Text);
+                }
+                catch
+                {
+                    MessageBox.Show(this, "还书次数必须是数字");
+                    return;
+                }
+            }
+
+            // 只还书
+            if (checkoutNum == 0 && checkinNum > 0)
+            {
+                if (itemNum == 0)
+                {
+                    MessageBox.Show(this, "请输入还书的册数");
+                    return;
+                }
+                this.Checkin(itemNum, checkinNum);
+                return;
+            }
+
+            //借书
+            if (checkoutNum > 0)
+            {
+                if (patrontNum == 0)
+                {
+                    MessageBox.Show(this, "请输入读者数量");
+                    return;
+                }
+                if (itemNum == 0)
+                {
+                    MessageBox.Show(this, "请输入图书册数量");
+                    return;
+                }
+                this.CheckoutAndCheckin(patrontNum,
+                    itemNum,
+                    checkoutNum,
+                    checkinNum);
+            }
+        }
+
+        // 续借
+        private void button_renew_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // 获取读者信息 
+        private void button_patronInfo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //获取册信息
+        private void button_itemInfo_Click(object sender, EventArgs e)
+        {
+
         }
 
     }
