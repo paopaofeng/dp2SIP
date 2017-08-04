@@ -1311,6 +1311,8 @@ namespace dp2SIPClient
 
         }
 
+
+
         //借书 10人*5册*1借
         private void button_checkout_Click(object sender, EventArgs e)
         {
@@ -1432,7 +1434,7 @@ namespace dp2SIPClient
             {
                 try
                 {
-                    itemNum = Convert.ToInt32(this.textBox_checkinout_outNum.Text);
+                    checkoutNum = Convert.ToInt32(this.textBox_checkinout_outNum.Text);
                 }
                 catch
                 {
@@ -1445,7 +1447,7 @@ namespace dp2SIPClient
             {
                 try
                 {
-                    itemNum = Convert.ToInt32(this.textBox_checkinout_inNum.Text);
+                    checkinNum = Convert.ToInt32(this.textBox_checkinout_inNum.Text);
                 }
                 catch
                 {
@@ -1483,13 +1485,92 @@ namespace dp2SIPClient
                     itemNum,
                     checkoutNum,
                     checkinNum);
+                return;
             }
+
+            MessageBox.Show(this, "请输入借书次数，还书次数");
         }
 
         // 续借
         private void button_renew_Click(object sender, EventArgs e)
         {
 
+        }
+
+        //借书，或者借还书
+        public void CheckoutAndRenew(int patrontNum,
+            int itemNum,
+            int checkoutNum,
+            int renewNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+        REDO:
+            // 循环读者
+            for (int i = 0; i < patrontNum; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+
+                // 每人 itemNum 册
+                for (int j = (i + 1) * itemNum - (itemNum - 1); j <= (i + 1) * itemNum; j++)
+                {
+                    Application.DoEvents();
+                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                    //执行借书
+                    for (int a = 0; a < checkoutNum; a++)
+                    {
+                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
+                        if (nRet == -2) //尚未登录的情况
+                        {
+                            nRet = SCHelper.Instance.Login("supervisor", "1", out error);
+                            if (nRet == 1) //登录成功，重新执行
+                                goto REDO;
+
+                            MessageBox.Show(this, "登录失败：" + error);
+                            return;
+                        }
+                        this.Print(patronBarcode + "借" + itemBarcode + "...");
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("借出失败:" + error);
+                            continue;
+                        }
+                        this.Print("借书成功");
+                    }
+
+                    //执行续借
+                    for (int a = 0; a < renewNum; a++)
+                    {
+                        //nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
+                        this.Print(patronBarcode + "续借" + itemBarcode + "...");
+
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("续借失败:" + error);
+                            continue;
+                        }
+                        this.Print("续借成功");
+                    }
+
+                }
+            }
+
+            return;
         }
 
         // 获取读者信息 

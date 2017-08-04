@@ -422,20 +422,20 @@
             this.button_renew.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button_renew.Location = new System.Drawing.Point(15, 406);
             this.button_renew.Name = "button_renew";
-            this.button_renew.Size = new System.Drawing.Size(104, 47);
+            this.button_renew.Size = new System.Drawing.Size(152, 47);
             this.button_renew.TabIndex = 25;
-            this.button_renew.Text = "续借";
+            this.button_renew.Text = "续借 29/30";
             this.button_renew.UseVisualStyleBackColor = true;
             this.button_renew.Click += new System.EventHandler(this.button_renew_Click);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(110, 418);
+            this.label10.Location = new System.Drawing.Point(163, 418);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(202, 24);
+            this.label10.Size = new System.Drawing.Size(274, 24);
             this.label10.TabIndex = 26;
-            this.label10.Text = "（10人*2册*3借）";
+            this.label10.Text = "（10人*2册*1借*2续借）";
             // 
             // textBox_17_patronNum
             // 
