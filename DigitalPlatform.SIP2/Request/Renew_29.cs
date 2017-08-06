@@ -44,7 +44,13 @@ namespace DigitalPlatform.SIP2.Request
 
         }
 
-
+        public override void SetDefaulValue()
+        {
+            ThirdPartyAllowed_1 = "N"; //默认设为N,不允许第三方续借
+            NoBlock_1 = "N";
+            NbDueDate_18 = "".PadLeft(18, ' '); //默认为18个空格
+            BO_FeeAcknowledged_1_o = "N";
+        }
 
         //1-char, fixed-length required field:  Y or N.
         public string ThirdPartyAllowed_1

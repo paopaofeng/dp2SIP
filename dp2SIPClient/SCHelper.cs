@@ -42,6 +42,7 @@ namespace dp2SIPClient
         }
         #endregion
 
+        #region 连接服务器
 
         public string SIPServerUrl { get; set; }
         public int SIPServerPort { get; set; }
@@ -87,7 +88,140 @@ namespace dp2SIPClient
             }
         }
 
-        // 发送数据
+        #endregion
+
+        #region 发送，接收消息
+
+        // 发送消息
+        public int SendMessage(string sendMsg, out string error)
+        {
+            error = "";
+
+            try
+            {
+
+                if (this._networkStream.DataAvailable == true)
+                {
+                    error = "异常：发送前发现流中有未读的数据!";
+                    return -1;
+                }
+
+                byte[] baPackage = SIPUtility.Encoding_UTF8.GetBytes(sendMsg);
+                this._networkStream.Write(baPackage, 0, baPackage.Length);
+                this._networkStream.Flush();//刷新当前数据流中的数据
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return -1;
+            }
+
+        }
+
+        public const int COMM_BUFF_LEN = 1024;
+        // 接收消息
+        public int RecvMessage(out string recvMsg,
+            out string strError)
+        {
+            strError = "";
+            recvMsg = "";
+
+            Debug.Assert(this._client != null, "client为空");
+
+            int offset = 0; //偏移量
+            int nRet = 0;
+
+            int nPackageLength = COMM_BUFF_LEN; //1024
+            byte[] baPackage = new byte[nPackageLength];
+
+            while (offset < nPackageLength)
+            {
+                if (this._client == null)
+                {
+                    strError = "通讯中断";
+                    goto ERROR1;
+                }
+
+                try
+                {
+                    nRet = this._networkStream.Read(baPackage,
+                        offset,
+                        baPackage.Length - offset);
+                }
+                catch (SocketException ex)
+                {
+                    // ??这个什么错误码
+                    if (ex.ErrorCode == 10035)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        continue;
+                    }
+
+                    strError = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+                catch (Exception ex)
+                {
+                    strError = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+
+                if (nRet == 0) //返回值为0
+                {
+                    strError = "Closed by remote peer";
+                    goto ERROR1;
+                }
+
+                // 得到包的长度
+                if (nRet >= 1 || offset >= 1)
+                {
+                    //没有找到结束符，继续读
+                    int nIndex = Array.IndexOf(baPackage, (byte)SIPConst.Terminator);
+                    if (nIndex != -1)
+                    {
+                        nPackageLength = nIndex;
+                        break;
+                    }
+
+                    //流中没有数据了
+                    if (this._networkStream.DataAvailable == false) 
+                    {
+                        nPackageLength = offset + nRet;
+                        break;
+                    }
+                }
+
+                offset += nRet;
+                if (offset >= baPackage.Length)
+                {
+                    // 扩大缓冲区
+                    byte[] temp = new byte[baPackage.Length + COMM_BUFF_LEN];//1024
+                    Array.Copy(baPackage, 0, temp, 0, offset);
+                    baPackage = temp;
+                    nPackageLength = baPackage.Length;
+                }
+            }
+
+            // 最后规整缓冲区尺寸，如果必要的话
+            if (baPackage.Length > nPackageLength)
+            {
+                byte[] temp = new byte[nPackageLength];
+                Array.Copy(baPackage, 0, temp, 0, nPackageLength);
+                baPackage = temp;
+            }
+
+            recvMsg = SIPUtility.Encoding_UTF8.GetString(baPackage);
+            return 0;
+
+        ERROR1:
+            this.Close();
+            baPackage = null;
+            return -1;
+        }
+
+        // 发送消息，接收消息
         public int SendAndRecvMessage(string requestText, 
             out BaseMessage response, 
             out string responseText, 
@@ -135,134 +269,7 @@ namespace dp2SIPClient
             return 0;
         }
 
-        // 发送数据
-        public int SendMessage(string sendMsg,  out string error)
-        {
-            error = "";
-
-            try
-            {
-
-                if (this._networkStream.DataAvailable == true)
-                {
-                    error = "异常：发送前发现流中有未读的数据!";
-                    return -1;
-                }
-
-                byte[] baPackage = SIPUtility.Encoding_UTF8.GetBytes(sendMsg);
-                this._networkStream.Write(baPackage, 0, baPackage.Length);
-                this._networkStream.Flush();//刷新当前数据流中的数据
-
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                error =  ex.Message;
-                return -1;
-            }
-
-        }
-
-
-        // 接收数据
-        public int RecvMessage(out string recvMsg,
-            out string strError)
-        {
-            strError = "";
-            recvMsg = "";
-
-            Debug.Assert(this._client != null, "client为空");
-
-            int offset = 0; //偏移量
-            int wRet = 0;
-
-            byte[] baPackage = new byte[1024];
-            int nOneLength = 1024; //COMM_BUFF_LEN;
-
-            while (offset < nOneLength)
-            {
-                if (this._client == null)
-                {
-                    strError = "通讯中断";
-                    goto ERROR1;
-                }
-
-                try
-                {
-                    wRet = this._networkStream.Read(baPackage,
-                        offset,
-                        baPackage.Length - offset);
-                }
-                catch (SocketException ex)
-                {
-                    // ??这个什么错误码
-                    if (ex.ErrorCode == 10035)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        continue;
-                    }
-
-                    strError = "Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-                catch (Exception ex)
-                {
-                    strError = "Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-
-                if (wRet == 0)
-                {
-                    //return 0;
-                    strError = "Closed by remote peer";
-                    goto ERROR1;
-                }
-
-                // 得到包的长度
-                if (wRet >= 1 || offset >= 1)
-                {
-                    //没有找到结束符，继续读
-                    int nRet = Array.IndexOf(baPackage, (byte)SIPConst.Terminator);
-                    if (nRet != -1)
-                    {
-                        nOneLength = nRet;
-                        break;
-                    }
-
-                    if (this._networkStream.DataAvailable == false) //流中没有数据了
-                    {
-                        nOneLength = offset + wRet;
-                        break;
-                    }
-                }
-
-                offset += wRet;
-                if (offset >= baPackage.Length)
-                {
-                    // 扩大缓冲区
-                    byte[] temp = new byte[baPackage.Length + 1024];
-                    Array.Copy(baPackage, 0, temp, 0, offset);
-                    baPackage = temp;
-                    nOneLength = baPackage.Length;
-                }
-            }
-
-            // 最后规整缓冲区尺寸，如果必要的话
-            if (baPackage.Length > nOneLength)
-            {
-                byte[] temp = new byte[nOneLength];
-                Array.Copy(baPackage, 0, temp, 0, nOneLength);
-                baPackage = temp;
-            }
-
-            recvMsg = SIPUtility.Encoding_UTF8.GetString(baPackage);
-            return 0;
-
-        ERROR1:
-            this.Close();
-            baPackage = null;
-            return -1;
-        }
+        #endregion
 
 
         /// <summary>
@@ -369,9 +376,11 @@ namespace dp2SIPClient
         /// 1 借书成功
         /// 0 借书失败
         /// -1 出错
-        /// -2 尚未登录,需要外部自动测试中断
+        /// -2 尚未登录,需要自动测试中断
         /// </returns>
-        public int Checkout(string patronBarcode, string itemBarcode, out string error)
+        public int Checkout(string patronBarcode,
+            string itemBarcode,
+            out string error)
         {
             error = "";
             int nRet = 0;
@@ -423,8 +432,14 @@ namespace dp2SIPClient
         /// </summary>
         /// <param name="itemBarcode"></param>
         /// <param name="error"></param>
-        /// <returns></returns>
-        public int Checkin(string itemBarcode, out string error)
+        /// <returns>
+        /// 1 还书成功
+        /// 0 还书失败
+        /// -1 出错
+        /// -2 尚未登录,需要自动测试中断
+        /// </returns>
+        public int Checkin(string itemBarcode,
+            out string error)
         {
             error = "";
             int nRet = 0;
@@ -469,6 +484,174 @@ namespace dp2SIPClient
 
             return 1;
         }
-                    
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="patronBarcode"></param>
+        /// <param name="itemBarcode"></param>
+        /// <param name="error"></param>
+        /// <returns>
+        /// 1 续借成功
+        /// 0 续借失败
+        /// -1 出错
+        /// -2 尚未登录,需要自动测试中断
+        /// </returns>
+        public int Renew(string patronBarcode,
+            string itemBarcode,
+            out string error)
+        {
+            error = "";
+            int nRet = 0;
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
+            Renew_29 request = new Renew_29()
+            {
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                AO_InstitutionId_r = SIPConst.AO_Value,
+                AA_PatronIdentifier_r = patronBarcode,
+                AB_ItemIdentifier_o= itemBarcode,
+            };
+            request.SetDefaulValue();//设置其它默认值
+
+            // 发送和接收消息
+            string requestText = request.ToText();
+            string responseText = "";
+            BaseMessage response = null;
+            nRet = SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+                return -1;
+
+            RenewResponse_30 response30 = response as RenewResponse_30;
+            if (response30 == null)
+            {
+                error = "返回的不是30消息";
+                return -1;
+            }
+
+            if (response30.Ok_1 == "0")
+            {
+                return 0;
+            }
+
+            return 1;
+        }
+
+        /// <summary>
+        /// 获取读者信息
+        /// </summary>
+        /// <param name="patronBarcode"></param>
+        /// <param name="error"></param>
+        /// <returns>
+        /// -1 出错
+        /// 0 成功
+        /// </returns>
+        public int GetPatronInformation(string patronBarcode,
+            out PatronInformationResponse_64 response64,
+            out string responseText,
+            out string error)
+        {
+            error = "";
+            int nRet = 0;
+            responseText = "";
+            response64 = null;
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
+            PatronInformation_63 request = new PatronInformation_63()
+            {
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                AO_InstitutionId_r = SIPConst.AO_Value,
+                AA_PatronIdentifier_r = patronBarcode,
+            };
+            request.SetDefaulValue();//设置其它默认值
+
+            // 发送和接收消息
+            string requestText = request.ToText();
+            BaseMessage response = null;
+            nRet = SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+                return -1;
+
+            response64 = response as PatronInformationResponse_64;
+            if (response64 == null)
+            {
+                error = "返回的不是64消息";
+                return -1;
+            }
+
+            return 0;
+        }
+
+
+        /// <summary>
+        /// 获取册信息
+        /// </summary>
+        /// <param name="itemBarcode"></param>
+        /// <param name="error"></param>
+        /// <returns>
+        /// -1 出错
+        /// 0 成功
+        /// </returns>
+        public int GetItemInformation(string itemBarcode,
+            out ItemInformationResponse_18 response18,
+            out string responseText,
+            out string error)
+        {
+            error = "";
+            int nRet = 0;
+            responseText = "";
+            response18 = null;
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
+            ItemInformation_17 request = new ItemInformation_17()
+            {
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                AO_InstitutionId_r = SIPConst.AO_Value,
+                AB_ItemIdentifier_r = itemBarcode,
+            };
+            request.SetDefaulValue();//设置其它默认值
+
+            // 发送和接收消息
+            string requestText = request.ToText();
+             
+            BaseMessage response = null;
+            nRet = SendAndRecvMessage(requestText,
+                out response,
+                out responseText,
+                out error);
+            if (nRet == -1)
+                return -1;
+
+            response18 = response as ItemInformationResponse_18;
+            if (response18 == null)
+            {
+                error = "返回的不是18消息";
+                return -1;
+            }
+
+            return 0;
+        }
     }
 }

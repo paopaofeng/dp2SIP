@@ -36,7 +36,7 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber,false));
         }
 
-        public void SetDefaulValue()
+        public override void SetDefaulValue()
         {
             UIDAlgorithm_1 = " "; //默认设为1个空格
             PWDAlgorithm_1 = " ";//默认设为1个空格

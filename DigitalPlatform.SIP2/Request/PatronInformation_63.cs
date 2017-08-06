@@ -36,6 +36,12 @@ namespace DigitalPlatform.SIP2.Request
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
+
+        public override void SetDefaulValue()
+        {
+            Language_3 = "019"; //Chinese 019
+            Summary_10 = "  Y       ";
+        }
         
 
         //3-char, fixed-length required field

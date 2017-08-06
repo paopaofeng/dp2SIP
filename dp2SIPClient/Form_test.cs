@@ -968,7 +968,7 @@ namespace dp2SIPClient
                                                 <param name='工作日历名' value='"+C_CalenderName+@"' />
                                                 <type book='" + C_BookType + @"'>
                                                   <param name='可借册数' value='10' />
-                                                  <param name='借期' value='31day,15day' />
+                                                  <param name='借期' value='31day,60day' />
                                                   <param name='超期违约金因子' value='' />
                                                   <param name='丢失违约金因子' value='1.5' />
                                                 </type>";
@@ -1494,7 +1494,7 @@ namespace dp2SIPClient
         // 续借
         private void button_renew_Click(object sender, EventArgs e)
         {
-
+            this.CheckoutAndRenew(10, 2, 1, 2);
         }
 
         //借书，或者借还书
@@ -1551,7 +1551,7 @@ namespace dp2SIPClient
                     //执行续借
                     for (int a = 0; a < renewNum; a++)
                     {
-                        //nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
+                        nRet = SCHelper.Instance.Renew(patronBarcode, itemBarcode, out error);
                         this.Print(patronBarcode + "续借" + itemBarcode + "...");
 
                         if (nRet == -1)
@@ -1576,14 +1576,80 @@ namespace dp2SIPClient
         // 获取读者信息 
         private void button_patronInfo_Click(object sender, EventArgs e)
         {
+            this.GetPatronInfo(10);
+        }
 
+        public void GetPatronInfo(int patrontNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+            // 循环读者
+            for (int i = 0; i < patrontNum; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+                PatronInformationResponse_64 response64 = null;
+                string responseText = "";
+                nRet = SCHelper.Instance.GetPatronInformation(patronBarcode,
+                    out response64,
+                    out responseText,
+                    out error);
+                if (nRet == -2) //尚未登录的情况
+                {
+                    MessageBox.Show(this, "登录失败：" + error);
+                    return;
+                }
+                this.Print("获取读者" + patronBarcode + "...");
+                if (nRet == -1)
+                {
+                    Print("出错:" + error);
+                    continue;
+                }
+                this.Print("成功："+responseText);
+            }
         }
 
         //获取册信息
         private void button_itemInfo_Click(object sender, EventArgs e)
         {
-
+            this.GetItemInfo(10);
         }
 
+        public void GetItemInfo(int itemNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+            // 循环读者
+            for (int i = 1; i <= itemNum; i++)
+            {
+                Application.DoEvents();
+
+                string itemBarcode = "_B" + i.ToString().PadLeft(6, '0');
+
+                ItemInformationResponse_18 response18 = null;
+                string responseText = "";
+                nRet = SCHelper.Instance.GetItemInformation(itemBarcode,
+                    out response18,
+                    out responseText,
+                    out error);
+                if (nRet == -2) //尚未登录的情况
+                {
+                    MessageBox.Show(this, "登录失败：" + error);
+                    return;
+                }
+                this.Print("获取图书" + itemBarcode + "...");
+                if (nRet == -1)
+                {
+                    Print("出错:" + error);
+                    continue;
+                }
+                this.Print("成功：" + responseText);
+            }
+        }
     }
 }
