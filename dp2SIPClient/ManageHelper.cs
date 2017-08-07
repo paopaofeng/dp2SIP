@@ -64,7 +64,7 @@ namespace DigitalPlatform.CirculationClient
         }
 
         // 创建读者库的定义结点
-        static XmlNode CreateReaderDatabaseNode(XmlDocument dom,
+        public static XmlNode CreateReaderDatabaseNode(XmlDocument dom,
             string strDatabaseName,
             string strLibraryCode,
             bool bInCirculation)

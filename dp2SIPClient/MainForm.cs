@@ -462,7 +462,12 @@ namespace dp2SIPClient
 
         private void 自动测试ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form_test dlg = new Form_test();
+
+        }
+
+        private void 自动测试ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Form_test dlg = new Form_test(this.toolStripStatusLabel_info.Text);
             dlg.Show();
         }
 

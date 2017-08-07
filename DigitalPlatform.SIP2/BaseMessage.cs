@@ -228,7 +228,7 @@ namespace DigitalPlatform.SIP2
             {
                 if (field.IsRequired==true &&  field.Value == null)
                 {
-                    error = field.ID + "是必备字段，必须有值";
+                    error = field.ID + "是必备字段，消息中需包含该字段";
                     return -1;
                 }
             }

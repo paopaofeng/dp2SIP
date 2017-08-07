@@ -10,7 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace dp2SIPClient
+namespace DigitalPlatform.SIP2
 {
     public class SCHelper
     {
@@ -97,6 +97,12 @@ namespace dp2SIPClient
         {
             error = "";
 
+            if (this._client == null || this._networkStream == null)
+            {
+                error = "尚未连接SIP2服务器";
+                return -1;
+            }
+
             try
             {
 
@@ -123,12 +129,16 @@ namespace dp2SIPClient
         public const int COMM_BUFF_LEN = 1024;
         // 接收消息
         public int RecvMessage(out string recvMsg,
-            out string strError)
+            out string error)
         {
-            strError = "";
+            error = "";
             recvMsg = "";
 
-            Debug.Assert(this._client != null, "client为空");
+            if (this._client == null || this._networkStream == null)
+            {
+                error = "尚未连接SIP2服务器";
+                return -1;
+            }
 
             int offset = 0; //偏移量
             int nRet = 0;
@@ -140,7 +150,7 @@ namespace dp2SIPClient
             {
                 if (this._client == null)
                 {
-                    strError = "通讯中断";
+                    error = "通讯中断";
                     goto ERROR1;
                 }
 
@@ -159,18 +169,18 @@ namespace dp2SIPClient
                         continue;
                     }
 
-                    strError = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    error = "接收数据异常: " +  ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
                 }
                 catch (Exception ex)
                 {
-                    strError = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
                 }
 
                 if (nRet == 0) //返回值为0
                 {
-                    strError = "Closed by remote peer";
+                    error = "Closed by remote peer";
                     goto ERROR1;
                 }
 
@@ -380,16 +390,15 @@ namespace dp2SIPClient
         /// </returns>
         public int Checkout(string patronBarcode,
             string itemBarcode,
+            out CheckoutResponse_12 response12,
+            out string responseText,
             out string error)
         {
             error = "";
             int nRet = 0;
+            responseText = "";
+            response12 = null;
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
 
             Checkout_11 request = new Checkout_11()
             {
@@ -402,7 +411,6 @@ namespace dp2SIPClient
 
             // 发送和接收消息
             string requestText = request.ToText();
-            string responseText = "";
             BaseMessage response = null;
             nRet = SendAndRecvMessage(requestText,
                 out response,
@@ -411,11 +419,17 @@ namespace dp2SIPClient
             if (nRet == -1)
                 return -1;
 
-            CheckoutResponse_12 response12 = response as CheckoutResponse_12;
+             response12 = response as CheckoutResponse_12;
             if (response12 == null)
             {
                 error="返回的不是12消息";
                 return -1;
+            }
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
             }
 
             if (response12.Ok_1 == "0")
@@ -424,6 +438,8 @@ namespace dp2SIPClient
             }
             
             return 1;
+
+
         }
 
 
@@ -439,16 +455,16 @@ namespace dp2SIPClient
         /// -2 尚未登录,需要自动测试中断
         /// </returns>
         public int Checkin(string itemBarcode,
+            out CheckinResponse_10 response10,
+            out string responseText,
             out string error)
         {
             error = "";
             int nRet = 0;
+            responseText = "";
+            response10 = null;
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+
 
             Checkin_09 request = new Checkin_09()
             {
@@ -461,7 +477,6 @@ namespace dp2SIPClient
 
             // 发送和接收消息
             string requestText = request.ToText();
-            string responseText = "";
             BaseMessage response = null;
             nRet = SendAndRecvMessage(requestText,
                 out response,
@@ -470,11 +485,17 @@ namespace dp2SIPClient
             if (nRet == -1)
                 return -1;
 
-            CheckinResponse_10 response10 = response as CheckinResponse_10;
+            response10 = response as CheckinResponse_10;
             if (response10 == null)
             {
                 error = "返回的不是10消息";
                 return -1;
+            }
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
             }
 
             if (response10.Ok_1 == "0")
@@ -500,16 +521,14 @@ namespace dp2SIPClient
         /// </returns>
         public int Renew(string patronBarcode,
             string itemBarcode,
+            out RenewResponse_30 response30,
+            out string responseText,
             out string error)
         {
             error = "";
             int nRet = 0;
-
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            responseText = "";
+            response30 = null;
 
             Renew_29 request = new Renew_29()
             {
@@ -522,7 +541,6 @@ namespace dp2SIPClient
 
             // 发送和接收消息
             string requestText = request.ToText();
-            string responseText = "";
             BaseMessage response = null;
             nRet = SendAndRecvMessage(requestText,
                 out response,
@@ -531,11 +549,17 @@ namespace dp2SIPClient
             if (nRet == -1)
                 return -1;
 
-            RenewResponse_30 response30 = response as RenewResponse_30;
+            response30 = response as RenewResponse_30;
             if (response30 == null)
             {
                 error = "返回的不是30消息";
                 return -1;
+            }
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
             }
 
             if (response30.Ok_1 == "0")
@@ -565,11 +589,7 @@ namespace dp2SIPClient
             responseText = "";
             response64 = null;
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+
 
             PatronInformation_63 request = new PatronInformation_63()
             {
@@ -596,6 +616,12 @@ namespace dp2SIPClient
                 return -1;
             }
 
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
             return 0;
         }
 
@@ -619,11 +645,6 @@ namespace dp2SIPClient
             responseText = "";
             response18 = null;
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
 
             ItemInformation_17 request = new ItemInformation_17()
             {
@@ -650,6 +671,13 @@ namespace dp2SIPClient
                 error = "返回的不是18消息";
                 return -1;
             }
+
+            if (this.IsLogin == false)
+            {
+                error = "尚未登录ASC系统";
+                return -2;
+            }
+
 
             return 0;
         }

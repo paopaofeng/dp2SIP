@@ -33,8 +33,8 @@ namespace DigitalPlatform.SIP2.Response
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AA_PatronIdentifier, true));
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AB_ItemIdentifier, true));
 
-            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, true));
-            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AH_DueDate, true));
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AJ_TitleIdentifier, false)); //true
+            this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AH_DueDate, false)); //true
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_BT_FeeType, false ));
 
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_CI_SecurityInhibit, false ));

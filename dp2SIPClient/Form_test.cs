@@ -22,13 +22,50 @@ namespace dp2SIPClient
     public partial class Form_test : Form
     {
 
-        public Form_test()
+        public Form_test(string info)
         {
             InitializeComponent();
+
+            // Stop初始化
+            _stopManager.Initial((object)this.button_stpp,
+                (object)this.toolStripStatusLabel1,
+                (object)this.toolStripProgressBar1);
+            _stop = new DigitalPlatform.Stop();
+            _stop.Register(this._stopManager, true);	// 和容器关联
+
+            this.Progress.SetMessage(info);
         }
 
-        private LibraryChannelPool _channelPool = new LibraryChannelPool();
+        #region 进度条与停止 按钮
 
+        /// <summary>
+        /// Stop 管理器
+        /// </summary>
+        public DigitalPlatform.StopManager _stopManager = new DigitalPlatform.StopManager();
+        internal DigitalPlatform.Stop _stop = null;
+        // 进度条和停止按钮
+        public Stop Progress
+        {
+            get
+            {
+                return this._stop;
+            }
+        }
+
+        public void DoStop(object sender, StopEventArgs e)
+        {
+            foreach (LibraryChannel channel in _channelList)
+            {
+                if (channel != null)
+                    channel.Abort();
+            }
+        }
+
+        #endregion
+
+        #region dp2通道
+
+        private LibraryChannelPool _channelPool = new LibraryChannelPool();
         List<LibraryChannel> _channelList = new List<LibraryChannel>();
 
         // parameters:
@@ -49,7 +86,7 @@ namespace dp2SIPClient
             Application.DoEvents();
         }
 
-        public void ReturnChannel(LibraryChannel channel)
+        private void ReturnChannel(LibraryChannel channel)
         {
             channel.Idle -= channel_Idle;
 
@@ -57,7 +94,16 @@ namespace dp2SIPClient
             _channelList.Remove(channel);
         }
 
-        public string dp2ServerUrl
+        void _channelPool_BeforeLogin(object sender, BeforeLoginEventArgs e)
+        {
+            e.LibraryServerUrl = this.dp2ServerUrl;
+            e.UserName = this.dp2Username;
+            e.Parameters = "type=worker,client=dp2SIPClient|0.01";
+            e.Password = this.dp2Password;
+            e.SavePasswordLong = true;
+        }
+
+        private string dp2ServerUrl
         {
             get
             {
@@ -65,7 +111,7 @@ namespace dp2SIPClient
             }
         }
 
-        public string dp2Username
+        private string dp2Username
         {
             get
             {
@@ -73,7 +119,7 @@ namespace dp2SIPClient
             }
         }
 
-        public string dp2Password
+        private string dp2Password
         {
             get
             {
@@ -81,33 +127,9 @@ namespace dp2SIPClient
             }
         }
 
-        private void Form_CreateTestEnv_Load(object sender, EventArgs e)
-        {
-           if (string.IsNullOrEmpty(this.dp2ServerUrl)==true
-               || string.IsNullOrEmpty(this.dp2Username) == true)
-            {
-                MessageBox.Show("尚未配置dp2系统登录信息");
-                this.Close();
-            }
+#endregion
 
-            this._channelPool.BeforeLogin += (sender1, e1) =>
-            {
-                e1.LibraryServerUrl = this.dp2ServerUrl;
-                e1.UserName = this.dp2Username;
-                e1.Parameters = "type=worker,client=dp2SIPClient|0.01";
-                e1.Password = this.dp2Password;
-                e1.SavePasswordLong = true;                
-            };
-
-            // Stop初始化
-            stopManager.Initial(null,
-                (object)this.toolStripStatusLabel1,
-                (object)this.toolStripProgressBar1);
-
-            stop = new DigitalPlatform.Stop();
-            stop.Register(this.stopManager, true);	// 和容器关联
-        }
-
+        #region 界面信息
         /// <summary>
         /// 允许或者禁止界面控件。在长操作前，一般需要禁止界面控件；操作完成后再允许
         /// </summary>
@@ -115,221 +137,272 @@ namespace dp2SIPClient
         public void EnableControls(bool bEnable)
         {
             this.button_createTestEnv.Enabled = bEnable;
+            this.button_deleteTestEnv.Enabled = bEnable;
+            this.button_checkin.Enabled = bEnable;
+            this.button_checkin_dup.Enabled = bEnable;
+            this.button_checkout.Enabled = bEnable;
+            this.button_checkout_dup.Enabled = bEnable;
+            this.button_checkoutin.Enabled = bEnable;
+            this.button_checkoutin_customer.Enabled = bEnable;
+            this.button_itemInfo.Enabled = bEnable;
+            this.button_login.Enabled = bEnable;
+            this.button_patronInfo.Enabled = bEnable;
+            this.button_renew.Enabled = bEnable;
+            this.button_SCStatus.Enabled = bEnable;
+            this.button_stpp.Enabled = bEnable;
+            
         }
-        /// <summary>
-        /// Stop 管理器
-        /// </summary>
-        public DigitalPlatform.StopManager stopManager = new DigitalPlatform.StopManager();
-        internal DigitalPlatform.Stop stop = null;
 
-        /// <summary>
-        /// 进度条和停止按钮
-        /// </summary>
-        public Stop Progress
+
+        private void Print(string text)
         {
-            get
-            {
-                return this.stop;
-            }
+            if (this.txtInfo.Text != "")
+                this.txtInfo.Text += "\r\n";
+            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + text;
+
+            //this.txtInfo.Text = text;
         }
 
-        public void DoStop(object sender, StopEventArgs e)
+        // 清空消息
+        public void ClearInfo()
         {
-            foreach (LibraryChannel channel in _channelList)
-            {
-                if (channel != null)
-                    channel.Abort();
-            }
+            this.txtInfo.Text = "";
         }
 
-        // 获得流通读者权限相关定义
-        int GetRightsTableInfo(LibraryChannel channel, 
-            out string strRightsTableXml,
-            out string strError)
-        {
-            strError = "";
-            strRightsTableXml = "";
-
-
-            stop.OnStop += new StopEventHandler(this.DoStop);
-            stop.Initial("正在获取读者流通权限定义 ...");
-            stop.BeginLoop();
-
-            try
-            {
-                long lRet = channel.GetSystemParameter(
-                    stop,
-                    "circulation",
-                    "rightsTable",
-                    out strRightsTableXml,
-                    out strError);
-                if (lRet == -1)
-                    goto ERROR1;
-
-                return (int)lRet;
-            }
-            finally
-            {
-                stop.EndLoop();
-                stop.OnStop -= new StopEventHandler(this.DoStop);
-                stop.Initial("");
-
-            }
-
-        ERROR1:
-            return -1;
-        }
-
-        // 保存流通读者权限相关定义
-        // parameters:
-        //      strRightsTableXml   流通读者权限定义XML。注意，没有根元素
-        int SetRightsTableDef( LibraryChannel channel,
-            string strRightsTableXml,
-            out string strError)
-        {
-            strError = "";
-
-
-            stop.OnStop += new StopEventHandler(this.DoStop);
-            stop.Initial("正在保存读者流通权限定义 ...");
-            stop.BeginLoop();
-
-            try
-            {
-                long lRet = channel.SetSystemParameter(
-                    stop,
-                    "circulation",
-                    "rightsTable",
-                    strRightsTableXml,
-                    out strError);
-                if (lRet == -1)
-                    goto ERROR1;
-
-                return (int)lRet;
-            }
-            finally
-            {
-                stop.EndLoop();
-                stop.OnStop -= new StopEventHandler(this.DoStop);
-                stop.Initial("");
-
-            }
-
-        ERROR1:
-            return -1;
-        }
-
-        /*
-        void UpdateDom(string strLibraryCode)
-        {
-            // string strFilter = "";
-            XmlNode root = null;
-            if (string.IsNullOrEmpty(strLibraryCode) == false)
-            {
-                // descendant
-                XmlNode temp = this._dom.SelectSingleNode("//descendant-or-self::library[@code='" + strLibraryCode + "']");
-                if (temp == null)
-                {
-                    temp = this._dom.CreateElement("library");
-                    this._dom.DocumentElement.AppendChild(temp);
-                    DomUtil.SetAttr(temp, "code", strLibraryCode);
-                }
-                root = temp;
-            }
-            else
-            {
-                root = this._dom.DocumentElement;
-                // strFilter = "[count(ancestor::library) = 0]";
-            }
-
-            // 删除原来的下级元素
-            XmlNodeList nodes = root.SelectNodes("child::*[not(self::library)]");
-            foreach (XmlNode node in nodes)
-            {
-                node.ParentNode.RemoveChild(node);
-            }
-
-            XmlNode insert_pos = root.SelectSingleNode("library");
-
-            List<string> reader_types = new List<string>();
-
-            foreach (Row row in this._rows)
-            {
-                reader_types.Add(row.ReaderType);
-
-                XmlNode reader = this._dom.CreateElement("type");
-                if (insert_pos != null)
-                    root.InsertBefore(reader, insert_pos);
-                else
-                    root.AppendChild(reader);
-                DomUtil.SetAttr(reader, "reader", row.ReaderType);
-
-                foreach (string strName in LoanParam.reader_d_paramnames)
-                {
-                    string strValue = row.PatronPolicyCell.GetValue(strName);
-                    XmlNode param = this._dom.CreateElement("param");
-                    reader.AppendChild(param);
-                    DomUtil.SetAttr(param, "name", strName);
-                    DomUtil.SetAttr(param, "value", strValue);
-                }
-
-                for (int j = 0; j < this._bookTypes.Count; j++)
-                {
-                    string strBookType = this._bookTypes[j];
-
-
-
-                    XmlNode book = this._dom.CreateElement("type");
-                    reader.AppendChild(book);
-                    DomUtil.SetAttr(book, "book", strBookType);
-
-                    foreach (string strName in LoanParam.two_d_paramnames)
-                    {
-                        string strValue = row.Cells[j].GetValue(strName);
-                        XmlNode param = this._dom.CreateElement("param");
-                        book.AppendChild(param);
-                        DomUtil.SetAttr(param, "name", strName);
-                        DomUtil.SetAttr(param, "value", strValue);
-                    }
-                }
-
-            }
-
-
-            // TODO: 最好插入在兄弟 <library> 元素以前
-            XmlNode readertypes_node = this._dom.CreateElement("readerTypes");
-            if (insert_pos != null)
-                root.InsertBefore(readertypes_node, insert_pos);
-            else
-                root.AppendChild(readertypes_node);
-            foreach (string s in reader_types)
-            {
-                XmlNode node = this._dom.CreateElement("item");
-                readertypes_node.AppendChild(node);
-                node.InnerText = s;
-            }
-
-            XmlNode booktypes_node = this._dom.CreateElement("bookTypes");
-            if (insert_pos != null)
-                root.InsertBefore(booktypes_node, insert_pos);
-            else
-                root.AppendChild(booktypes_node);
-            foreach (string s in this._bookTypes)
-            {
-                XmlNode node = this._dom.CreateElement("item");
-                booktypes_node.AppendChild(node);
-                node.InnerText = s;
-            }
-
-            this._domChanged = true;
-        }
-        */
-
-        public string C_ReaderDbName = "_测试读者";
-        private void button_createTestEnv_Click(object sender, EventArgs e)
+        private void 创建流通权限ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string strError = "";
             int nRet = 0;
+            LibraryChannel channel = this.GetChannel();
+            EnableControls(false);
+            try
+            {
+                // 获取流通权限
+                string strRightsTableXml = "";
+                nRet = GetRightsTableInfo(channel, out strRightsTableXml, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+                strRightsTableXml = "<rightsTable>" + strRightsTableXml + "</rightsTable>";
+                XmlDocument dom = new XmlDocument();
+                try
+                {
+                    dom.LoadXml(strRightsTableXml);
+                }
+                catch (Exception ex)
+                {
+                    strError = "strRightsTableXml装入XMLDOM时发生错误：" + ex.Message;
+                    goto ERROR1;
+                }
+
+                // 先删除原来测试自动增加权限
+                nRet = this.RemoveTestRightsTable(channel, dom, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                //增加测试用权限
+                nRet = this.AddTestRightsTable(channel, dom, out strError);
+                if (nRet == -1)
+                    goto ERROR1;
+            }
+            finally
+            {
+                EnableControls(true);
+                this.ReturnChannel(channel);
+            }
+        ERROR1:
+            MessageBox.Show(this, strError);
+        }
+
+        #endregion
+
+
+        #region 初始化测试环境
+
+        public string C_ReaderDbName = "_测试读者";
+        public string C_BiblioDbName = "_测试用中文图书";
+        public string C_Location = "_测试流通库";
+        public const string C_CalenderName = "_测试日历";
+        public string C_PatronType = "测试-读者类型";
+        public string C_BookType = "测试-图书类型";
+
+        // 删除测试环境
+        private void button_deleteTestEnv_Click(object sender, EventArgs e)
+        {
+            string error = "";
+            int nRet = this.DeleteTestEnv(out error);
+            if (nRet == -1)
+            {
+                MessageBox.Show(this, "初始化测试环境出错：" + error);
+                return;
+            }
+
+            MessageBox.Show(this, "初始化测试环境完成");
+            return;
+        }
+
+        public int DeleteTestEnv(out string error)
+        {
+            error = "";
+            int nRet = 0;
+
+            // 检查登录信息
+            if (string.IsNullOrEmpty(this.dp2ServerUrl) == true
+                || string.IsNullOrEmpty(this.dp2Username) == true)
+            {
+                error = "尚未配置dp2系统登录信息";
+                return -1;
+            }
+            this._channelPool.BeforeLogin -= _channelPool_BeforeLogin;
+            this._channelPool.BeforeLogin += _channelPool_BeforeLogin;
+
+
+            //===
+            LibraryChannel channel = this.GetChannel();
+            TimeSpan old_timeout = channel.Timeout;
+            channel.Timeout = TimeSpan.FromMinutes(10);
+
+            Progress.Style = StopStyle.EnableHalfStop;
+            Progress.OnStop -= new StopEventHandler(this.DoStop);
+            Progress.OnStop += new StopEventHandler(this.DoStop);
+            Progress.Initial("开始删除测试环境 ...");
+            Progress.BeginLoop();
+            EnableControls(false);
+            try
+            {
+                // 删除书目库
+                Progress.SetMessage("正在删除测试用书目库 ...");
+                string strOutputInfo = "";
+                long lRet = channel.ManageDatabase(
+                    _stop,
+                    "delete",
+                    C_BiblioDbName,    // strDatabaseNames,
+                    "",
+                    out strOutputInfo,
+                    out error);
+                if (lRet == -1)
+                {
+                    if (channel.ErrorCode != DigitalPlatform.LibraryClient.localhost.ErrorCode.NotFound)
+                        goto ERROR1;
+                }
+
+
+                // 删除读者库
+                Progress.SetMessage("正在删除测试用读者库 ...");
+                lRet = channel.ManageDatabase(
+                   _stop,
+                   "delete",
+                   C_ReaderDbName,    // strDatabaseNames,
+                   "",
+                   out strOutputInfo,
+                   out error);
+                if (lRet == -1)
+                {
+                    if (channel.ErrorCode != DigitalPlatform.LibraryClient.localhost.ErrorCode.NotFound)
+                        goto ERROR1;
+                }
+
+
+
+                // *** 删除馆藏地
+                Progress.SetMessage("正在删除馆藏地 ...");
+
+                List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem> items = new List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem>();
+                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试阅览室", true, true));
+                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试流通库", true, true));
+
+                // 为系统添加新的馆藏地定义
+                nRet = ManageHelper.AddLocationTypes(
+                    channel,
+                    this.Progress,
+                    "remove",
+                    items,
+                    out error);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                //***删除工作日历
+                string infos = "";
+                CalenderInfo[] infos1 = null;
+                lRet = channel.GetCalendar(
+                    this.Progress,
+                    "get",
+                    C_CalenderName,
+                    0,
+                    -1,
+                    out infos1,
+                    out error);
+                if (lRet == -1)
+                    goto ERROR1;
+                if (lRet > 0)
+                {
+                    Progress.SetMessage("正在删除工作日历 ...");
+                    CalenderInfo info = new CalenderInfo();
+                    info.Name = C_CalenderName;
+                    info.Range = "20170101-20191231";
+                    info.Comment = "";
+                    info.Content = "";
+                    lRet = channel.SetCalendar(
+                       _stop,
+                       "delete",
+                       info,
+                       out error);
+                    if (lRet == -1)
+                        goto ERROR1;
+                }
+
+
+
+                // ***删除权限流通权限
+                Progress.SetMessage("正在删除流通权限 ...");
+
+                // 先删除原来测试自动增加权限
+                nRet = this.RemoveTestRightsTable(channel, null, out error);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                error = "Exception: " + ExceptionUtil.GetExceptionText(ex);
+                goto ERROR1;
+            }
+            finally
+            {
+                Progress.EndLoop();
+                Progress.OnStop -= new StopEventHandler(this.DoStop);
+                Progress.Initial("");
+                Progress.HideProgress();
+                EnableControls(true);
+
+                channel.Timeout = old_timeout;
+                this.ReturnChannel(channel);
+            }
+
+
+        ERROR1:
+            return -1;
+        }
+
+        // 初始化测试环境
+        private void button_createTestEnv_Click(object sender, EventArgs e)
+        {
+            string error = "";
+            int nRet = 0;
+            long lRet = 0;
+            string strOutputInfo = "";
+
+
+            //先删除测试环境
+            nRet = this.DeleteTestEnv(out error);
+            if (nRet == -1)
+            {
+                error = "删除测试环境出错：" + error;
+                goto ERROR1;
+            }
+
+            //===
+
 
             LibraryChannel channel = this.GetChannel();
             TimeSpan old_timeout = channel.Timeout;
@@ -337,33 +410,47 @@ namespace dp2SIPClient
 
             Progress.Style = StopStyle.EnableHalfStop;
             Progress.OnStop += new StopEventHandler(this.DoStop);
-            Progress.Initial("正在进行测试 ...");
+            Progress.Initial("开始初始化测试环境 ...");
             Progress.BeginLoop();
-
-
             EnableControls(false);
             try
             {
-                // 创建测试所需的书目库
+                // *** 定义测试所需的馆藏地
+                Progress.SetMessage("正在定义测试所需的馆藏地 ...");
+                List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem> items = new List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem>();
+                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试阅览室", true, true));
+                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试流通库", true, true));
+                nRet = ManageHelper.AddLocationTypes(
+                    channel,
+                    this.Progress,
+                    "add",
+                    items,
+                    out error);
+                if (nRet == -1)
+                    goto ERROR1;
 
-                string strBiblioDbName = "_测试用中文图书";
-
-                // 如果测试用的书目库以前就存在，要先删除。删除前最好警告一下
-                Progress.SetMessage("正在删除测试用书目库 ...");
-                string strOutputInfo = "";
-                long lRet = channel.ManageDatabase(
-                    stop,
-                    "delete",
-                    strBiblioDbName,    // strDatabaseNames,
-                    "",
-                    out strOutputInfo,
-                    out strError);
+                //***创建工作日历
+                Progress.SetMessage("正在配置工作日历 ...");
+                CalenderInfo info = new CalenderInfo();
+                info.Name = C_CalenderName;
+                info.Range = "20170101-20191231";
+                info.Comment = "";
+                info.Content = "";
+                lRet = channel.SetCalendar(
+                   _stop,
+                   "new",
+                   info,
+                   out error);
                 if (lRet == -1)
-                {
-                    if (channel.ErrorCode != DigitalPlatform.LibraryClient.localhost.ErrorCode.NotFound)
-                        goto ERROR1;
-                }
+                    goto ERROR1;
 
+                // ***创建流通权限
+                Progress.SetMessage("正在配置测试所需的流通权限 ...");
+                nRet = this.AddTestRightsTable(channel, null, out error);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                // ***创建测试所需的书目库
                 Progress.SetMessage("正在创建测试用书目库 ...");
                 // 创建一个书目库
                 // parameters:
@@ -374,340 +461,74 @@ namespace dp2SIPClient
                 nRet = ManageHelper.CreateBiblioDatabase(
                     channel,
                     this.Progress,
-                    strBiblioDbName,
+                    C_BiblioDbName,
                     "book",
                     "unimarc",
-                    out strError);
+                    out error);
                 if (nRet == -1)
                     goto ERROR1;
 
-                // 创建书目库的定义
-                Progress.SetMessage("正在删除测试用读者库 ...");
-                 lRet = channel.ManageDatabase(
-                    stop,
-                    "delete",
-                    C_ReaderDbName,    // strDatabaseNames,
-                    "",
-                    out strOutputInfo,
-                    out strError);
-                if (lRet == -1)
-                {
-                    if (channel.ErrorCode != DigitalPlatform.LibraryClient.localhost.ErrorCode.NotFound)
-                        goto ERROR1;
-                }
+                // 创建书目记录
+                Progress.SetMessage("正在创建书目记录和册记录 ...");
+                nRet = this.CreateBiblioRecord(channel, C_BiblioDbName, out error);
+                if (nRet == -1)
+                    goto ERROR1;
 
+                // ***创建测试所需的读者库====
                 Progress.SetMessage("正在创建测试用读者库 ...");
-
                 XmlDocument database_dom = new XmlDocument();
                 database_dom.LoadXml("<root />");
                 // 创建读者库
-                CreateReaderDatabaseNode(database_dom,
+                ManageHelper.CreateReaderDatabaseNode(database_dom,
                     C_ReaderDbName,
                     "",
                     true);
                 lRet = channel.ManageDatabase(
-                    this.stop,
+                    this._stop,
                     "create",
                     "",
                     database_dom.OuterXml,
                     out strOutputInfo,
-                    out strError);
+                    out error);
                 if (lRet == -1)
                     goto ERROR1;
 
                 Progress.SetMessage("正在创建测试读者记录 ...");
-                lRet = this.CreateReaderRecord(channel, out strError);
+                lRet = this.CreateReaderRecord(channel, out error);
                 if (lRet == -1)
-                    goto ERROR1;
-
-                Progress.SetMessage("正在定义测试所需的馆藏地 ...");
-                // *** 定义测试所需的馆藏地
-                List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem> items = new List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem>();
-                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试阅览室", true, true));
-                items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试流通库", true, true));
-
-                // 为系统添加新的馆藏地定义
-                nRet = ManageHelper.AddLocationTypes(
-                    channel,
-                    this.Progress,
-                    "add",
-                    items,
-                    out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-
-                Progress.SetMessage("正在配置工作日历 ...");
-
-                CalenderInfo info = new CalenderInfo();
-                info.Name = C_CalenderName;
-                info.Range = "20170101-20191231";
-                info.Comment = "";
-                info.Content = "";
-
-                //先删除
-                lRet = channel.SetCalendar(
-                   stop,
-                   "delete",
-                   info,
-                   out strError);
-                if (lRet == -1)
-                    goto ERROR1;
-
-                lRet = channel.SetCalendar(
-                   stop,
-                   "new",
-                   info,
-                   out strError);
-                if (lRet == -1)
-                    goto ERROR1;
-
-                Progress.SetMessage("正在配置测试所需的流通权限 ...");
-
-                // 先删除原来测试自动增加权限
-                nRet = this.RemoveTestRightsTable(channel, null, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-
-                //增加测试用权限
-                nRet = this.AddTestRightsTable(channel, null, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-
-
-                Progress.SetMessage("正在创建书目记录和册记录 ...");
-                // 创建书目
-                nRet = this.CreateBiblioRecord(channel, strBiblioDbName, out strError);
-                if (nRet == -1)
                     goto ERROR1;
 
                 
-                /*
-                // 删除测试用的书目库、馆藏地定义
-                Progress.SetMessage("正在删除测试用书目库 ...");
-                lRet = channel.ManageDatabase(
-                    stop,
-                    "delete",
-                    strBiblioDbName,    // strDatabaseNames,
-                    "",
-                    out strOutputInfo,
-                    out strError);
-                if (lRet == -1)
-                    goto ERROR1;
 
-                Progress.SetMessage("正在删除测试用的馆藏地 ...");
-                nRet = ManageHelper.AddLocationTypes(
-                    channel,
-                    this.Progress,
-                    "remove",
-                    items,
-                    out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-                */
-
+                MessageBox.Show(this, "初始化测试环境完成");
                 return;
             }
-            //catch (Exception ex)
-            //{
-            //    strError = "MoveBiblioRecord() Exception: " + ExceptionUtil.GetExceptionText(ex);
-            //    goto ERROR1;
-            //}
+            catch (Exception ex)
+            {
+                error = "Exception: " + ExceptionUtil.GetExceptionText(ex);
+                goto ERROR1;
+            }
             finally
             {
                 Progress.EndLoop();
                 Progress.OnStop -= new StopEventHandler(this.DoStop);
                 Progress.Initial("");
                 Progress.HideProgress();
-
-
                 EnableControls(true);
 
                 channel.Timeout = old_timeout;
                 this.ReturnChannel(channel);
             }
+
+
         ERROR1:
-            this.Invoke((Action)(() => MessageBox.Show(this, strError)));
+            MessageBox.Show(this, error);
+        return;
             
         }
 
-        public const string C_CalenderName = "_测试日历";
 
-        int CreateReaderRecord(LibraryChannel channel,
-            out string strError)
-        {
-            strError="";
-
-            // 创建10条测试用读者记录
-            string strTargetRecPath=C_ReaderDbName+"/?";
-            for (int i = 0; i < 10; i++)
-            {
-                XmlDocument dom = new XmlDocument();
-                dom.LoadXml("<root />");
-                XmlNode root = dom.DocumentElement;
-
-                string barcode = "_P" + i.ToString().PadLeft(3, '0');
-                DomUtil.SetElementText(root, "barcode", barcode);
-
-                string name = "SIP2测试" + i.ToString().PadLeft(3, '0'); ;
-                DomUtil.SetElementText(root, "name", name);
-
-                DomUtil.SetElementText(root, "readerType", C_PatronType);
-
-                //DomUtil.SetElementText(root,"createDate", this.CreateDate);
-                string strExistingXml="";
-                string strSavedXml="";
-                string strSavedPath="";
-                byte[] baNewTimestamp=null;
-                ErrorCodeValue kernel_errorcode=ErrorCodeValue.NoError;
-                 long lRet = channel.SetReaderInfo(
-                    stop,
-                    "new",  // this.m_strSetAction,
-                    strTargetRecPath,
-                    dom.OuterXml,
-                    null,
-                    null,
-
-                    out strExistingXml,
-                    out strSavedXml,
-                    out strSavedPath,
-                    out baNewTimestamp,
-                    out kernel_errorcode,
-                    out strError);
-                 if (lRet == -1)
-                 {
-                     return -1;
-                 }
-            }
-
-            return 0;
-
-        }
-
-        /*
-        internal override void RefreshDom()
-        {
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "barcode", this.Barcode);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "cardNumber", this.CardNumber);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "state", this.State);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "comment", this.Comment);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "readerType", this.ReaderType);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "createDate", this.CreateDate);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "expireDate", this.ExpireDate);
-
-            // 2007/6/15
-            XmlNode nodeHire = null;
-            nodeHire = this._dataDom.DocumentElement.SelectSingleNode("hire");
-            if (nodeHire == null)
-            {
-                nodeHire = this._dataDom.CreateElement("hire");
-                this._dataDom.DocumentElement.AppendChild(nodeHire);
-            }
-            DomUtil.SetAttr(nodeHire, "expireDate", this.HireExpireDate);
-            DomUtil.SetAttr(nodeHire, "period", this.HirePeriod);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "foregift", this.Foregift);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "name", this.NameString);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-    "namePinyin", this.NamePinyin);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "gender", this.Gender);
-
-            // 2012/4/11
-            // 根据记录中是否已经有<dateOfBirth>元素来决定是否使用这个元素，以免对旧的dp2Library版本写记录过程中丢失<dateOfBirth>元素
-            XmlNode nodeExistBirthdate = this._dataDom.DocumentElement.SelectSingleNode("dateOfBirth");    // BUG 2012/5/3 原先少了.DocumentElement
-            if (nodeExistBirthdate == null)
-                DomUtil.SetElementText(this._dataDom.DocumentElement,
-                    "birthday", this.DateOfBirth);
-            else
-                DomUtil.SetElementText(this._dataDom.DocumentElement,
-                    "dateOfBirth", this.DateOfBirth);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "idCardNumber", this.IdCardNumber);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "department", this.Department);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "post", this.Post);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "address", this.Address);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "tel", this.Tel);
-
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "email", this.Email);
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "rights", this.Rights);
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "personalLibrary", this.PersonalLibrary);
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "access", this.Access);
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-                "friends", this.Friends);
-            DomUtil.SetElementText(this._dataDom.DocumentElement,
-    "refID", this.RefID);
-
-            base.RefreshDom();
-        }
-         */
-
-        // 创建读者库的定义结点
-        static XmlNode CreateReaderDatabaseNode(XmlDocument dom,
-            string strDatabaseName,
-            string strLibraryCode,
-            bool bInCirculation)
-        {
-            XmlNode nodeDatabase = dom.CreateElement("database");
-            dom.DocumentElement.AppendChild(nodeDatabase);
-
-            // type
-            DomUtil.SetAttr(nodeDatabase, "type", "reader");
-
-            // inCirculation
-            string strInCirculation = "true";
-            if (bInCirculation == true)
-                strInCirculation = "true";
-            else
-                strInCirculation = "false";
-
-            DomUtil.SetAttr(nodeDatabase, "inCirculation", strInCirculation);
-
-            DomUtil.SetAttr(nodeDatabase, "name", strDatabaseName);
-
-            DomUtil.SetAttr(nodeDatabase, "libraryCode",
-                strLibraryCode);
-
-            return nodeDatabase;
-        }
-
-        // 所创建的书目记录和下属册记录信息。用于最后核对验证
-        class BiblioCreationInfo
-        {
-            public string BiblioRecPath { get; set; }
-            public List<string> ItemRefIDs { get; set; }
-        }
-
+        // 创建书目记录与册记录
         int CreateBiblioRecord(LibraryChannel channel,
             string strBiblioDbName, 
             out string strError)
@@ -741,7 +562,7 @@ namespace dp2SIPClient
                 string strOutputPath = "";
 
                 long lRet = channel.SetBiblioInfo(
-                    stop,
+                    _stop,
                     "new",
                     strPath,
                     "xml",
@@ -814,7 +635,7 @@ namespace dp2SIPClient
                 EntityInfo[] errorinfos = null;
 
                 lRet = channel.SetEntities(
-                     this.stop,   // this.BiblioStatisForm.stop,
+                     this._stop,   // this.BiblioStatisForm.stop,
                      strOutputPath,
                      entities,
                      out errorinfos,
@@ -831,6 +652,7 @@ namespace dp2SIPClient
 
         }
 
+        // 从路径中获取id
         public static string GetRecordID(string strPath)
         {
             int nRet = strPath.LastIndexOf("/");
@@ -840,13 +662,145 @@ namespace dp2SIPClient
             return strPath.Substring(nRet + 1).Trim();
         }
 
-        public string C_Location = "_测试流通库";
-        public string C_PatronType = "测试-读者类型";
-        public string C_BookType = "测试-图书类型";
+
+        // 创建读者记录
+        int CreateReaderRecord(LibraryChannel channel,
+            out string strError)
+        {
+            strError = "";
+
+            // 创建10条测试用读者记录
+            string strTargetRecPath = C_ReaderDbName + "/?";
+            for (int i = 0; i < 10; i++)
+            {
+                XmlDocument dom = new XmlDocument();
+                dom.LoadXml("<root />");
+                XmlNode root = dom.DocumentElement;
+
+                string barcode = "_P" + i.ToString().PadLeft(3, '0');
+                DomUtil.SetElementText(root, "barcode", barcode);
+
+                string name = "SIP2测试" + i.ToString().PadLeft(3, '0'); ;
+                DomUtil.SetElementText(root, "name", name);
+
+                DomUtil.SetElementText(root, "readerType", C_PatronType);
+
+                //DomUtil.SetElementText(root,"createDate", this.CreateDate);
+                string strExistingXml = "";
+                string strSavedXml = "";
+                string strSavedPath = "";
+                byte[] baNewTimestamp = null;
+                ErrorCodeValue kernel_errorcode = ErrorCodeValue.NoError;
+                long lRet = channel.SetReaderInfo(
+                   _stop,
+                   "new",  // this.m_strSetAction,
+                   strTargetRecPath,
+                   dom.OuterXml,
+                   null,
+                   null,
+
+                   out strExistingXml,
+                   out strSavedXml,
+                   out strSavedPath,
+                   out baNewTimestamp,
+                   out kernel_errorcode,
+                   out strError);
+                if (lRet == -1)
+                {
+                    return -1;
+                }
+            }
+
+            return 0;
+
+        }
+
+
+
+
+        #region 流通权限
+
+
+        // 获得流通读者权限相关定义
+        int GetRightsTableInfo(LibraryChannel channel,
+            out string strRightsTableXml,
+            out string strError)
+        {
+            strError = "";
+            strRightsTableXml = "";
+
+
+            _stop.OnStop += new StopEventHandler(this.DoStop);
+            _stop.Initial("正在获取读者流通权限定义 ...");
+            _stop.BeginLoop();
+
+            try
+            {
+                long lRet = channel.GetSystemParameter(
+                    _stop,
+                    "circulation",
+                    "rightsTable",
+                    out strRightsTableXml,
+                    out strError);
+                if (lRet == -1)
+                    goto ERROR1;
+
+                return (int)lRet;
+            }
+            finally
+            {
+                _stop.EndLoop();
+                _stop.OnStop -= new StopEventHandler(this.DoStop);
+                _stop.Initial("");
+
+            }
+
+        ERROR1:
+            return -1;
+        }
+
+        // 保存流通读者权限相关定义
+        // parameters:
+        //      strRightsTableXml   流通读者权限定义XML。注意，没有根元素
+        int SetRightsTableDef(LibraryChannel channel,
+            string strRightsTableXml,
+            out string strError)
+        {
+            strError = "";
+
+
+            _stop.OnStop += new StopEventHandler(this.DoStop);
+            _stop.Initial("正在保存读者流通权限定义 ...");
+            _stop.BeginLoop();
+
+            try
+            {
+                long lRet = channel.SetSystemParameter(
+                    _stop,
+                    "circulation",
+                    "rightsTable",
+                    strRightsTableXml,
+                    out strError);
+                if (lRet == -1)
+                    goto ERROR1;
+
+                return (int)lRet;
+            }
+            finally
+            {
+                _stop.EndLoop();
+                _stop.OnStop -= new StopEventHandler(this.DoStop);
+                _stop.Initial("");
+
+            }
+
+        ERROR1:
+            return -1;
+        }
 
         // 删除测试加的流通权限
         public int RemoveTestRightsTable(LibraryChannel channel,
-            XmlDocument dom, 
+            XmlDocument dom,
             out string strError)
         {
             strError = "";
@@ -906,27 +860,6 @@ namespace dp2SIPClient
             return -1;
         }
 
-        /*
-         
-                    string newXml = @"<type reader='_测试读者类型'>
-                                                    <param name='可借总册数' value='10' />
-                                                    <param name='可预约册数' value='5' />
-                                                    <param name='以停代金因子' value='' />
-                                                    <param name='工作日历名' value='' />
-                                                    <type book='_测试图书类型'>
-                                                        <param name='可借册数' value='10' />
-                                                        <param name='借期' value='31day,15day' />
-                                                        <param name='超期违约金因子' value='' />
-                                                        <param name='丢失违约金因子' value='1.5' />
-                                                    </type>
-                                                    </type>
-                                                    <readerTypes>
-                                                    <item>_测试读者类型</item>
-                                                    </readerTypes>
-                                                    <bookTypes>
-                                                    <item>_测试图书类型</item>
-                                                    </bookTypes>";
- */
         // 增加测试用的流通权限
         public int AddTestRightsTable(LibraryChannel channel,
             XmlDocument dom,
@@ -965,7 +898,7 @@ namespace dp2SIPClient
                 node.InnerXml = @"<param name='可借总册数' value='10' />
                                                 <param name='可预约册数' value='5' />
                                                 <param name='以停代金因子' value='' />
-                                                <param name='工作日历名' value='"+C_CalenderName+@"' />
+                                                <param name='工作日历名' value='" + C_CalenderName + @"' />
                                                 <type book='" + C_BookType + @"'>
                                                   <param name='可借册数' value='10' />
                                                   <param name='借期' value='31day,60day' />
@@ -1011,146 +944,49 @@ namespace dp2SIPClient
         ERROR1:
             return -1;
         }
-                    
 
-        private void button_createRightsTable_Click(object sender, EventArgs e)
-        {
-            
-        }
+        #endregion
 
-        private void btnCheckinCheckout_Click(object sender, EventArgs e)
-        {
-            string error="";
-            int nRet=0;
+        #endregion
 
-
-            REDO:
-
-            for (int i = 0; i < 10; i++)
-            {
-                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
-
-                for (int j = 1; j <= 50; j++)
-                {
-                    Application.DoEvents();
-
-                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
-
-
-                    nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
-                    if (nRet == -2) //尚未登录的情况
-                    {
-
-                        nRet = SCHelper.Instance.Login("supervisor", "1", out error);
-                        if (nRet == 1)
-                        {
-                            goto REDO;
-                        }
-
-                        goto ERROR1;
-                    }
-
-                    this.Print(patronBarcode + "借" + itemBarcode + "...");
-
-
-                    if (nRet == -1)
-                    {
-                        Print("出错:" + error);
-                        continue;
-                    }
-
-                    if (nRet == 0)
-                    {
-                        Print("借出失败:" + error);
-                        continue;
-                    }
-
-                    this.Print("借书成功");
-                }
-
-            }
-
-        ERROR1:
-            this.Print(error);
-
-        }
-
-
-        private void Print(string text)
-        {
-            if (this.txtInfo.Text != "")
-                this.txtInfo.Text += "\r\n";
-            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + text;
-
-            //this.txtInfo.Text = text;
-        }
-
-        // 清空消息
-        public void ClearInfo()
-        {
-            this.txtInfo.Text = "";
-        }
-
-        private void 创建流通权限ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string strError = "";
-            int nRet = 0;
-            LibraryChannel channel = this.GetChannel();
-            EnableControls(false);
-            try
-            {
-                // 获取流通权限
-                string strRightsTableXml = "";
-                nRet = GetRightsTableInfo(channel, out strRightsTableXml, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-                strRightsTableXml = "<rightsTable>" + strRightsTableXml + "</rightsTable>";
-                XmlDocument dom = new XmlDocument();
-                try
-                {
-                    dom.LoadXml(strRightsTableXml);
-                }
-                catch (Exception ex)
-                {
-                    strError = "strRightsTableXml装入XMLDOM时发生错误：" + ex.Message;
-                    goto ERROR1;
-                }
-
-                // 先删除原来测试自动增加权限
-                nRet = this.RemoveTestRightsTable(channel, dom, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-
-                //增加测试用权限
-                nRet = this.AddTestRightsTable(channel, dom, out strError);
-                if (nRet == -1)
-                    goto ERROR1;
-            }
-            finally
-            {
-                EnableControls(true);
-                this.ReturnChannel(channel);
-            }
-        ERROR1:
-            MessageBox.Show(this, strError);
-        }
+        #region 登录与SC Status
 
         //登录
         private void button_login_Click(object sender, EventArgs e)
         {
             string error = "";
-            int nRet = SCHelper.Instance.Login("supervisor", "1", out error);
-            if (nRet == -1)
-            {
-                MessageBox.Show(this, "登录出错：" + error);
-                return;
-            }
-            if (nRet==0)
+            int nRet = this.login(out error);
+            if (nRet == -1 || nRet == 0)
             {
                 MessageBox.Show(this, "登录失败：" + error);
                 return;
             }
             MessageBox.Show(this, "登录成功");
+        }
+
+        /// <returns>
+        /// 1 登录成功
+        /// 0 登录失败
+        /// -1 出错
+        /// </returns>
+        public int login(out string error)
+        {
+            error = "";
+            string username = this.textBox_93_username.Text;
+            string password = this.textBox_93_password.Text;
+            if (string.IsNullOrEmpty(username) == true)
+            {
+                error = "用户名不能为空";
+                return -1;
+            }
+
+            /// <returns>
+            /// 1 登录成功
+            /// 0 登录失败
+            /// -1 出错
+            /// </returns>
+            int nRet = SCHelper.Instance.Login(username, password, out error);
+            return nRet;
         }
 
         //SC status
@@ -1160,232 +996,41 @@ namespace dp2SIPClient
             ACSStatus_98 response98 = null;
             string responseText = "";
             int nRet = SCHelper.Instance.SCStatus(out response98,
-                out responseText, 
+                out responseText,
                 out error);
             if (nRet == -1)
             {
-                MessageBox.Show(this, "出错：" + error);
-                return;
+                this.Print( "出错：" + error);
             }
-            if (nRet == 0)
+            else if (nRet == 0)
             {
-                MessageBox.Show(this, "ACS不在线");
-                return;
-            }
-            MessageBox.Show(this, "ACS在线状态");
-        }
-
-        public void CustomerCheckoutAndCheckin(int patrontNum, 
-            int itemNum,
-            int checkoutNum, 
-            int checkinNum)
-        {
-            //借还
-            if (checkoutNum > 0 && checkinNum > 0)
-            {
-
-            }
-            else if (checkoutNum > 0 && checkinNum==0)
-            {
- 
-            }
-            else if (checkoutNum == 0 && checkinNum > 0)
-            {
- 
+                this.Print("ACS不在线");
             }
 
-        }
-
-        //借书，或者借还书
-        public void CheckoutAndCheckin(int patrontNum,
-            int itemNum,
-            int checkoutNum,
-            int checkinNum)
-        {
-            string error = "";
-            int nRet = 0;
-
-            // 清空输出信息
-            this.ClearInfo();
-
-        REDO:
-            // 循环读者
-            for (int i = 0; i < patrontNum; i++)
-            {
-                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
-
-                // 每人 itemNum 册
-                for (int j = (i + 1) * itemNum - (itemNum-1); j <= (i + 1) * itemNum; j++)
-                {
-                    Application.DoEvents();
-                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
-
-                    //执行借书
-                    for (int a = 0; a < checkoutNum; a++)
-                    {
-                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
-                        if (nRet == -2) //尚未登录的情况
-                        {
-                            nRet = SCHelper.Instance.Login("supervisor", "1", out error);
-                            if (nRet == 1) //登录成功，重新执行
-                                goto REDO;
-
-                            MessageBox.Show(this, "登录失败：" + error);
-                            return;
-                        }
-                        this.Print(patronBarcode + "借" + itemBarcode + "...");
-                        if (nRet == -1)
-                        {
-                            Print("出错:" + error);
-                            continue;
-                        }
-                        if (nRet == 0)
-                        {
-                            Print("借出失败:" + error);
-                            continue;
-                        }
-                        this.Print("借书成功");
-                    }
-
-                    //执行还书
-                    for (int a = 0; a < checkinNum; a++)
-                    {
-                        nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
-                        this.Print("还" + itemBarcode + "...");
-                        if (nRet == -1)
-                        {
-                            Print("出错:" + error);
-                            continue;
-                        }
-                        if (nRet == 0)
-                        {
-                            Print("还书失败:" + error);
-                            continue;
-                        }
-                        this.Print("还书成功");
-                    }
-
-                }
-            }
-
+            this.Print(responseText);
             return;
         }
 
-        public void Checkin(int itemNum, int checkinNum)
-        {
-            string error = "";
-            int nRet = 0;
+        #endregion
 
-            // 清空输出信息
-            this.ClearInfo();
-
-            for (int j = 1; j <= itemNum; j++)
-            {
-                Application.DoEvents();
-                string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
-
-                //执行还书
-                for (int a = 0; a < checkinNum; a++)
-                {
-                    nRet = SCHelper.Instance.Checkin(itemBarcode, out error);
-                    if (nRet == -2) //尚未登录的情况
-                    {
-                        MessageBox.Show(this, "尚未登录");
-                        return;
-                    }
-
-                    this.Print("还" + itemBarcode + "...");
-                    if (nRet == -1)
-                    {
-                        Print("出错:" + error);
-                        continue;
-                    }
-                    if (nRet == 0)
-                    {
-                        Print("还书失败:" + error);
-                        continue;
-                    }
-                    this.Print("还书成功");
-                }
-            }
-
-        }
-
-
+        #region 借还
 
         //借书 10人*5册*1借
         private void button_checkout_Click(object sender, EventArgs e)
         {
-            this.CheckoutAndCheckin(10, 5, 1,0);
-            /*
-            string error = "";
-            int nRet = 0;
-
-            // 清空输出信息
-            this.ClearInfo();
-
-        REDO:
-            // 10人
-            for (int i = 0; i < 10; i++)
-            {
-                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
-
-                // 每人5册
-                for (int j = (i+1)*5-4; j <= (i+1)*5; j++)
-                {
-                    Application.DoEvents();
-
-                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
-
-                    nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
-                    if (nRet == -2) //尚未登录的情况
-                    {
-
-                        nRet = SCHelper.Instance.Login("supervisor", "1", out error);
-                        if (nRet == 1)
-                        {
-                            goto REDO;
-                        }
-
-                        goto ERROR1;
-                    }
-
-                    this.Print(patronBarcode + "借" + itemBarcode + "...");
-
-
-                    if (nRet == -1)
-                    {
-                        Print("出错:" + error);
-                        continue;
-                    }
-
-                    if (nRet == 0)
-                    {
-                        Print("借出失败:" + error);
-                        continue;
-                    }
-                    this.Print("借书成功");
-                }
-            }
-
-        return;
-
-        ERROR1:
-            this.Print(error);
-             */
+            this.CheckoutAndCheckin(10, 5, 1, 0);
         }
 
         //还书 50册*1还
         private void button_checkin_Click(object sender, EventArgs e)
         {
-            this.Checkin(50,1);
+            this.Checkin(50, 1);
         }
 
         // 借还 10人*2册*1借*1还
         private void button_checkoutin_Click(object sender, EventArgs e)
         {
             this.CheckoutAndCheckin(10, 2, 1, 1);
-
         }
 
         // 重复还 10册*2次
@@ -1403,7 +1048,7 @@ namespace dp2SIPClient
         // 自定义借还
         private void button_checkoutin_customer_Click(object sender, EventArgs e)
         {
-            int patrontNum=0;
+            int patrontNum = 0;
             if (this.textBox_checkinout_patronNum.Text != "")
             {
                 try
@@ -1416,7 +1061,7 @@ namespace dp2SIPClient
                     return;
                 }
             }
-            int itemNum=0;
+            int itemNum = 0;
             if (this.textBox_checkinout_itemNum.Text != "")
             {
                 try
@@ -1429,7 +1074,7 @@ namespace dp2SIPClient
                     return;
                 }
             }
-            int checkoutNum=0;
+            int checkoutNum = 0;
             if (this.textBox_checkinout_outNum.Text != "")
             {
                 try
@@ -1497,6 +1142,161 @@ namespace dp2SIPClient
             this.CheckoutAndRenew(10, 2, 1, 2);
         }
 
+
+        //借书，或者借还书
+        public void CheckoutAndCheckin(int patrontNum,
+            int itemNum,
+            int checkoutNum,
+            int checkinNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+        REDO:
+            // 循环读者
+            for (int i = 0; i < patrontNum; i++)
+            {
+                string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+
+                // 设成错误的读者条码
+                if (checkBox_wrongPatron.Checked == true)
+                {
+                    patronBarcode += "_w";
+                }
+
+                // 每人 itemNum 册
+                for (int j = (i + 1) * itemNum - (itemNum-1); j <= (i + 1) * itemNum; j++)
+                {
+                    Application.DoEvents();
+                    string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                    // 设成错误的册条码
+                    if (this.checkBox_wrongItem.Checked == true)
+                    {
+                        itemBarcode += "_w";
+                    }
+
+                    //执行借书
+                    for (int a = 0; a < checkoutNum; a++)
+                    {
+                        CheckoutResponse_12 response12 = null;
+                        string responseText = "";
+                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode,
+                            out response12,
+                            out responseText,
+                            out error);
+                        if (nRet == -2) //尚未登录的情况
+                        {
+                            //nRet = this.login(out error);
+                            //if (nRet == 1) //登录成功，重新执行
+                            //    goto REDO;
+                            //MessageBox.Show(this, "登录失败：" + error);
+                            //return;
+
+                            this.Print("SC尚未登录图书馆系统");
+                            this.Print(responseText);
+                            return;
+                        }
+                        this.Print(patronBarcode + "借" + itemBarcode + "...");
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("借出失败:" + error);
+                            continue;
+                        }
+                        this.Print("借书成功");
+                    }
+
+                    //执行还书
+                    for (int a = 0; a < checkinNum; a++)
+                    {
+                        CheckinResponse_10 response10 = null;
+                        string responseText = "";
+                        nRet = SCHelper.Instance.Checkin(itemBarcode,
+                            out response10,
+                            out responseText,
+                            out error);
+                        this.Print("还" + itemBarcode + "...");
+                        if (nRet == -1)
+                        {
+                            Print("出错:" + error);
+                            continue;
+                        }
+                        if (nRet == 0)
+                        {
+                            Print("还书失败:" + error);
+                            continue;
+                        }
+                        this.Print("还书成功");
+                    }
+
+                }
+            }
+
+            return;
+        }
+
+        //还书
+        public void Checkin(int itemNum, int checkinNum)
+        {
+            string error = "";
+            int nRet = 0;
+
+            // 清空输出信息
+            this.ClearInfo();
+
+            for (int j = 1; j <= itemNum; j++)
+            {
+                Application.DoEvents();
+                string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+
+                // 设成错误的册条码
+                if (this.checkBox_wrongItem.Checked == true)
+                {
+                    itemBarcode += "_w";
+                }
+
+                //执行还书
+                for (int a = 0; a < checkinNum; a++)
+                {
+                    CheckinResponse_10 response10 = null;
+                    string responseText = "";
+                    nRet = SCHelper.Instance.Checkin(itemBarcode,
+                        out response10,
+                        out responseText,
+                        out error);
+                    if (nRet == -2) //尚未登录的情况
+                    {
+                        this.Print("SC尚未登录图书馆系统"); 
+                        this.Print(responseText);
+                        return;
+                    }
+
+                    this.Print("还" + itemBarcode + "...");
+                    if (nRet == -1)
+                    {
+                        Print("出错:" + error);
+                        continue;
+                    }
+                    if (nRet == 0)
+                    {
+                        Print("还书失败:" + error);
+                        continue;
+                    }
+                    this.Print("还书成功");
+                }
+            }
+
+        }
+
+
         //借书，或者借还书
         public void CheckoutAndRenew(int patrontNum,
             int itemNum,
@@ -1514,24 +1314,42 @@ namespace dp2SIPClient
             for (int i = 0; i < patrontNum; i++)
             {
                 string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+                // 设成错误的读者条码
+                if (checkBox_wrongPatron.Checked == true)
+                {
+                    patronBarcode += "_w";
+                }
 
                 // 每人 itemNum 册
                 for (int j = (i + 1) * itemNum - (itemNum - 1); j <= (i + 1) * itemNum; j++)
                 {
                     Application.DoEvents();
                     string itemBarcode = "_B" + j.ToString().PadLeft(6, '0');
+                    // 设成错误的册条码
+                    if (this.checkBox_wrongItem.Checked == true)
+                    {
+                        itemBarcode += "_w";
+                    }
 
                     //执行借书
                     for (int a = 0; a < checkoutNum; a++)
                     {
-                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode, out error);
+                        CheckoutResponse_12 response12 = null;
+                        string responseText = "";
+                        nRet = SCHelper.Instance.Checkout(patronBarcode, itemBarcode,
+                            out response12,
+                            out responseText,
+                            out error);
                         if (nRet == -2) //尚未登录的情况
                         {
-                            nRet = SCHelper.Instance.Login("supervisor", "1", out error);
-                            if (nRet == 1) //登录成功，重新执行
-                                goto REDO;
+                            //nRet = this.login(out error);
+                            //if (nRet == 1) //登录成功，重新执行
+                            //    goto REDO;
+                            //MessageBox.Show(this, "登录失败：" + error);
+                            //return;
 
-                            MessageBox.Show(this, "登录失败：" + error);
+                            this.Print("SC尚未登录图书馆系统");;
+                            this.Print(responseText);
                             return;
                         }
                         this.Print(patronBarcode + "借" + itemBarcode + "...");
@@ -1551,7 +1369,12 @@ namespace dp2SIPClient
                     //执行续借
                     for (int a = 0; a < renewNum; a++)
                     {
-                        nRet = SCHelper.Instance.Renew(patronBarcode, itemBarcode, out error);
+                        RenewResponse_30 response30 = null;
+                        string responseText = "";
+                        nRet = SCHelper.Instance.Renew(patronBarcode, itemBarcode,
+                            out response30,
+                            out responseText,
+                            out error);
                         this.Print(patronBarcode + "续借" + itemBarcode + "...");
 
                         if (nRet == -1)
@@ -1573,10 +1396,29 @@ namespace dp2SIPClient
             return;
         }
 
+        #endregion
+
+        #region 获取读者信息
         // 获取读者信息 
         private void button_patronInfo_Click(object sender, EventArgs e)
         {
-            this.GetPatronInfo(10);
+            string numString = this.textBox_63_patronNum.Text.Trim();
+            if (numString == "")
+            {
+                MessageBox.Show(this, "尚未输入读者数量");
+                return;
+            }
+            int num = 0;
+            try
+            {
+                num = Convert.ToInt32(numString);
+            }
+            catch
+            {
+                MessageBox.Show(this, "册数必须为整数");
+                return;
+            }
+            this.GetPatronInfo(num);
         }
 
         public void GetPatronInfo(int patrontNum)
@@ -1590,6 +1432,12 @@ namespace dp2SIPClient
             for (int i = 0; i < patrontNum; i++)
             {
                 string patronBarcode = "_P" + i.ToString().PadLeft(3, '0');
+                // 设成错误的读者条码
+                if (checkBox_wrongPatron.Checked == true)
+                {
+                    patronBarcode += "_w";
+                }
+
                 PatronInformationResponse_64 response64 = null;
                 string responseText = "";
                 nRet = SCHelper.Instance.GetPatronInformation(patronBarcode,
@@ -1598,7 +1446,8 @@ namespace dp2SIPClient
                     out error);
                 if (nRet == -2) //尚未登录的情况
                 {
-                    MessageBox.Show(this, "登录失败：" + error);
+                    this.Print("SC尚未登录图书馆系统");
+                    this.Print(responseText);
                     return;
                 }
                 this.Print("获取读者" + patronBarcode + "...");
@@ -1611,10 +1460,31 @@ namespace dp2SIPClient
             }
         }
 
+        #endregion
+
+        #region 获取册信息
+
         //获取册信息
         private void button_itemInfo_Click(object sender, EventArgs e)
         {
-            this.GetItemInfo(10);
+            string itemNum = this.textBox_17_itemNum.Text.Trim();
+            if (itemNum=="")
+            {
+                MessageBox.Show(this,"尚未输入册数");
+                return;
+            }
+            int num = 0;
+            try
+            {
+                num = Convert.ToInt32(itemNum);
+            }
+            catch
+            {
+                MessageBox.Show(this, "册数必须为整数");
+                return;
+            }
+
+            this.GetItemInfo(num);
         }
 
         public void GetItemInfo(int itemNum)
@@ -1631,6 +1501,12 @@ namespace dp2SIPClient
 
                 string itemBarcode = "_B" + i.ToString().PadLeft(6, '0');
 
+                // 设成错误的册条码
+                if (this.checkBox_wrongItem.Checked == true)
+                {
+                    itemBarcode += "_w";
+                }
+
                 ItemInformationResponse_18 response18 = null;
                 string responseText = "";
                 nRet = SCHelper.Instance.GetItemInformation(itemBarcode,
@@ -1639,7 +1515,8 @@ namespace dp2SIPClient
                     out error);
                 if (nRet == -2) //尚未登录的情况
                 {
-                    MessageBox.Show(this, "登录失败：" + error);
+                    this.Print("SC尚未登录图书馆系统");
+                    this.Print(responseText);
                     return;
                 }
                 this.Print("获取图书" + itemBarcode + "...");
@@ -1651,5 +1528,9 @@ namespace dp2SIPClient
                 this.Print("成功：" + responseText);
             }
         }
+
+        #endregion
+
+
     }
 }
