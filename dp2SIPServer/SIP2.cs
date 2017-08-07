@@ -73,13 +73,14 @@ namespace dp2SIPServer
                 MagneticMedia_1 = "N",
                 Alert_1 = "N",
                 TransactionDate_18 = SIPUtility.NowDateTime,
-                AO_InstitutionId_r = "dp2Library"
+                AO_InstitutionId_r = "dp2Library",
+                AJ_TitleIdentifier_o = string.Empty,
             };
 
             Checkin_09 request = new Checkin_09();
 
-            bool bRet = request.parse(message, out strError);
-            if (!bRet)
+            int nRet = request.parse(message, out strError);
+            if (-1 == nRet)
             {
                 response.AF_ScreenMessage_o = strError;
             }
@@ -126,8 +127,8 @@ namespace dp2SIPServer
                 {
                     response.Ok_1 = "1";
                     response.AA_PatronIdentifier_o = strOutputReaderBarcode;
-                    response.AF_ScreenMessage_o="成功";
-                    response.AG_PrintLine_o="成功";
+                    response.AF_ScreenMessage_o = "成功";
+                    response.AG_PrintLine_o = "成功";
 
                     if (itemRecords != null && itemRecords.Length > 0)
                     {
@@ -163,7 +164,7 @@ namespace dp2SIPServer
                     if (record != null)
                     {
                         if (strMarcSyntax == "unimarc")
-                            response.AJ_TitleIdentifier_o=record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                            response.AJ_TitleIdentifier_o = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
                         else if (strMarcSyntax == "usmarc")
                             response.AJ_TitleIdentifier_o = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
                     }
@@ -212,11 +213,13 @@ namespace dp2SIPServer
                 Desensitize_1 = "N",
                 TransactionDate_18 = SIPUtility.NowDateTime,
                 AO_InstitutionId_r = "dp2Library",
+                AJ_TitleIdentifier_r = string.Empty,
+                AH_DueDate_r = string.Empty,
             };
 
             Renew_29 request = new Renew_29();
-            bool bRet = request.parse(message, out strError);
-            if (!bRet)
+            int nRet = request.parse(message, out strError);
+            if (-1 == nRet)
             {
                 response.AF_ScreenMessage_o = strError;
             }
@@ -338,14 +341,17 @@ namespace dp2SIPServer
                 MagneticMedia_1 = "N",
                 Desensitize_1 = "Y",
                 TransactionDate_18 = SIPUtility.NowDateTime,
-                AO_InstitutionId_r = "dp2Library"
+                AO_InstitutionId_r = "dp2Library",
+                AJ_TitleIdentifier_r = string.Empty,
+                AH_DueDate_r = string.Empty,
+
             };
 
             Checkout_11 request = new Checkout_11();
-            bool bRet = request.parse(message, out strError);
-            if (!bRet)
+            int nRet = request.parse(message, out strError);
+            if (-1 == nRet)
             {
-                response.AF_ScreenMessage_o=strError;
+                response.AF_ScreenMessage_o = strError;
             }
             else
             {
@@ -435,14 +441,14 @@ namespace dp2SIPServer
                         if (String.IsNullOrEmpty(strBiblioSummary))
                             strBiblioSummary = strItemBarcode;
 
-                        response.AJ_TitleIdentifier_r=strBiblioSummary;
+                        response.AJ_TitleIdentifier_r = strBiblioSummary;
 
                         string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, this.DateFormat);
-                        response.AH_DueDate_r=strLatestReturnTime;
+                        response.AH_DueDate_r = strLatestReturnTime;
 
 
                         response.AF_ScreenMessage_o = "成功";
-                        response.AG_PrintLine_o="成功";
+                        response.AG_PrintLine_o = "成功";
                     }
                 }
             }
