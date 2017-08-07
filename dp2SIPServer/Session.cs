@@ -28,11 +28,12 @@ namespace dp2SIPServer
 
         TcpClient _client = null;
 
-        string _username
-        {
-            get;
-            set;
-        }
+        string _username { get; set; }
+
+        string _loginPassword { get; set; }
+
+        string _locationCode { get; set; }
+
 
         // 命令结束符
         char Terminator
@@ -112,6 +113,21 @@ namespace dp2SIPServer
         internal Session(TcpClient client)
         {
             this._client = client;
+
+            this._channelPool.BeforeLogin += (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(this._username))
+                {
+                    e.Cancel = true;
+                    e.ErrorInfo = "尚未设置登录信息";
+                }
+
+                e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
+                e.UserName = this._username;
+                e.Parameters = "type=worker,client=dp2SIPServer|0.01";
+                e.Password = this._loginPassword;
+                e.SavePasswordLong = true;
+            };
         }
 
 
@@ -516,7 +532,7 @@ namespace dp2SIPServer
                                 LibraryChannel channel = this.GetChannel(this._username);
                                 try
                                 {
-                                    strBackMsg = sip.Checkin(channel,strPackage);
+                                    strBackMsg = sip.Checkin(channel, strPackage);
                                 }
                                 finally
                                 {
@@ -565,7 +581,7 @@ namespace dp2SIPServer
                             }
                         case "35":
                             {
-                                strBackMsg = "36Y" + this._dateTimeNow + "AOdp2Library|AA" + strReaderBarcode;
+                                strBackMsg = sip.EndPatronSession(strPackage);
                                 break;
                             }
                         case "85":
@@ -583,7 +599,16 @@ namespace dp2SIPServer
                             }
                         case "63":
                             {
-                                strBackMsg = GetReaderInfo(strReaderBarcode, strPassword);
+                                // strBackMsg = GetReaderInfo(strReaderBarcode, strPassword);
+                                LibraryChannel channel = this.GetChannel(this._username);
+                                try
+                                {
+                                    strBackMsg = sip.PatronInfo(channel, strPackage);
+                                }
+                                finally
+                                {
+                                    this.ReturnChannel(channel);
+                                }
                                 break;
                             }
                         case "81":
@@ -606,14 +631,30 @@ namespace dp2SIPServer
                                 }
                                 break;
                             }
-                        case "93": // 登录，方便调试，跳过验证终端编号，密码和用户名及用户密码。
+                        case "93":
                             {
-                                strBackMsg = Login(strPackage);
+                                // strBackMsg = Login(strPackage);
+
+                                LibraryChannel channel = this.GetChannel();
+                                try
+                                {
+                                    strBackMsg = sip.Login(channel, strPackage);
+                                    if ("941" == strBackMsg)
+                                    {
+                                        this._username = sip.LoginUserId;
+                                        this._loginPassword = sip.LoginPassword;
+                                        this._locationCode = sip.LocationCode;
+                                    }
+                                }
+                                finally
+                                {
+                                    this.ReturnChannel(channel);
+                                }
                                 break;
                             }
                         case "99":
                             {
-                                strBackMsg = "98YYYYYY010003" + this._dateTimeNow + "2.00AOdp2Library|AMdp2Library|BXYYYYYYYYYYYYYYYY|AF连接成功!";
+                                strBackMsg = sip.SCStatus(strPackage);
                                 break;
                             }
                         default:
