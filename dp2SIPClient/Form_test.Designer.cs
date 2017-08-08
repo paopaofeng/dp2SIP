@@ -76,6 +76,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.更多ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.创建流通权限ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.参数配置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -573,17 +574,25 @@
             // 更多ToolStripMenuItem
             // 
             this.更多ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.参数配置ToolStripMenuItem,
             this.创建流通权限ToolStripMenuItem});
             this.更多ToolStripMenuItem.Name = "更多ToolStripMenuItem";
-            this.更多ToolStripMenuItem.Size = new System.Drawing.Size(74, 35);
+            this.更多ToolStripMenuItem.Size = new System.Drawing.Size(74, 38);
             this.更多ToolStripMenuItem.Text = "更多";
             // 
             // 创建流通权限ToolStripMenuItem
             // 
             this.创建流通权限ToolStripMenuItem.Name = "创建流通权限ToolStripMenuItem";
-            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(257, 38);
+            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.创建流通权限ToolStripMenuItem.Text = "创建流通权限";
             this.创建流通权限ToolStripMenuItem.Click += new System.EventHandler(this.创建流通权限ToolStripMenuItem_Click);
+            // 
+            // 参数配置ToolStripMenuItem
+            // 
+            this.参数配置ToolStripMenuItem.Name = "参数配置ToolStripMenuItem";
+            this.参数配置ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.参数配置ToolStripMenuItem.Text = "参数配置";
+            this.参数配置ToolStripMenuItem.Click += new System.EventHandler(this.参数配置ToolStripMenuItem_Click);
             // 
             // Form_test
             // 
@@ -665,6 +674,7 @@
         private System.Windows.Forms.Button button_deleteTestEnv;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBox_wrongItem;
+        private System.Windows.Forms.ToolStripMenuItem 参数配置ToolStripMenuItem;
 
     }
 }

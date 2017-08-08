@@ -47,9 +47,10 @@
             // button_start
             // 
             this.button_start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_start.Location = new System.Drawing.Point(299, 327);
+            this.button_start.Location = new System.Drawing.Point(598, 654);
+            this.button_start.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.button_start.Name = "button_start";
-            this.button_start.Size = new System.Drawing.Size(75, 23);
+            this.button_start.Size = new System.Drawing.Size(150, 46);
             this.button_start.TabIndex = 1;
             this.button_start.Text = "启动";
             this.button_start.UseVisualStyleBackColor = true;
@@ -57,26 +58,28 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel_port});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 353);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 718);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(467, 26);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 28, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(934, 40);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(131, 21);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(257, 35);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // toolStripStatusLabel_port
             // 
             this.toolStripStatusLabel_port.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.toolStripStatusLabel_port.Name = "toolStripStatusLabel_port";
-            this.toolStripStatusLabel_port.Size = new System.Drawing.Size(128, 21);
+            this.toolStripStatusLabel_port.Size = new System.Drawing.Size(247, 35);
             this.toolStripStatusLabel_port.Text = "toolStripStatusLabel";
             // 
             // groupBox1
@@ -85,9 +88,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.webBrowser1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 28);
+            this.groupBox1.Location = new System.Drawing.Point(24, 56);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(443, 287);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Size = new System.Drawing.Size(886, 574);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "信息";
@@ -95,19 +100,22 @@
             // webBrowser1
             // 
             this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser1.Location = new System.Drawing.Point(3, 17);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Location = new System.Drawing.Point(6, 34);
+            this.webBrowser1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(40, 40);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(437, 267);
+            this.webBrowser1.Size = new System.Drawing.Size(874, 534);
             this.webBrowser1.TabIndex = 0;
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem_file});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(467, 25);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(12, 4, 0, 4);
+            this.menuStrip1.Size = new System.Drawing.Size(934, 43);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -116,23 +124,24 @@
             this.toolStripMenuItem_file.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem_settings});
             this.toolStripMenuItem_file.Name = "toolStripMenuItem_file";
-            this.toolStripMenuItem_file.Size = new System.Drawing.Size(58, 21);
+            this.toolStripMenuItem_file.Size = new System.Drawing.Size(103, 35);
             this.toolStripMenuItem_file.Text = "文件(&F)";
             // 
             // toolStripMenuItem_settings
             // 
             this.toolStripMenuItem_settings.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem_settings.Image")));
             this.toolStripMenuItem_settings.Name = "toolStripMenuItem_settings";
-            this.toolStripMenuItem_settings.Size = new System.Drawing.Size(139, 22);
+            this.toolStripMenuItem_settings.Size = new System.Drawing.Size(239, 38);
             this.toolStripMenuItem_settings.Text = "参数配置(&S)";
             this.toolStripMenuItem_settings.Click += new System.EventHandler(this.toolStripMenuItem_settings_Click);
             // 
             // button_stop
             // 
             this.button_stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_stop.Location = new System.Drawing.Point(380, 327);
+            this.button_stop.Location = new System.Drawing.Point(760, 654);
+            this.button_stop.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.button_stop.Name = "button_stop";
-            this.button_stop.Size = new System.Drawing.Size(75, 23);
+            this.button_stop.Size = new System.Drawing.Size(150, 46);
             this.button_stop.TabIndex = 5;
             this.button_stop.Text = "停止";
             this.button_stop.UseVisualStyleBackColor = true;
@@ -140,20 +149,20 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(467, 379);
+            this.ClientSize = new System.Drawing.Size(934, 758);
             this.Controls.Add(this.button_stop);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.button_start);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "SIP2协议接口程序";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

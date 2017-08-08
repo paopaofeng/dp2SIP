@@ -4,6 +4,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 
 namespace DigitalPlatform.SIP2
@@ -131,6 +132,7 @@ namespace DigitalPlatform.SIP2
         }
 
 
+
         #region 通用函数
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace DigitalPlatform.SIP2
             get
             {
                 return DateTime.Now.ToString("yyyyMMdd    HHmmss");
+
             }
         }
 

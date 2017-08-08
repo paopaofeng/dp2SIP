@@ -1,0 +1,233 @@
+﻿using DigitalPlatform;
+using DigitalPlatform.SIP2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+namespace DigitalPlatform.SIP2
+{
+    public class TcpClientWrapper
+    {
+        private TcpClient _client =null;
+        private NetworkStream _networkStream=null;
+
+        public TcpClientWrapper()
+        {
+
+        }
+
+        public TcpClientWrapper(TcpClient client)
+        {
+
+            this._client = client;
+            this._networkStream = client.GetStream();
+        }
+
+        public string SIPServerUrl { get; set; }
+        public int SIPServerPort { get; set; }
+
+        public bool Connection(string serverUrl, int port, out string error)
+        {
+            error = "";
+
+            this.SIPServerUrl = serverUrl;
+            this.SIPServerPort = port;
+
+            // 先进行关闭
+            this.Close();
+
+            try
+            {
+                IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
+                string hostName = Dns.GetHostEntry(ipAddress).HostName;
+                
+                TcpClient client = new TcpClient(hostName, this.SIPServerPort);
+                this._client = client;
+                this._networkStream = client.GetStream();
+            }
+            catch (Exception ex)
+            {
+                error = "连接服务器失败:" + ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Close()
+        {
+            if (_networkStream != null)
+            {
+                //您必须先关闭 NetworkStream 您何时通过发送和接收数据。 关闭 TcpClient 不会释放 NetworkStream。
+                _networkStream.Close();
+                _networkStream = null;
+            }
+
+            if (_client != null)
+            {
+                /*
+                TCPClient.Close 释放此 TcpClient 实例本身，并请求关闭基础 TCP 连接（被封装的Socket）。
+                TCPClient.Client.Close 关闭 被封装的Socket 连接并释放所有关联此Socket的资源。
+                TCPClient.Client.Shutdown 禁用被封装的 Socket 上的发送和接收。
+                 */
+                this._client.Client.Close(); //
+                this._client.Close();
+                this._client = null;
+            }
+        }
+
+        // 发送消息
+        public  int SendMessage(string sendMsg,
+            out string error)
+        {
+            error = "";
+
+            if (this._client == null)
+            {
+                error = "_client对象不能为null。";
+                return -1;
+            }
+
+            if (this._networkStream == null)
+            {
+                error = "_networkStream对象不能为null。";
+                return -1;
+            }
+
+            try
+            {
+                if (this._networkStream.DataAvailable == true)
+                {
+                    error = "异常：发送前发现流中有未读的数据!";
+                    return -1;
+                }
+
+                byte[] baPackage = SIPUtility.Encoding_UTF8.GetBytes(sendMsg);
+                this._networkStream.Write(baPackage, 0, baPackage.Length);
+                this._networkStream.Flush();//刷新当前数据流中的数据
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return -1;
+            }
+
+        }
+
+        // 接收消息
+        public int RecvMessage(out string recvMsg,
+            out string error)
+        {
+            error = "";
+            recvMsg = "";
+
+            if (this._client == null)
+            {
+                error = "_client对象不能为null。";
+                return -1;
+            }
+
+            if (this._networkStream == null)
+            {
+                error = "_networkStream对象不能为null。";
+                return -1;
+            }
+
+            int offset = 0; //偏移量
+            int nRet = 0;
+
+            int nPackageLength = SIPConst.COMM_BUFF_LEN; //1024
+            byte[] baPackage = new byte[nPackageLength];
+
+            while (offset < nPackageLength)
+            {
+                if (this._client == null)
+                {
+                    error = "通讯中断";
+                    goto ERROR1;
+                }
+
+                try
+                {
+                    nRet = this._networkStream.Read(baPackage,
+                        offset,
+                        baPackage.Length - offset);
+                }
+                catch (SocketException ex)
+                {
+                    // ??这个什么错误码
+                    if (ex.ErrorCode == 10035)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        continue;
+                    }
+
+                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+                catch (Exception ex)
+                {
+                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+
+                if (nRet == 0) //返回值为0
+                {
+                    error = "Closed by remote peer";
+                    goto ERROR1;
+                }
+
+                // 得到包的长度
+                if (nRet >= 1 || offset >= 1)
+                {
+                    //没有找到结束符，继续读
+                    int nIndex = Array.IndexOf(baPackage, (byte)SIPConst.Terminator);
+                    if (nIndex != -1)
+                    {
+                        nPackageLength = nIndex;
+                        break;
+                    }
+
+                    //流中没有数据了
+                    if (this._networkStream.DataAvailable == false)
+                    {
+                        nPackageLength = offset + nRet;
+                        break;
+                    }
+                }
+
+                offset += nRet;
+                if (offset >= baPackage.Length)
+                {
+                    // 扩大缓冲区
+                    byte[] temp = new byte[baPackage.Length + SIPConst.COMM_BUFF_LEN];//1024
+                    Array.Copy(baPackage, 0, temp, 0, offset);
+                    baPackage = temp;
+                    nPackageLength = baPackage.Length;
+                }
+            }
+
+            // 最后规整缓冲区尺寸，如果必要的话
+            if (baPackage.Length > nPackageLength)
+            {
+                byte[] temp = new byte[nPackageLength];
+                Array.Copy(baPackage, 0, temp, 0, nPackageLength);
+                baPackage = temp;
+            }
+
+            recvMsg = SIPUtility.Encoding_UTF8.GetString(baPackage);
+            return 0;
+
+        ERROR1:
+            baPackage = null;
+            return -1;
+        }
+
+
+    }
+}

@@ -237,6 +237,10 @@ namespace DigitalPlatform.SIP2
 
         #endregion
 
+        // 缓冲区长度
+        public const int COMM_BUFF_LEN = 1024;
+
+
         // 变长字段分隔符
         public const string FIELD_TERMINATOR = "|";
 

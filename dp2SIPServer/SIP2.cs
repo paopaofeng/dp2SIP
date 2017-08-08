@@ -49,7 +49,7 @@ namespace dp2SIPServer
             }
         }
 
-        static MarcRecord MarcXml2MarcRecord(string strMarcXml,
+        public static MarcRecord MarcXml2MarcRecord(string strMarcXml,
             out string strOutMarcSyntax,
             out string strError)
         {
@@ -71,6 +71,39 @@ namespace dp2SIPServer
                 strError = "MarcXml转换错误:" + strError;
 
             return record;
+        }
+
+        /// <summary>
+        /// To calculate the checksum add each character as an unsigned binary number,
+        /// take the lower 16 bits of the total and perform a 2's complement. 
+        /// The checksum field is the result represented by four hex digits.
+        /// </summary>
+        /// <param name="message">
+        /// 内容中不包含 校验和(checksum)
+        /// </param>
+        /// <returns></returns>
+        public static string GetChecksum(string message)
+        {
+            string checksum = "";
+
+            try
+            {
+                ushort sum = 0;
+                foreach (char c in message)
+                {
+                    sum += c;
+                }
+
+                ushort checksum_inverted_plus1 = (ushort)(~sum + 1);
+
+                checksum = checksum_inverted_plus1.ToString("X4");
+            }
+            catch (Exception ex)
+            {
+                string strError = ex.Message;
+                checksum = null;
+            }
+            return checksum;
         }
 
         /// <summary>

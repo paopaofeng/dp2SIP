@@ -14,10 +14,8 @@ namespace DigitalPlatform.SIP2
 {
     public class SCHelper
     {
-        private TcpClient _client;
-        private NetworkStream _networkStream;
 
-        public bool IsLogin { get; set; }
+
 
         #region 单一实例
 
@@ -44,192 +42,27 @@ namespace DigitalPlatform.SIP2
 
         #region 连接服务器
 
-        public string SIPServerUrl { get; set; }
-        public int SIPServerPort { get; set; }
+        private TcpClientWrapper _clientWrapper = null;
 
         public bool Connection(string serverUrl, int port,out string error)
         {
             error = "";
-
-            this.SIPServerUrl = serverUrl;
-            this.SIPServerPort = port;
-
-            // 先进行关闭
-            this.Close();
-
-            try
-            {
-                IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
-                string hostName = Dns.GetHostEntry(ipAddress).HostName;
-                _client = new TcpClient(hostName, this.SIPServerPort);
-
-                _networkStream = _client.GetStream();
-            }
-            catch (Exception ex)
-            {
-                error= "连接服务器失败:" + ex.Message;
-                return false;
-            }
-
-            this.IsLogin = false;
-            return true;
+            this._clientWrapper = new TcpClientWrapper();
+            return this._clientWrapper.Connection(serverUrl, port, out error);
         }
 
         // 关闭连接
         public void Close()
         {
-            if (_client != null)
+            if (this._clientWrapper != null)
             {
-                this._networkStream.Close();
-                this._client.Close();
-
-                this._networkStream = null;
-                this._client = null;
+                this._clientWrapper.Close();
             }
         }
 
         #endregion
 
         #region 发送，接收消息
-
-        // 发送消息
-        public int SendMessage(string sendMsg, out string error)
-        {
-            error = "";
-
-            if (this._client == null || this._networkStream == null)
-            {
-                error = "尚未连接SIP2服务器";
-                return -1;
-            }
-
-            try
-            {
-
-                if (this._networkStream.DataAvailable == true)
-                {
-                    error = "异常：发送前发现流中有未读的数据!";
-                    return -1;
-                }
-
-                byte[] baPackage = SIPUtility.Encoding_UTF8.GetBytes(sendMsg);
-                this._networkStream.Write(baPackage, 0, baPackage.Length);
-                this._networkStream.Flush();//刷新当前数据流中的数据
-
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-                return -1;
-            }
-
-        }
-
-        public const int COMM_BUFF_LEN = 1024;
-        // 接收消息
-        public int RecvMessage(out string recvMsg,
-            out string error)
-        {
-            error = "";
-            recvMsg = "";
-
-            if (this._client == null || this._networkStream == null)
-            {
-                error = "尚未连接SIP2服务器";
-                return -1;
-            }
-
-            int offset = 0; //偏移量
-            int nRet = 0;
-
-            int nPackageLength = COMM_BUFF_LEN; //1024
-            byte[] baPackage = new byte[nPackageLength];
-
-            while (offset < nPackageLength)
-            {
-                if (this._client == null)
-                {
-                    error = "通讯中断";
-                    goto ERROR1;
-                }
-
-                try
-                {
-                    nRet = this._networkStream.Read(baPackage,
-                        offset,
-                        baPackage.Length - offset);
-                }
-                catch (SocketException ex)
-                {
-                    // ??这个什么错误码
-                    if (ex.ErrorCode == 10035)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        continue;
-                    }
-
-                    error = "接收数据异常: " +  ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-                catch (Exception ex)
-                {
-                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-
-                if (nRet == 0) //返回值为0
-                {
-                    error = "Closed by remote peer";
-                    goto ERROR1;
-                }
-
-                // 得到包的长度
-                if (nRet >= 1 || offset >= 1)
-                {
-                    //没有找到结束符，继续读
-                    int nIndex = Array.IndexOf(baPackage, (byte)SIPConst.Terminator);
-                    if (nIndex != -1)
-                    {
-                        nPackageLength = nIndex;
-                        break;
-                    }
-
-                    //流中没有数据了
-                    if (this._networkStream.DataAvailable == false) 
-                    {
-                        nPackageLength = offset + nRet;
-                        break;
-                    }
-                }
-
-                offset += nRet;
-                if (offset >= baPackage.Length)
-                {
-                    // 扩大缓冲区
-                    byte[] temp = new byte[baPackage.Length + COMM_BUFF_LEN];//1024
-                    Array.Copy(baPackage, 0, temp, 0, offset);
-                    baPackage = temp;
-                    nPackageLength = baPackage.Length;
-                }
-            }
-
-            // 最后规整缓冲区尺寸，如果必要的话
-            if (baPackage.Length > nPackageLength)
-            {
-                byte[] temp = new byte[nPackageLength];
-                Array.Copy(baPackage, 0, temp, 0, nPackageLength);
-                baPackage = temp;
-            }
-
-            recvMsg = SIPUtility.Encoding_UTF8.GetString(baPackage);
-            return 0;
-
-        ERROR1:
-            this.Close();
-            baPackage = null;
-            return -1;
-        }
 
         // 发送消息，接收消息
         public int SendAndRecvMessage(string requestText, 
@@ -242,6 +75,12 @@ namespace DigitalPlatform.SIP2
             responseText = "";
             int nRet = 0;
 
+            if (this._clientWrapper == null)
+            {
+                error = "尚未创建TcpClient对象";
+                return -1;
+            }
+
 
             // 校验消息
             BaseMessage request = null;
@@ -253,7 +92,7 @@ namespace DigitalPlatform.SIP2
             }
 
             // 发送消息
-            nRet = this.SendMessage(requestText, out error);
+            nRet = this._clientWrapper.SendMessage( requestText, out error);
             if (nRet == -1)
             {
                 error = "发送消息出错:" + error;
@@ -261,7 +100,7 @@ namespace DigitalPlatform.SIP2
             }
 
             // 接收消息
-            nRet = RecvMessage(out responseText, out error);
+            nRet = this._clientWrapper.RecvMessage(out responseText, out error);
             if (nRet == -1)
             {
                 error = "接收消息出错:" + error;
@@ -332,7 +171,6 @@ namespace DigitalPlatform.SIP2
                 return 0;
             }
 
-            this.IsLogin = true;
 
             return 1;
         }
@@ -430,11 +268,11 @@ namespace DigitalPlatform.SIP2
                 return -1;
             }
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            //if (this.IsLogin == false)
+            //{
+            //    error = "尚未登录ASC系统";
+            //    return -2;
+            //}
 
             if (response12.Ok_1 == "0")
             {
@@ -496,11 +334,11 @@ namespace DigitalPlatform.SIP2
                 return -1;
             }
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            //if (this.IsLogin == false)
+            //{
+            //    error = "尚未登录ASC系统";
+            //    return -2;
+            //}
 
             if (response10.Ok_1 == "0")
             {
@@ -560,11 +398,11 @@ namespace DigitalPlatform.SIP2
                 return -1;
             }
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            //if (this.IsLogin == false)
+            //{
+            //    error = "尚未登录ASC系统";
+            //    return -2;
+            //}
 
             if (response30.Ok_1 == "0")
             {
@@ -593,8 +431,6 @@ namespace DigitalPlatform.SIP2
             responseText = "";
             response64 = null;
 
-
-
             PatronInformation_63 request = new PatronInformation_63()
             {
                 TransactionDate_18 = SIPUtility.NowDateTime,
@@ -620,11 +456,11 @@ namespace DigitalPlatform.SIP2
                 return -1;
             }
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            //if (this.IsLogin == false)
+            //{
+            //    error = "尚未登录ASC系统";
+            //    return -2;
+            //}
 
             return 0;
         }
@@ -676,11 +512,11 @@ namespace DigitalPlatform.SIP2
                 return -1;
             }
 
-            if (this.IsLogin == false)
-            {
-                error = "尚未登录ASC系统";
-                return -2;
-            }
+            //if (this.IsLogin == false)
+            //{
+            //    error = "尚未登录ASC系统";
+            //    return -2;
+            //}
 
 
             return 0;

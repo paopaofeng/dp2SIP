@@ -240,6 +240,7 @@ namespace dp2SIPClient
             return;
         }
 
+        // 删除测试环境
         public int DeleteTestEnv(out string error)
         {
             error = "";
@@ -1547,6 +1548,11 @@ namespace dp2SIPClient
         }
 
         #endregion
+
+        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
 
 
     }

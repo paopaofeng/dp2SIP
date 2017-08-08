@@ -6,6 +6,7 @@ using DigitalPlatform.IO;
 using DigitalPlatform.LibraryClient;
 using DigitalPlatform.LibraryClient.localhost;
 using DigitalPlatform.Marc;
+using DigitalPlatform.SIP2;
 using DigitalPlatform.Text;
 using DigitalPlatform.Xml;
 using System;
@@ -15,92 +16,42 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace dp2SIPServer
 {
-    public class Session : IDisposable
+    public class Session : IDisposable //不清楚去掉IDisposable可以吗？jane 20170808
     {
-        SIP sip = new SIP();
-
-        public LibraryChannelPool _channelPool = new LibraryChannelPool();
-
-        TcpClient _client = null;
-
-        string _username { get; set; }
-
-        string _loginPassword { get; set; }
-
-        string _locationCode { get; set; }
-
-
-        // 命令结束符
-        char Terminator
-        {
-            get
-            {
-                string strTerminator = Properties.Settings.Default.Terminator;
-                if (strTerminator == "LF")
-                    return (char)10;
-                else // if(strTerminator == "CR")
-                    return (char)13;
-            }
-        }
-
-        string DateFormat
-        {
-            get
-            {
-                string strDateFormat = Properties.Settings.Default.DateFormat;
-                if (string.IsNullOrEmpty(strDateFormat) || strDateFormat.Length < 8)
-                    strDateFormat = "yyyy-MM-dd";
-                return strDateFormat;
-            }
-        }
-
+        TcpClientWrapper _clientWrapper = null;
         MainForm _mainForm = null;
-        public MainForm MainForm
+
+        Thread _clientThread = null;
+        SIP _sip = new SIP();
+
+        string _username = "";
+        string _loginPassword = "";
+        string _locationCode = "";
+
+        internal Session(TcpClient client, MainForm form)
         {
-            get
-            {
-                return this._mainForm;
-            }
-            set
-            {
-                this._mainForm = value;
-            }
+            this._clientWrapper = new TcpClientWrapper(client);
+            this._mainForm = form;
+
+            // 挂上按需登录回调事件
+            this._channelPool.BeforeLogin += _channelPool_BeforeLogin;
+
+            // 开一个线程来接收和发送消息
+            this._clientThread = new Thread(new ThreadStart(this.Processing));
+            this._clientThread.Start();// Start proccessing
         }
 
-
-        string _dateTimeNow
+        public void Close()
         {
-            get
+            if (_clientWrapper != null)
             {
-                return DateTime.Now.ToString("yyyyMMdd    HHmmss");
-            }
-        }
-
-        Encoding Encoding
-        {
-            get
-            {
-                return this._mainForm.Encoding;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (this._client != null)
-            {
-                try
-                {
-                    this._client.Close();
-                }
-                catch
-                {
-                }
-                this._client = null;
+                this._clientWrapper.Close();
             }
 
             foreach (LibraryChannel channel in this._channelList)
@@ -110,27 +61,29 @@ namespace dp2SIPServer
             }
         }
 
-        internal Session(TcpClient client)
+        public void Dispose()
         {
-            this._client = client;
-
-            this._channelPool.BeforeLogin += (sender, e) =>
-            {
-                if (string.IsNullOrEmpty(this._username))
-                {
-                    e.Cancel = true;
-                    e.ErrorInfo = "尚未设置登录信息";
-                }
-
-                e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
-                e.UserName = this._username;
-                e.Parameters = "type=worker,client=dp2SIPServer|0.01";
-                e.Password = this._loginPassword;
-                e.SavePasswordLong = true;
-            };
+            this.Close();
         }
 
+        #region 关于dp2通道
 
+        void _channelPool_BeforeLogin(object sender, BeforeLoginEventArgs e)
+        {
+            if (string.IsNullOrEmpty(this._username))
+            {
+                e.Cancel = true;
+                e.ErrorInfo = "尚未设置登录信息";
+            }
+
+            e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
+            e.UserName = this._username;
+            e.Parameters = "type=worker,client=dp2SIPServer|0.01";
+            e.Password = this._loginPassword;
+            e.SavePasswordLong = true;
+        }
+
+        public LibraryChannelPool _channelPool = new LibraryChannelPool();
         List<LibraryChannel> _channelList = new List<LibraryChannel>();
 
         // parameters:
@@ -161,302 +114,9 @@ namespace dp2SIPServer
             _channelList.Remove(channel);
         }
 
-#if NEW
-        public int RecvTcpPackage(out string strPackage,
-            out string strError)
-        {
-            strError = "";
+        #endregion
 
-            strPackage = "";
-
-            int nInLen;
-            int wRet = 0;
-
-            Debug.Assert(this._client != null, "client为空");
-
-            byte[] baPackage = new byte[1024];
-            nInLen = 0;
-
-            int nLen = 1024; //COMM_BUFF_LEN;
-
-            // long lIdleCount = 0;
-
-            while (nInLen < nLen)
-            {
-                if (this._client == null)
-                {
-                    strError = "通讯中断";
-                    goto ERROR1;
-                }
-
-                try
-                {
-                    wRet = this._client.GetStream().Read(baPackage,
-                        nInLen,
-                        baPackage.Length - nInLen);
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.ErrorCode == 10035)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        continue;
-                    }
-
-                    // bool bRet = this.client.Connected;
-
-                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-                catch (Exception ex)
-                {
-                    //bool bRet = this.client.Connected;
-
-                    strError = "[ERROR] Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-
-                if (wRet == 0)
-                {
-                    strError = "Closed by remote peer";
-                    goto ERROR1;
-                }
-
-                // 得到包的长度
-
-                if (wRet >= 1 || nInLen >= 1)
-                {
-                    int nRet = Array.IndexOf(baPackage, (byte)this.Terminator);
-                    if (nRet != -1)
-                    {
-                        // nLen = nInLen + wRet;
-                        nLen = nRet;
-                        break;
-                    }
-
-                    if (this._client.GetStream().DataAvailable == false)
-                    {
-                        nLen = nInLen + wRet;
-                        break;
-                    }
-                }
-
-                nInLen += wRet;
-                if (nInLen >= baPackage.Length)
-                {
-                    // 扩大缓冲区
-                    byte[] temp = new byte[baPackage.Length + 1024];
-                    Array.Copy(baPackage, 0, temp, 0, nInLen);
-                    baPackage = temp;
-                    nLen = baPackage.Length;
-                }
-            }
-
-            // 最后规整缓冲区尺寸，如果必要的话
-            if (baPackage.Length > nLen)
-            {
-                byte[] temp = new byte[nLen];
-                Array.Copy(baPackage, 0, temp, 0, nLen);
-                baPackage = temp;
-            }
-
-            strPackage = this.Encoding.GetString(baPackage);
-
-            LogManager.Logger.Info("Recv:" + strPackage);
-
-            return 0;
-            ERROR1:
-            // this.CloseSocket();
-            baPackage = null;
-            return -1;
-        }
-#endif
-
-#if OLD
-        // 接收请求包
-        public int RecvTcpPackage(out string strPackage,
-            out string strError)
-        {
-            strError = "";
-            strPackage = "";
-
-            Debug.Assert(client != null, "client为空");
-
-            // StringBuilder sb = new StringBuilder();
-            List<byte> list = new List<byte>();
-            while (true)
-            {
-                try
-                {
-                    NetworkStream stream = client.GetStream();
-
-                    int nRet = stream.ReadByte();
-                    if (nRet == -1 || stream.DataAvailable == false)
-                        break;
-                    /*
-                    if (sb.Length > 0)
-                        sb.Append(" ");
-                    sb.AppendFormat("{0:X2}", nRet);
-                    */
-
-                    if (nRet == 0x0a || nRet == 0x0d)
-                    {
-                        // EndOfCMD += (char)nRet;
-                    }
-                    else
-                    {
-                        list.Add((byte)nRet);
-                    }
-                }
-                catch (SocketException ex)
-                {
-                    if (ex.ErrorCode == 10035)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        continue;
-                    }
-                    strError = "Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-                catch (Exception ex)
-                {
-                    strError = "Recv出错: " + ExceptionUtil.GetDebugText(ex);
-                    goto ERROR1;
-                }
-            }
-
-            /*
-            if (string.IsNullOrEmpty(EndOfCMD))
-                EndOfCMD = "[空]";
-            this.WriteToLog("[endof] " + EndOfCMD);
-            */
-
-            if (list.Count < 1)
-            {
-                strError = "[ERROR] Recv出错:接收到的命令为空";
-                goto ERROR1;
-            }
-
-            byte[] baPackage = new byte[list.Count];
-            list.CopyTo(0, baPackage, 0, list.Count);
-            strPackage = this.Encoding.GetString(baPackage);
-            this.WriteToLog("Recv:" + strPackage);
-
-            // this.WriteToLog("Recv:" + sb.ToString());
-
-            return 0;
-
-            ERROR1:
-            strPackage = "";
-            return -1;
-        }
-#endif
-        // 发出响应包
-        // return:
-        //      -1  出错
-        //      0   正确发出
-        //      1   发出前，发现流中有未读入的数据
-        public int SendTcpPackage(string strPackage,
-            out string strError)
-        {
-            strError = "";
-
-            if (_client == null)
-            {
-                strError = "client尚未初始化";
-                return -1;
-            }
-
-            StringBuilder msg = new StringBuilder(strPackage);
-            char endChar = strPackage[strPackage.Length - 1];
-            if (endChar == '|')
-                msg.Append("AY4AZ");
-            else
-                msg.Append("|AY4AZ");
-
-            msg.Append(GetChecksum(strPackage));
-
-            LogManager.Logger.Info("Send:" + msg.ToString());
-
-            msg.Append(this.Terminator);
-            strPackage = msg.ToString();
-            byte[] baPackage = this.Encoding.GetBytes(strPackage);
-
-            try
-            {
-                NetworkStream stream = _client.GetStream();
-                if (stream.DataAvailable == true)
-                {
-                    strError = "发送前发现流中有未读的数据";
-                    return 1;
-                }
-
-                stream.Write(baPackage, 0, baPackage.Length);
-                // stream.Flush();
-
-                /*
-                StringBuilder sb = new StringBuilder();
-                foreach (byte b in baPackage)
-                {
-                    if (sb.Length > 0)
-                        sb.Append(" ");
-                    sb.AppendFormat("{0:X2}", b);
-                }
-                this.WriteToLog("Send:" + sb.ToString());
-                */
-
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                strError = "Send出错: " + ExceptionUtil.GetDebugText(ex);
-                // this.CloseSocket();
-                LogManager.Logger.Error(strError);
-                return -1;
-            }
-        }
-
-
-        string StringToHex(string input)
-        {
-            StringBuilder sb = new StringBuilder();
-            byte[] baPackage = this.Encoding.GetBytes(input);
-            foreach (byte b in baPackage)
-            {
-                if (sb.Length > 0)
-                    sb.Append(" ");
-                sb.AppendFormat("{0:X2}", b);
-            }
-            return sb.ToString();
-        }
-
-
-        public void CloseSocket()
-        {
-            if (_client != null)
-            {
-                try
-                {
-                    NetworkStream stream = this._client.GetStream();
-                    stream.Close();
-                }
-                catch { }
-
-                try
-                {
-                    this._client.Close();
-                }
-                catch { }
-
-                this._client = null;
-            }
-
-            foreach (LibraryChannel channel in this._channelList)
-            {
-                if (channel != null)
-                    channel.Abort();
-            }
-        }
+        #region 接收 和 发送消息
 
         /// <summary>
         /// Session处理轮回
@@ -465,1468 +125,255 @@ namespace dp2SIPServer
         {
             string strPackage = "";
             string strError = "";
+            if (this._clientWrapper == null)
+            {
+                strError = "client尚未初始化";
+                return;
+            }
 
             try
             {
                 while (true)
                 {
-                    int nRet = RecvTcpPackage(out strPackage, out strError);
+                    // 先接收消息
+                    int nRet = this._clientWrapper.RecvMessage(out strPackage, out strError);//RecvTcpPackage(out strPackage, out strError);
                     if (nRet == -1)
-                    {
-                        LogManager.Logger.Error(strError);
-                        return;
-                    }
+                        goto ERROR1;
+                    LogManager.Logger.Info("Recv:" + strPackage);
 
-                    if (strPackage.Length < 2)
-                    {
-                        LogManager.Logger.Error("命令错误，命令长度不够2位");
-                        return;
-                    }
-
-                    string strMessageIdentifiers = strPackage.Substring(0, 2);
-
-                    string strReaderBarcode = "";
-                    string strItemBarcode = "";
-                    string strPassword = "";
-                    string[] parts = strPackage.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 1; i < parts.Length; i++)
-                    {
-                        string part = parts[i];
-                        if (part.Length < 2)
-                            continue;
-
-                        switch (part.Substring(0, 2))
-                        {
-                            case "AA":
-                                strReaderBarcode = part.Substring(2);
-                                break;
-                            case "AB":
-                                strItemBarcode = part.Substring(2);
-                                break;
-                            case "AD":
-                                strPassword = part.Substring(2);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-#if DoLogin
-                    // 登录到dp2系统
-                    nRet = DoLogin(Properties.Settings.Default.Username,
-                        Properties.Settings.Default.Password,
-                        out strError);
-                    if (nRet == -1 || nRet == 0)
-                    {
-                        LogManager.Logger.Error(strError);
-                        return;
-                    }
-#endif
+                    // 处理消息
                     string strBackMsg = "";
-                    switch (strMessageIdentifiers)
-                    {
-                        case "09":
-                            {
-                                /*
-                                 strBackMsg = Return(strItemBarcode);
-                                */
-                                LibraryChannel channel = this.GetChannel(this._username);
-                                try
-                                {
-                                    strBackMsg = sip.Checkin(channel, strPackage);
-                                }
-                                finally
-                                {
-                                    this.ReturnChannel(channel);
-                                }
-                                break;
-                            }
-                        case "11":
-                            {
-                                /*
-                                strBackMsg = Borrow(false, strReaderBarcode, strItemBarcode, "auto_renew");
-                                */
-                                LibraryChannel channel = this.GetChannel(this._username);
-                                try
-                                {
-                                    strBackMsg = sip.Checkout(channel, strPackage);
-                                }
-                                finally
-                                {
-                                    this.ReturnChannel(channel);
-                                }
-                                break;
-                            }
-                        case "17":
-                            {
-                                strBackMsg = GetItemInfo(strItemBarcode);
-                                break;
-                            }
-                        case "29":
-                            {
-                                /*
-                                strBackMsg = Borrow(true, // 续借
-                                    "",  // 读者条码号为空，续借
-                                    strItemBarcode);
-                                */
-                                LibraryChannel channel = this.GetChannel(this._username);
-                                try
-                                {
-                                    strBackMsg = sip.Renew(channel, strPackage);
-                                }
-                                finally
-                                {
-                                    this.ReturnChannel(channel);
-                                }
-                                break;
-                            }
-                        case "35":
-                            {
-                                strBackMsg = sip.EndPatronSession(strPackage);
-                                break;
-                            }
-                        case "85":
-                            {
-                                /*
-                                nRet = GetReaderInfo(strReaderBarcode,
-                                    strPassword,
-                                    "readerInfo",
-                                    out strBackMsg,
-                                    out strError);
-                                if (nRet == 0)
-                                    this.WriteToLog(strError);
-                                */
-                                break;
-                            }
-                        case "63":
-                            {
-                                // strBackMsg = GetReaderInfo(strReaderBarcode, strPassword);
-                                LibraryChannel channel = this.GetChannel(this._username);
-                                try
-                                {
-                                    strBackMsg = sip.PatronInfo(channel, strPackage);
-                                }
-                                finally
-                                {
-                                    this.ReturnChannel(channel);
-                                }
-                                break;
-                            }
-                        case "81":
-                            {
-                                nRet = SetReaderInfo(strPackage, out strBackMsg, out strError);
-                                if (nRet == 0)
-                                {
-                                    if (String.IsNullOrEmpty(strError) == false)
-                                        LogManager.Logger.Error(strError);
-                                }
-                                break;
-                            }
-                        case "91":
-                            {
-                                nRet = CheckDupReaderInfo(strPackage, out strBackMsg, out strError);
-                                if (nRet == 0)
-                                {
-                                    if (String.IsNullOrEmpty(strError) == false)
-                                        LogManager.Logger.Error(strError);
-                                }
-                                break;
-                            }
-                        case "93":
-                            {
-                                // strBackMsg = Login(strPackage);
-
-                                LibraryChannel channel = this.GetChannel();
-                                try
-                                {
-                                    strBackMsg = sip.Login(channel, strPackage);
-                                    if ("941" == strBackMsg)
-                                    {
-                                        this._username = sip.LoginUserId;
-                                        this._loginPassword = sip.LoginPassword;
-                                        this._locationCode = sip.LocationCode;
-                                    }
-                                }
-                                finally
-                                {
-                                    this.ReturnChannel(channel);
-                                }
-                                break;
-                            }
-                        case "99":
-                            {
-                                strBackMsg = sip.SCStatus(strPackage);
-                                break;
-                            }
-                        default:
-                            strBackMsg = "无法识别的命令'" + strMessageIdentifiers + "'";
-                            break;
-                    }
-
-                    nRet = SendTcpPackage(strBackMsg, out strError);
+                    nRet = this.HandleOneMessage(strPackage, out strBackMsg, out strError);
                     if (nRet == -1)
-                    {
-                        LogManager.Logger.Error(strError);
-                        return;
-                    }
+                        goto ERROR1;
+
+                    // 发送返回的消息
+                    nRet = this._clientWrapper.SendMessage(strBackMsg, out strError);
+                    if (nRet == -1)
+                        goto ERROR1;
+                    LogManager.Logger.Info("Send:" + strBackMsg);
+
                 }
             }
             finally
             {
-                this.CloseSocket();
+                this.Close();
             }
+
+            ERROR1:
+            LogManager.Logger.Error(strError);
+            return;
         }
 
-
-
-        string Login(string strPackage)
+        // 处理一条消息
+        private int HandleOneMessage(string strPackage, out string strBackMsg, out string strError)
         {
-            string strBackMsg = "";
+            strBackMsg = "";
+            strError = "";
+            int nRet = 0;
 
-            string strUserID = "";
-            string strPassword = "";
-            string strLocationCode = "";
-
-            string[] parts = strPackage.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string part in parts)
+            if (strPackage.Length < 2)
             {
+                LogManager.Logger.Error("命令错误，命令长度不够2位");
+                return -1;
+            }
+
+            string strMessageIdentifiers = strPackage.Substring(0, 2);
+
+            string strReaderBarcode = "";
+            string strItemBarcode = "";
+            string strPassword = "";
+            string[] parts = strPackage.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string part = parts[i];
                 if (part.Length < 2)
                     continue;
 
-                int nRet = part.IndexOf("CN");
-                if (nRet != -1)
+                switch (part.Substring(0, 2))
                 {
-                    strUserID = part.Substring(nRet + 2);
+                    case "AA":
+                        strReaderBarcode = part.Substring(2);
+                        break;
+                    case "AB":
+                        strItemBarcode = part.Substring(2);
+                        break;
+                    case "AD":
+                        strPassword = part.Substring(2);
+                        break;
+                    default:
+                        break;
                 }
-                else
-                {
-                    string strFieldID = part.Substring(0, 2);
-                    string strContent = part.Substring(2);
+            }
 
-                    switch (strFieldID)
+
+            switch (strMessageIdentifiers)
+            {
+                case "09":
                     {
-                        case "CO":
-                            strPassword = strContent;
-                            break;
-                        case "CP":
-                            strLocationCode = strContent;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            string strError = "";
-            LibraryChannel channel = this.GetChannel(strUserID);
-            try
-            {
-                long lRet = channel.Login(strUserID,
-                    strPassword,
-                    "type=worker,client=dp2SIPServer|0.01",
-                    out strError);
-                if (lRet == -1)
-                {
-                    LogManager.Logger.Error(strError);
-                    strBackMsg = "940";
-                }
-                else if (lRet == 0)
-                {
-                    LogManager.Logger.Error(strError);
-                    strBackMsg = "940";
-                }
-                else
-                {
-                    strBackMsg = "941";
-                    this._channelPool.BeforeLogin += (sender, e) =>
-                    {
-                        e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
-                        e.UserName = strUserID;
-                        e.Parameters = "type=worker,client=dp2SIPServer|0.01";
-                        e.Password = strPassword;
-                        e.SavePasswordLong = true;
-                    };
-
-                    this._username = strUserID;
-
-                    LogManager.Logger.Info("终端 " + strLocationCode + " : " + strUserID + " 接入");
-                }
-            }
-            finally
-            {
-                this.ReturnChannel(channel);
-            }
-            return strBackMsg;
-        }
-
-        // 进行登录
-        // return:
-        //      -1  error
-        //      0   登录未成功
-        //      1   登录成功
-        int DoLogin(string strUserName,
-            string strPassword,
-            out string strError)
-        {
-            strError = "";
-
-            LibraryChannel channel = this.GetChannel();
-
-            // return:
-            //      -1  error
-            //      0   登录未成功
-            //      1   登录成功
-            long lRet = channel.Login(strUserName,
-                strPassword,
-                "type=worker,client=dp2SIPServer|0.01",
-                out strError);
-            if (lRet == -1)
-            {
-                this.ReturnChannel(channel);
-                return -1;
-            }
-            this._channelPool.BeforeLogin += (sender, e) =>
-            {
-                e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
-                e.UserName = strUserName;
-                e.Parameters = "type=worker,client=dp2SIPServer|0.01";
-                e.Password = strPassword;
-                e.SavePasswordLong = true;
-            };
-            this.ReturnChannel(channel);
-            return (int)lRet;
-        }
-
-
-        /// <summary>
-        /// 借或续借
-        /// </summary>
-        /// <param name="bRenew">29 命令续借为 true，11 命令续借为 false</param>
-        /// <param name="strStyle">[空]或auto_renew 11 命令续借</param>
-        /// <param name="strReaderBarcode"></param>
-        /// <param name="strItemBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        string Borrow(bool bRenew,
-            string strReaderBarcode,
-            string strItemBarcode,
-            string strStyle = "")
-        {
-            string strError = "";
-
-            string strErrorInfo = ""; // dp2Library 接口返回的错误信息。
-
-            if (string.IsNullOrEmpty(strStyle))
-                strStyle = "biblio,item";
-            else
-                strStyle += ",biblio,item";
-
-            int nFlag = 0;
-
-            string strBiblioSummary = "";
-
-            // string strCurrencyType = ""; // 币种
-            // string strFeeAmount = "";    // 金额
-
-            // string strLastReturningDate = ""; // 续借前应还日期
-
-            string[] aDupPath = null;
-            string[] item_records = null;
-            string[] reader_records = null;
-            string[] biblio_records = null;
-            string strOutputReaderBarcode = "";
-            BorrowInfo borrow_info = null;
-
-            LibraryChannel channel = this.GetChannel(this._username);
-
-            long lRet = channel.Borrow(
-                null,   // stop,
-                bRenew,  // 续借为 true
-                strReaderBarcode,    //读者证条码号
-                strItemBarcode,     // 册条码号
-                null, //strConfirmItemRecPath,
-                false,
-                null,   // this.OneReaderItemBarcodes,
-                strStyle, // auto_renew,biblio,item                   //  "reader,item,biblio", // strStyle,
-                "xml:noborrowhistory",  // strItemReturnFormats,
-                out item_records,
-                "summary",    // strReaderFormatList
-                out reader_records,
-                "xml",         //strBiblioReturnFormats,
-                out biblio_records,
-                out aDupPath,
-                out strOutputReaderBarcode,
-                out borrow_info,
-                out strErrorInfo);
-            if (lRet == -1)
-            {
-                nFlag = 0;
-                LogManager.Logger.Error("[ERROR] " + strErrorInfo);
-
-                string strBiblioRecPath = "";
-                lRet = channel.GetBiblioSummary(null,
-                    strItemBarcode,
-                    "",
-                    "",
-                    out strBiblioRecPath,
-                    out strBiblioSummary,
-                    out strErrorInfo);
-                if (lRet == -1)
-                    LogManager.Logger.Error(strErrorInfo);
-            }
-            else
-            {
-                nFlag = 1;
-
-                XmlDocument dom = new XmlDocument();
-                try
-                {
-                    dom.LoadXml(item_records[0]);
-
-                    /*
-                    string strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
-                    CurrencyItem currencyItem = null;
-                    if (!string.IsNullOrEmpty(strPrice))
-                    {
-                        int nRet1 = PriceUtil.ParseSinglePrice(strPrice, out currencyItem, out strError);
-                        if (nRet1 == 0)
-                        {
-                            strCurrencyType = currencyItem.Prefix;
-                            strFeeAmount = currencyItem.Value.ToString();
-                        }
-                        if (string.IsNullOrEmpty(strCurrencyType) == false && strCurrencyType.Length != 3)
-                            strCurrencyType = "CNY";
-                    }
-
-                    strLastReturningDate = DomUtil.GetElementText(dom.DocumentElement, "lastReturningDate");
-                    strLastReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strLastReturningDate, "yyyyMMdd");
-                    */
-                }
-                catch (Exception ex)
-                {
-                    strError = "册信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
-                    LogManager.Logger.Error(strError);
-                }
-
-                string strMarcSyntax = "";
-                MarcRecord record = MarcXml2MarcRecord(biblio_records[0],
-                    out strMarcSyntax,
-                    out strError);
-                if (record != null)
-                {
-                    if (strMarcSyntax == "unimarc")
-                    {
-                        strBiblioSummary = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                    }
-                    else if (strMarcSyntax == "usmarc")
-                    {
-                        strBiblioSummary = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                    }
-                }
-                else
-                {
-                    strError = "书目信息解析错误:" + strError;
-                    LogManager.Logger.Error(strError);
-                }
-            }
-
-            strErrorInfo = RegularString(strErrorInfo);
-
-            if (string.IsNullOrEmpty(strBiblioSummary))
-                strBiblioSummary = strItemBarcode;
-
-            strBiblioSummary = RegularString(strBiblioSummary); // 替换文件中可能存在的"\r"，"\n"，"|"
-
-            StringBuilder sb = new StringBuilder(1024);
-            if (bRenew == false)
-                sb.Append("12").Append(nFlag).Append("NNY").Append(this._dateTimeNow).Append("AOdp2Library");
-            else
-                sb.Append("30").Append(nFlag).Append("YNN").Append(this._dateTimeNow).Append("AOdp2Library");
-
-            sb.Append("|AA").Append(strOutputReaderBarcode).Append("|AB").Append(strItemBarcode);
-            if (nFlag == 0)
-            {
-                if (bRenew == false)
-                {
-                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅失败。").Append(strErrorInfo);
-                    sb.Append("|AF借阅失败");// .Append(strErrorInfo);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书：").Append("《").Append(strBiblioSummary).Append("》失败。").Append(strErrorInfo);
-                }
-                else
-                {
-                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借失败。").Append(strErrorInfo);
-                    sb.Append("|AF续借失败");// .Append(strErrorInfo);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借图书").Append("《").Append(strBiblioSummary).Append("》失败。").Append(strErrorInfo);
-                }
-            }
-            else // if (nFlag == 1)
-            {
-                string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, this.DateFormat);
-                sb.Append("|AJ").Append(strBiblioSummary).Append("|AH").Append(strLatestReturnTime);
-
-                // sb.Append("|BH").Append(strCurrencyType).Append("|BV").Append(strFeeAmount);
-
-                if (bRenew == false)
-                {
-#if PJST
-                    sb.Append("|CHATN").Append("PR").Append(strPrice);
-#endif
-                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》借阅成功。").Append(channel.UserName);
-                    sb.Append("|AF借阅成功"); // .Append(channel.UserName);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书 ");
-                    sb.Append("《").Append(strBiblioSummary).Append("》成功。");
-                }
-                else
-                {
-#if PJST
-                    sb.Append("|CM").Append(strLastReturningDate);
-#endif
-                    // sb.Append("|AF图书《").Append(strBiblioSummary).Append("》续借成功。");
-                    sb.Append("|AF续借成功");
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借");
-                    sb.Append("《").Append(strBiblioSummary).Append("》成功。");
-                }
-            }
-
-            this.ReturnChannel(channel);
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// 还书
-        /// </summary>
-        /// <param name="strItemBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        string Return(string strItemBarcode)
-        {
-            int nFlag = 0;
-
-            string strErrorInfo = "";
-
-            string strTitle = "";
-
-            string strLocation = "";
-            /*
-            string strBookType = "";
-            string strPrice = "";
-
-            string strOverduePrice = "";
-            */
-            string strReturnDate = "";
-
-
-            string[] item_records = null;
-            string[] reader_records = null;
-            string[] biblio_records = null;
-            string[] aDupPath = null;
-            string strOutputReaderBarcode = "";
-            ReturnInfo return_info = null;
-            string strError = "";
-
-            LibraryChannel channel = this.GetChannel(this._username);
-            long lRet = channel.Return(null,
-                "return",
-                "",    //strReaderBarcode,
-                strItemBarcode,
-                "", // strConfirmItemRecPath
-                false,
-                "item,biblio",
-                "xml",
-                out item_records,
-                "xml",
-                out reader_records,
-                "xml",
-                out biblio_records,
-                out aDupPath,
-                out strOutputReaderBarcode,
-                out return_info,
-                out strError);
-            if (lRet == -1)
-            {
-                nFlag = 0;
-                LogManager.Logger.Error(strError);
-                if (channel.ErrorCode == ErrorCode.NotBorrowed)
-                    nFlag = 1;
-
-                if (!string.IsNullOrEmpty(strErrorInfo))
-                    strErrorInfo += ";";
-
-                strErrorInfo += strError;
-            }
-            else
-            {
-                nFlag = 1;
-                XmlDocument item_dom = new XmlDocument();
-                string strItemXml = item_records[0];
-                try
-                {
-                    item_dom.LoadXml(strItemXml);
-
-                    strLocation = DomUtil.GetElementText(item_dom.DocumentElement, "location");
-                    /*
-                          strPrice = DomUtil.GetElementText(item_dom.DocumentElement, "price");
-                          strBookType = DomUtil.GetElementText(item_dom.DocumentElement, "bookType");
-                    */
-                    strReturnDate = DomUtil.GetAttr(item_dom.DocumentElement, "borrowHistory/borrower", "returnDate");
-                    if (String.IsNullOrEmpty(strReturnDate) == false)
-                        strReturnDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturnDate, this.DateFormat);
-                    else
-                        strReturnDate = DateTime.Now.ToString(this.DateFormat);
-                }
-                catch (Exception ex)
-                {
-                    strError = "册信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
-                    LogManager.Logger.Error(strError);
-                }
-            }
-
-            /*
-                 if (lRet == 1)
-                 {
-                      XmlDocument overdue_dom = new XmlDocument();
-                      try
-                      {
-                          overdue_dom.LoadXml(return_info.OverdueString);
-
-                          strOverduePrice = DomUtil.GetAttr(overdue_dom.DocumentElement, "price");
-                      }
-                      catch (Exception ex)
-                      {
-                           strError = "超期信息解析错误:" + ExceptionUtil.GetExceptionText(ex);
-                           this.WriteToLog(strError);
-                      }
-                }
-            */
-
-            if (biblio_records != null && biblio_records.Length > 0)
-            {
-                string strMarcSyntax = "";
-                MarcRecord record = MarcXml2MarcRecord(biblio_records[0], out strMarcSyntax, out strError);
-                if (record != null)
-                {
-                    if (strMarcSyntax == "unimarc")
-                        strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                    else if (strMarcSyntax == "usmarc")
-                        strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                }
-                else
-                {
-                    strError = "书目信息解析错误:" + strError;
-                    LogManager.Logger.Error(strError);
-                }
-            }
-
-            if (lRet != -1 && string.IsNullOrEmpty(strTitle))
-            {
-                string strBiblioRecPath = "";
-                string strSummary = "";
-                lRet = channel.GetBiblioSummary(null,
-                    strItemBarcode,
-                    "",
-                    "",
-                    out strBiblioRecPath,
-                    out strSummary,
-                    out strError);
-                if (lRet != -1)
-                    strTitle = strSummary;
-                else
-                {
-                    if (!string.IsNullOrEmpty(strErrorInfo))
-                        strErrorInfo += ";";
-
-                    strErrorInfo += strError;
-                }
-            }
-
-            strTitle = RegularString(strTitle);
-
-            // ErrorCode code = channel.ErrorCode;
-
-            StringBuilder sb = new StringBuilder(1024);
-            sb.Append("10").Append(nFlag.ToString()).Append("YNN").Append(this._dateTimeNow).Append("AOdp2Library");
-            sb.Append("|AB").Append(strItemBarcode);
-
-            if (nFlag == 1)
-            {
-                sb.Append("|AQ").Append(strLocation);
-                if (!string.IsNullOrEmpty(strTitle))
-                    sb.Append("|AJ").Append(strTitle);
-                else
-                    sb.Append("|AJ").Append(strItemBarcode);
-
-                sb.Append("|AA").Append(strOutputReaderBarcode);
-
-                // sb.Append("|CK").Append(strBookType);
-
-                // sb.Append("ATN").Append("PR").Append(strPrice);
-
-                // sb.Append("|CLsort bin A1");
-
-                sb.Append("|AF图书《").Append(strTitle).Append("》还回处理成功！").Append(channel.UserName);
-                sb.Append("|AG图书《").Append(strTitle).Append("》-- ").Append(strItemBarcode).Append("已于").Append(strReturnDate).Append("归还！");
-            }
-            else // nFlag == 0
-            {
-                strErrorInfo = RegularString(strErrorInfo);
-
-                // sb.Append("|CLsort bin A1");
-                sb.Append("|AF图书【").Append(strItemBarcode).Append("】");
-                if (!string.IsNullOrEmpty(strTitle))
-                    sb.Append(" - 《").Append(strTitle).Append("》");
-                sb.Append("还回处理错误:").Append(strError);
-
-                sb.Append("|AG图书【").Append(strItemBarcode).Append("】");
-                if (!string.IsNullOrEmpty(strTitle))
-                    sb.Append(" - 《").Append(strTitle).Append("》");
-                sb.Append("还回处理错误:").Append(strError);
-            }
-            this.ReturnChannel(channel);
-
-            return sb.ToString();
-        }
-
-#if NO
-        /// <summary>
-        /// 借
-        /// </summary>
-        /// <param name="bRenew"></param>
-        /// <param name="strReaderBarcode"></param>
-        /// <param name="strItemBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        int Borrow(bool bRenew,
-            string strReaderBarcode,
-            string strItemBarcode,
-            out string strBackMsg,
-            out string strError)
-        {
-            strBackMsg = "";
-            strError = "";
-
-            int nRet = 0;
-
-            int nFlag = 0;
-
-            string strTitle = "";
-
-            string strPrice = "";
-
-            string strLastReturningDate = ""; // 续借前应还日期
-
-            string[] aDupPath = null;
-            string[] item_records = null;
-            string[] reader_records = null;
-            string[] biblio_records = null;
-            string strOutputReaderBarcode = "";
-            BorrowInfo borrow_info = null;
-
-            LibraryChannel channel = this.GetChannel();
-
-            long lRet = channel.Borrow(
-                null,   // stop,
-                bRenew,  // 续借为 true
-                 strReaderBarcode,    //读者证条码号
-                 strItemBarcode,     // 册条码号
-                null, //strConfirmItemRecPath,
-                false,
-                null,   // this.OneReaderItemBarcodes,
-                "biblio,item",//  "reader,item,biblio", // strStyle,
-                "xml:noborrowhistory",  // strItemReturnFormats,
-                out item_records,
-                "summary",    // strReaderFormatList
-                out reader_records,
-                "xml",         //strBiblioReturnFormats,
-                out biblio_records,
-                out aDupPath,
-                out strOutputReaderBarcode,
-                out borrow_info,
-                out strError);
-            if (lRet == -1)
-            {
-                nRet = -1;
-                nFlag = 0;
-            }
-            else
-            {
-                nFlag = 1;
-
-                XmlDocument dom = new XmlDocument();
-                try
-                {
-                    dom.LoadXml(item_records[0]);
-
-                    strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
-
-                    strLastReturningDate = DomUtil.GetElementText(dom.DocumentElement, "lastReturningDate");
-                    strLastReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strLastReturningDate, "yyyy-MM-dd");
-                }
-                catch (Exception ex)
-                {
-                    nRet = -1;
-                    strError = "册信息解析错误" + ex.Message;
-                }
-
-
-                if (nRet == 0)
-                {
-                    string strMarcSyntax = "";
-                    MarcRecord record = MarcXml2MarcRecord(biblio_records[0],
-                        out strMarcSyntax,
-                        out strError);
-                    if (record != null)
-                    {
-                        if (strMarcSyntax == "unimarc")
-                        {
-                            strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                        }
-                        else if (strMarcSyntax == "usmarc")
-                        {
-                            strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                        }
-                    }
-                    else
-                    {
-                        nRet = -1;
-                        strError = "书目信息解析错误:" + strError;
-                    }
-                }
-            }
-
-            StringBuilder sb = new StringBuilder(1024);
-            if (bRenew == false)
-                sb.Append("12").Append(nFlag.ToString()).Append("NNY20141027    181545AOdp2Library");
-            else
-                sb.Append("30").Append(nFlag.ToString()).Append("YNN20141028    082239AOdp2Library");
-
-            sb.Append("|AA").Append(strOutputReaderBarcode).Append("|AB").Append(strItemBarcode);
-            if (nFlag == 0)
-            {
-                if (bRenew == false)
-                {
-                    sb.Append("|AF 图书【").Append(strItemBarcode).Append("】借阅失败！");
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书 ").Append("【").Append(strItemBarcode).Append("】失败！");
-                }
-                else
-                {
-                    sb.Append("|AF 图书【").Append(strItemBarcode).Append("】续借失败！");
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借图书 ").Append("【").Append(strItemBarcode).Append("】失败！");
-                }
-            }
-            else // if (nFlag == 1)
-            {
-                string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, "yyyy-MM-dd");
-                sb.Append("|AJ").Append(strTitle).Append("|AH").Append(strLatestReturnTime);
-
-                if (bRenew == false)
-                {
-                    sb.Append("|CHATN").Append("PR").Append(strPrice);
-                    sb.Append("|AF 图书【").Append(strItemBarcode).Append("】借阅成功！应还日期：").Append(strLatestReturnTime);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】借书 ").Append(strTitle);
-                    sb.Append("【").Append(strItemBarcode).Append("】成功，应还日期：").Append(strLatestReturnTime);
-                }
-                else
-                {
-                    sb.Append("|CM").Append(strLastReturningDate);
-
-                    sb.Append("|AF 图书【").Append(strItemBarcode).Append("】续借处理成功，应还日期：").Append(strLatestReturnTime);
-                    sb.Append("|AG读者【").Append(strOutputReaderBarcode).Append("】续借处理成功，应还日期：").Append(strLatestReturnTime);
-                }
-            }
-            strBackMsg = sb.ToString();
-
-            this.ReturnChannel(channel);
-
-            return nRet;
-        }
-
-
-
-
-        /// <summary>
-        /// 还书
-        /// </summary>
-        /// <param name="strItemBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        int Return(
-            // string strReaderBarcode, 
-            string strItemBarcode,
-            out string strBackMsg,
-            out string strError)
-        {
-            strBackMsg = "";
-            strError = "";
-
-            int nRet = 0;
-
-            int nFlag = 0;
-
-
-            string strTitle = "";
-
-            string strLocation = "";
-            string strBookType = "";
-            string strPrice = "";
-
-            string strOverduePrice = "";
-            string strReturnDate = "";
-
-
-            string[] item_records = null;
-            string[] reader_records = null;
-            string[] biblio_records = null;
-            string[] aDupPath = null;
-            string strOutputReaderBarcode = "";
-            ReturnInfo return_info = null;
-
-            LibraryChannel channel = this.GetChannel();
-            long lRet = channel.Return(null,
-                "return",
-                "",    //strReaderBarcode,
-                strItemBarcode,
-                "", // strConfirmItemRecPath
-                false,
-                "item,biblio",
-                "xml",
-                out item_records,
-                "xml",
-                out reader_records,
-                "xml",
-                out biblio_records,
-                out aDupPath,
-                out strOutputReaderBarcode,
-                out return_info,
-                out strError);
-            if (lRet == -1)
-            {
-                nRet = -1;
-                nFlag = 0;
-            }
-            else
-            {
-                nFlag = 1;
-
-                XmlDocument item_dom = new XmlDocument();
-                string strItemXml = item_records[0];
-                try
-                {
-                    item_dom.LoadXml(strItemXml);
-
-
-                    strLocation = DomUtil.GetElementText(item_dom.DocumentElement, "location");
-                    strPrice = DomUtil.GetElementText(item_dom.DocumentElement, "price");
-                    strBookType = DomUtil.GetElementText(item_dom.DocumentElement, "bookType");
-
-                    strReturnDate = DomUtil.GetAttr(item_dom.DocumentElement, "borrowHistory/borrower", "returnDate");
-                    if (String.IsNullOrEmpty(strReturnDate) == false)
-                        strReturnDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturnDate, "yyyy-MM-dd");
-                    else
-                        strReturnDate = DateTime.Now.ToString("yyyy-MM-dd");
-                }
-                catch (Exception ex)
-                {
-                    nRet = -1;
-                    strError = "册信息解析错误:" + ex.Message;
-                }
-
-                if (nRet == 0 && lRet == 1)
-                {
-                    XmlDocument overdue_dom = new XmlDocument();
-                    try
-                    {
-                        overdue_dom.LoadXml(return_info.OverdueString);
-
-                        strOverduePrice = DomUtil.GetAttr(overdue_dom.DocumentElement, "price");
-                    }
-                    catch (Exception ex)
-                    {
-                        nRet = -1;
-                        strError = "超期信息解析错误:" + ex.Message;
-                    }
-                }
-
-
-                if (nRet == 0)
-                {
-                    string strMarcSyntax = "";
-                    MarcRecord record = MarcXml2MarcRecord(biblio_records[0], out strMarcSyntax, out strError);
-                    if (record != null)
-                    {
-                        if (strMarcSyntax == "unimarc")
-                        {
-                            strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                        }
-                        else if (strMarcSyntax == "usmarc")
-                        {
-                            strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                        }
-                    }
-                    else
-                    {
-                        nRet = -1;
-                        strError = "书目信息解析错误:" + strError;
-                    }
-                }
-            }
-
-            StringBuilder sb = new StringBuilder(1024);
-            sb.Append("10").Append(nFlag.ToString()).Append("YNN").Append(this._dateTimeNow).Append("AOdp2Library");
-            sb.Append("|AB").Append(strItemBarcode);
-
-            if (nFlag == 1)
-            
-                sb.Append("|AQ").Append(strLocation);
-                sb.Append("|AJ").Append(strTitle).Append("|AA").Append(strOutputReaderBarcode);
-                sb.Append("|CK").Append(strBookType);
-                sb.Append("|CF").Append(strOverduePrice); // 超期还书欠费金额
-                sb.Append("|CH").Append(strTitle).Append("ATN").Append("PR").Append(strPrice);
-                sb.Append("|CLsort bin A1");
-
-                sb.Append("|AF图书【").Append(strItemBarcode).Append("】还回处理成功！").Append(strReturnDate);
-                sb.Append("|AG图书").Append(strTitle).Append("[").Append(strItemBarcode).Append("]已于").Append(strReturnDate).Append("归还！");
-            }
-            else // nFlag == 0
-            {
-                sb.Append("|CLsort bin A1");
-                sb.Append("|AF图书【").Append(strItemBarcode).Append("】还回处理错误！");
-                sb.Append("|AG图书【").Append(strItemBarcode).Append("】还回处理错误！");
-            }
-
-            strBackMsg = sb.ToString();
-
-            this.ReturnChannel(channel);
-
-            return nRet;
-        }
-#endif
-
-#if NO
-        /// <summary>
-        /// 获得读者记录
-        /// </summary>
-        /// <param name="strBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        int GetReaderInfo(string strBarcode,
-            string strPassword,
-            string strStyle,
-            out string strBackMsg,
-            out string strError)
-        {
-            strBackMsg = "";
-            strError = "";
-
-            int nRet = 0;
-
-            long lRet = 0;
-
-            LibraryChannel channel = this.GetChannel();
-
-            StringBuilder sb = new StringBuilder(1024);
-
-            if (strStyle == "" || strStyle == "readerInfo")
-            {
-                sb.Append("86").Append(this._dateTimeNow).Append("AOdp2Library");
-            }
-            else  // strStyle == "borrowInfo"
-            {
-                sb.Append("64              001").Append(this._dateTimeNow).Append("000600000006000000000008AOdp2Library");
-            }
-            sb.Append("|AA").Append(strBarcode);
-
-            // strStyle == "readerInfo" && 
-            if (String.IsNullOrEmpty(strPassword) == false)
-            {
-                lRet = channel.VerifyReaderPassword(null,
-                    strBarcode,
-                    strPassword,
-                    out strError);
-                if (lRet == -1)
-                {
-                    sb.Append("|BLN").Append("|CQN");
-                    sb.Append("|AF").Append("校验密码过程中发生错误……");
-                    sb.Append("|AG").Append("校验密码过程中发生错误……");
-                    strBackMsg = sb.ToString();
-                    return nRet;
-                }
-                else if (lRet == 0)
-                {
-                    sb.Append("|BLN").Append("|CQN");
-                    sb.Append("|AF").Append("卡号或密码不正确。");
-                    sb.Append("|AG").Append("卡号或密码不正确。");
-                    strBackMsg = sb.ToString();
-                    return nRet;
-                }
-            }
-
-
-            XmlDocument dom = new XmlDocument();
-            string[] results = null;
-            lRet = channel.GetReaderInfo(
-                null,// stop,
-                strBarcode, //读者卡号,
-                "advancexml",   // this.RenderFormat, // "html",
-                out results,
-                out strError);
-            switch (lRet)
-            {
-                case -1:
-                    nRet = 0;
-                    break;
-                case 0:
-                    nRet = 0;
-                    strError = "查无此证";
-                    break;
-                case 1:
-                    {
-                        nRet = 1;
-                        string strReaderXml = results[0];
+                        /*
+                         strBackMsg = Return(strItemBarcode);
+                        */
+                        LibraryChannel channel = this.GetChannel(this._username);
                         try
                         {
-                            dom.LoadXml(strReaderXml);
+                            strBackMsg = this._sip.Checkin(channel, strPackage);
                         }
-                        catch (Exception ex)
+                        finally
                         {
-                            nRet = 0;
-                            strError = "读者信息解析错误:" + ExceptionUtil.GetDebugText(ex);
+                            this.ReturnChannel(channel);
                         }
                         break;
                     }
-                default: // lRet > 1
-                    nRet = 0;
-                    strError = "找到多条读者记录";
+                case "11":
+                    {
+                        /*
+                        strBackMsg = Borrow(false, strReaderBarcode, strItemBarcode, "auto_renew");
+                        */
+                        LibraryChannel channel = this.GetChannel(this._username);
+                        try
+                        {
+                            strBackMsg = this._sip.Checkout(channel, strPackage);
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
+                        break;
+                    }
+                case "17":
+                    {
+                        strBackMsg = GetItemInfo(strItemBarcode);
+                        break;
+                    }
+                case "29":
+                    {
+                        /*
+                        strBackMsg = Borrow(true, // 续借
+                            "",  // 读者条码号为空，续借
+                            strItemBarcode);
+                        */
+                        LibraryChannel channel = this.GetChannel(this._username);
+                        try
+                        {
+                            strBackMsg = this._sip.Renew(channel, strPackage);
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
+                        break;
+                    }
+                case "35":
+                    {
+                        strBackMsg = this._sip.EndPatronSession(strPackage);
+                        break;
+                    }
+                case "85":
+                    {
+                        /*
+                        nRet = GetReaderInfo(strReaderBarcode,
+                            strPassword,
+                            "readerInfo",
+                            out strBackMsg,
+                            out strError);
+                        if (nRet == 0)
+                            this.WriteToLog(strError);
+                        */
+                        break;
+                    }
+                case "63":
+                    {
+                        // strBackMsg = GetReaderInfo(strReaderBarcode, strPassword);
+                        LibraryChannel channel = this.GetChannel(this._username);
+                        try
+                        {
+                            strBackMsg = this._sip.PatronInfo(channel, strPackage);
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
+                        break;
+                    }
+                case "81":
+                    {
+                        nRet = SetReaderInfo(strPackage, out strBackMsg, out strError);
+                        if (nRet == 0)
+                        {
+                            if (String.IsNullOrEmpty(strError) == false)
+                                LogManager.Logger.Error(strError);
+                        }
+                        break;
+                    }
+                case "91":
+                    {
+                        nRet = CheckDupReaderInfo(strPackage, out strBackMsg, out strError);
+                        if (nRet == 0)
+                        {
+                            if (String.IsNullOrEmpty(strError) == false)
+                                LogManager.Logger.Error(strError);
+                        }
+                        break;
+                    }
+                case "93":
+                    {
+                        // strBackMsg = Login(strPackage);
+
+                        LibraryChannel channel = this.GetChannel();
+                        try
+                        {
+                            strBackMsg = this._sip.Login(channel, strPackage);
+                            if ("941" == strBackMsg)
+                            {
+                                this._username = this._sip.LoginUserId;
+                                this._loginPassword = this._sip.LoginPassword;
+                                this._locationCode = this._sip.LocationCode;
+                            }
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
+                        break;
+                    }
+                case "99":
+                    {
+                        strBackMsg = this._sip.SCStatus(strPackage);
+                        break;
+                    }
+                default:
+                    strBackMsg = "无法识别的命令'" + strMessageIdentifiers + "'";
                     break;
             }
 
-            if (strStyle == "" || strStyle == "readerInfo")
-            {
-                sb.Append("|OK").Append(nRet.ToString());
-            }
-
-            if (nRet == 0)
-            {
-                sb.Append("|BLN").Append("|AF查询读者信息失败:").Append(strError).Append("|AG查询读者信息失败!");
-            }
-            else // nRet == 1
-            {
-                sb.Append("|AE").Append(DomUtil.GetElementText(dom.DocumentElement, "name"));
-                sb.Append("|XT").Append(DomUtil.GetElementText(dom.DocumentElement, "readerType"));
-
-                string strExpireDate = DomUtil.GetElementText(dom.DocumentElement, "expireDate");
-                strExpireDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strExpireDate, "yyyyMMdd");
-                sb.Append("|XD").Append(strExpireDate);
-                if (strStyle == "" || strStyle == "readerInfo")
-                {
-                    sb.Append("|BP").Append(DomUtil.GetElementText(dom.DocumentElement, "tel"));
-                    sb.Append("|BD").Append(DomUtil.GetElementText(dom.DocumentElement, "address"));
-                    sb.Append("|XO").Append(DomUtil.GetElementText(dom.DocumentElement, "idCardNumber"));
-
-                    string strCreateDate = DomUtil.GetElementText(dom.DocumentElement, "createDate");
-                    strCreateDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strCreateDate, "yyyyMMdd");
-                    sb.Append("|XB").Append(strCreateDate);
-
-                    string strDateOfBirth = DomUtil.GetElementText(dom.DocumentElement, "dateOfBirth");
-                    strDateOfBirth = DateTimeUtil.Rfc1123DateTimeStringToLocal(strDateOfBirth, "yyyyMMdd");
-                    sb.Append("|XH").Append(strDateOfBirth);
-                    // sb.Append("|XN"); // 民族
-                    sb.Append("|XF").Append(DomUtil.GetElementText(dom.DocumentElement, "comment"));
-                    string strGender = DomUtil.GetElementText(dom.DocumentElement, "gender").Trim();
-                    if (strGender == "男")
-                        strGender = "1";
-                    else if (strGender == "女")
-                        strGender = "0";
-                    else
-                        strGender = "1";
-                    sb.Append("|XM").Append(strGender).Append("|AF查询读者信息成功!|AG查询读者信息成功!");
-                }
-                else if (strStyle == "borrowInfo")
-                {
-                    string strOverduesPrice = "";
-                    XmlNodeList nodes = dom.DocumentElement.SelectNodes("overdues/overdue/@price");
-                    foreach (XmlNode node in nodes)
-                    {
-                        string strPrice = node.Value;
-                        if (String.IsNullOrEmpty(strPrice))
-                            continue;
-
-                        if (String.IsNullOrEmpty(strOverduesPrice) == false)
-                            strOverduesPrice += "+";
-
-                        strOverduesPrice += strPrice;
-                    }
-                    nRet = PriceUtil.SumPrices(strOverduesPrice, out strOverduesPrice, out strError);
-                    if (nRet == 0)
-                        sb.Append("|CF").Append(strOverduesPrice).Append("|JF").Append(strOverduesPrice);
-                    else
-                        sb.Append("|CF").Append("CNY0.0").Append("|JF").Append("CNY0.0");
-
-                    // 验证读者：Y表示读者存在，N表示读者不存在
-                    sb.Append("|BLY");
-
-                    // CQ验证密码：Y表示读者密码正确，N表示读者密码错误
-                    sb.Append("|CQY");
-
-                    // 租金 JE 预付款
-                    sb.Append("|JE");
-
-                    // 保证金保证系数
-                    sb.Append("|XR");
-
-                    // 所借图书总额
-                    string strItemsPrices = "";
-                    string barcodes = "";
-                    XmlNodeList borrows = dom.DocumentElement.SelectNodes("borrows/borrow");
-                    foreach (XmlNode borrow in borrows)
-                    {
-                        string strItemBarcode = DomUtil.GetAttr(borrow, "barcode");
-                        if (String.IsNullOrEmpty(strItemBarcode) == false)
-                            barcodes += "|AS" + strItemBarcode;
-
-                        string strPrice = DomUtil.GetAttr(borrow, "price");
-                        if (String.IsNullOrEmpty(strPrice) == false)
-                        {
-                            if (String.IsNullOrEmpty(strItemsPrices) == false)
-                                strItemsPrices += "+";
-
-                            strItemsPrices += strPrice;
-                        }
-                    }
-
-                    sb.Append(barcodes);
-
-                    nRet = PriceUtil.SumPrices(strItemsPrices, out strItemsPrices, out strError);
-                    if (nRet == 0)
-                        sb.Append("|XC").Append(strItemsPrices);
-                    else
-                        sb.Append("|XC0.0");
-
-                    // 押金
-                    sb.Append("|BV").Append(DomUtil.GetElementText(dom.DocumentElement, "foregift"));
-
-                    // 可借总册数
-                    string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
-                    sb.Append("|BZ").Append(strCount);
-
-                    string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
-                    string strMsg = "";
-                    if (strBorrowsCount != "0")
-                        strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
-                    else
-                        strMsg += "您在本馆借书数已达最多可借数【" + strCount + "】，不能继续借了!";
-                    sb.Append("|AF").Append(strMsg).Append("|AG").Append(strMsg);
-                }
-            }
-
-            strBackMsg = sb.ToString();
-
-            this.ReturnChannel(channel);
-            return nRet;
+            // 加校验码
+            strBackMsg = this.AddChecksumForMessage(strBackMsg);
+            return 0;
         }
-#endif
 
-        private string GetReaderInfo(string strBarcode,
-            string strPassword)
+        #endregion
+
+        #region 一些内部函数
+
+        // 加校验码
+        private string AddChecksumForMessage(string strPackage)
         {
-            long lRet = 0;
+            // 加校验码
+            StringBuilder msg = new StringBuilder(strPackage);
+            char endChar = strPackage[strPackage.Length - 1];
+            if (endChar == '|')
+                msg.Append("AY4AZ");
+            else
+                msg.Append("|AY4AZ");
+            msg.Append(SIP.GetChecksum(strPackage));
 
-            bool isVerifyPassword = false;
+            // 写日志
+            //LogManager.Logger.Info("Send:" + msg.ToString());
 
-            string strBackMsg = "";
-            string strError = "";
-
-            LibraryChannel channel = this.GetChannel(this._username);
-
-            StringBuilder sb = new StringBuilder(1024);
-            sb.Append("64              001").Append(this._dateTimeNow);
-
-            try
-            {
-                if (String.IsNullOrEmpty(strPassword) == false)
-                {
-                    lRet = channel.VerifyReaderPassword(null,
-                        strBarcode,
-                        strPassword,
-                        out strError);
-                    if (lRet == -1)
-                    {
-                        sb.Append("|BLN").Append("|CQN");
-                        sb.Append("|AF").Append("校验密码过程中发生错误……");
-                        sb.Append("|AG").Append("校验密码过程中发生错误……");
-                        strBackMsg = sb.ToString();
-                        return strBackMsg;
-                    }
-                    else if (lRet == 0)
-                    {
-                        sb.Append("|BLN").Append("|CQN");
-                        sb.Append("|AF").Append("卡号或密码不正确。");
-                        sb.Append("|AG").Append("卡号或密码不正确。");
-                        strBackMsg = sb.ToString();
-                        return strBackMsg;
-                    }
-
-                    isVerifyPassword = true;
-                }
-
-                string[] results = null;
-                lRet = channel.GetReaderInfo(null,
-                    strBarcode, //读者卡号,
-                    "advancexml",   // this.RenderFormat, // "html",
-                    out results,
-                    out strError);
-                if (lRet <= -1)
-                {
-                    LogManager.Logger.Error(strError);
-                    sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
-                    return sb.ToString();
-                }
-                else if (lRet == 0)
-                {
-                    sb.Append("|BLN");
-                    sb.Append("|AF查无此证").Append("|AG查询读者信息失败!");
-                    return sb.ToString();
-                }
-                else if (lRet > 1)
-                {
-                    sb.Append("|AF证号重复").Append("|AG查询读者信息失败!");
-                    return sb.ToString();
-                }
-
-                // if(lRet == 1)
-                XmlDocument dom = new XmlDocument();
-                string strReaderXml = results[0];
-                try
-                {
-                    dom.LoadXml(strReaderXml);
-                }
-                catch (Exception ex)
-                {
-                    LogManager.Logger.Error("读者信息解析错误:" + ExceptionUtil.GetDebugText(ex));
-                    sb.Append("|AF查询读者信息失败:系统错误").Append("|AG查询读者信息失败!");
-                    return sb.ToString();
-                }
-
-                // hold items count 4 - char, fixed-length required field -- 预约
-                int nHoldItemsCount = 0;
-                string holdItems = "";
-                XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
-                if (holdItemNodes != null)
-                    nHoldItemsCount = holdItemNodes.Count;
-
-                sb.Append(nHoldItemsCount.ToString().PadLeft(4, '0'));
-                foreach (XmlNode node in holdItemNodes)
-                {
-                    string strItemBarcode = DomUtil.GetAttr(node, "items");
-                    if (string.IsNullOrEmpty(strItemBarcode))
-                        continue;
-
-#if Default
-                    strItemBarcode = strItemBarcode.Replace(",", "|AS");
-                    holdItems += "|AS" + strItemBarcode;
-#endif
-#if TEST
-                    if (!string.IsNullOrEmpty(holdItems))
-                        holdItems += ",";
-
-                    holdItems += strItemBarcode;
-#endif
-                }
-
-                // overdue items count 4 - char, fixed-length required field  -- 超期
-                // charged items count 4 - char, fixed-length required field -- 在借
-                int nOverdueItemsCount = 0;
-                int nChargedItemsCount = 0;
-                XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
-                if (chargedItemNodes != null)
-                    nChargedItemsCount = chargedItemNodes.Count;
-
-                string chargedItems = "";
-                string overdueItems = "";
-                foreach (XmlNode item in chargedItemNodes)
-                {
-                    string strItemBarcode = DomUtil.GetAttr(item, "barcode");
-                    if (string.IsNullOrEmpty(strItemBarcode))
-                        continue;
-#if Default
-                    if (!string.IsNullOrEmpty(strItemBarcode))
-                        chargedItems += "|AU" + strItemBarcode;
-#endif
-
-#if TEST
-                    if (!string.IsNullOrEmpty(chargedItems))
-                        chargedItems += ",";
-
-                    chargedItems += strItemBarcode;
-#endif
-
-                    string strReturningDate = DomUtil.GetAttr(item, "returningDate");
-                    DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
-                    if (returningDate < DateTime.Now)
-                    {
-                        nOverdueItemsCount++;
-                        overdueItems += "|AT" + strItemBarcode;
-                    }
-                }
-                sb.Append(nOverdueItemsCount.ToString().PadLeft(4, '0'));
-                // sb.Append("0000");
-                sb.Append(nChargedItemsCount.ToString().PadLeft(4, '0'));
-
-                // fine items count 4 - char, fixed-length required field
-                sb.Append("0000");
-                // recall items count 4 - char, fixed-length required field
-                sb.Append("0000");
-                // unavailable holds count 4 - char, fixed-length required field
-                sb.Append("0000");
-
-                sb.Append("AOdp2Library");
-                sb.Append("|AA").Append(strBarcode);
-                sb.Append("|AE").Append(DomUtil.GetElementText(dom.DocumentElement, "name"));
-#if Default
-                if (!string.IsNullOrEmpty(holdItems))
-                    sb.Append(holdItems);
-                if (!string.IsNullOrEmpty(chargedItems))
-                    sb.Append(chargedItems);
-#endif
-
-#if TEST
-                if (!string.IsNullOrEmpty(holdItems))
-                    sb.Append("|AU").Append(holdItems);
-                if (!string.IsNullOrEmpty(chargedItems))
-                    sb.Append("|AS").Append(chargedItems);
-#endif
-                sb.Append("|BLY");
-
-                if (isVerifyPassword)
-                    sb.Append("|CQY");
-
-                /*
-                if (!string.IsNullOrEmpty(overdueItems))
-                    sb.Append(overdueItems);
-                */
-                // 押金
-                // sb.Append("|BV").Append(DomUtil.GetElementText(dom.DocumentElement, "foregift"));
-
-                // 可借总册数
-                string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
-                string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
-                sb.Append("|BZ").Append(strBorrowsCount.PadLeft(4, '0'));
-                string strMsg = "";
-                if (strBorrowsCount != "0")
-                    strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
-                else
-                    strMsg += "您在本馆借书数已达最多可借数【" + strCount + "】，不能继续借了!";
-                sb.Append("|AF").Append(strMsg).Append("|AG").Append(strMsg);
-            }
-            finally
-            {
-                this.ReturnChannel(channel);
-            }
-            return sb.ToString();
+            // 加消息结束符
+            msg.Append(this._mainForm.Terminator);
+            return msg.ToString();
         }
 
         /// <summary>
@@ -2110,11 +557,11 @@ namespace dp2SIPServer
                         strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
 
                         strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
-                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
+                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this._mainForm.DateFormat);
 
 
                         string strMarcSyntax = "";
-                        MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
+                        MarcRecord record = SIP.MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
                         if (record != null)
                         {
                             if (strMarcSyntax == "unimarc")
@@ -2145,7 +592,7 @@ namespace dp2SIPServer
 
                 strError = RegularString(strError);
 
-                sb.Append("18").Append(strBookState).Append("0001").Append(this._dateTimeNow);
+                sb.Append("18").Append(strBookState).Append("0001").Append(SIPUtility.NowDateTime);
                 if (nReservations > 0)
                     sb.Append("CF").Append(nReservations);
 #if PJST
@@ -2197,159 +644,6 @@ namespace dp2SIPServer
             return sb.ToString();
         }
 
-#if NO
-        /// <summary>
-        /// 获得图书信息
-        /// </summary>
-        /// <param name="strBarcode"></param>
-        /// <param name="strBackMsg"></param>
-        /// <param name="strError"></param>
-        /// <returns></returns>
-        int GetItemInfo(string strBarcode,
-            out string strBackMsg,
-            out string strError)
-        {
-            strBackMsg = "";
-            strError = "";
-
-            int nRet = 0;
-
-            string strBookState = "";
-            string strReaderBarcode = "";
-            string strTitle = "";
-            string strAuthor = "";
-            string strISBN = "";
-            string strIsArrived = "";
-            string strBookType = "";
-            string strPrice = "";
-            string strAccessNo = "";
-            // string strDocType = ""; // 文献类型
-            string strLocation = "";
-            string strReturningDate = "";
-
-
-            string strItemXml = "";
-            string strBiblio = "";
-            LibraryChannel channel = this.GetChannel();
-            long lRet = channel.GetItemInfo(null,
-                strBarcode,
-                "xml",
-                out strItemXml,
-                "xml",
-                out strBiblio,
-                out strError);
-            switch (lRet)
-            {
-                case -1:
-                    nRet = 0;
-                    strBookState = "05";
-                    strError = "获得'" + strBarcode + "'发生错误:" + strError;
-                    break;
-                case 0:
-                    nRet = 0;
-                    strBookState = "00";
-                    strError = strBarcode + " 册记录不存在";
-                    break;
-                case 1:
-                    nRet = 1;
-                    break;
-                default: // lRet > 1
-                    nRet = 0;
-                    strBookState = "05";
-                    strError = strBarcode + " 找到多条册记录，条码重复";
-                    break;
-            }
-
-            XmlDocument dom = new XmlDocument();
-            if (nRet == 1)
-            {
-                try
-                {
-                    dom.LoadXml(strItemXml);
-
-                    string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
-                    if (String.IsNullOrEmpty(strItemState))
-                    {
-                        strReaderBarcode = DomUtil.GetElementText(dom.DocumentElement, "borrower");
-                        if (String.IsNullOrEmpty(strReaderBarcode))
-                            strBookState = "02";
-                        else
-                            strBookState = "03";
-                    }
-                    else
-                    {
-                        if (StringUtil.IsInList("丢失", strItemState))
-                            strBookState = "04";
-
-                        if (StringUtil.IsInList("#预约", strItemState))
-                            strIsArrived = "1";
-                        else
-                            strIsArrived = "0";
-                    }
-
-                    strPrice = DomUtil.GetElementText(dom.DocumentElement, "price");
-                    strBookType = DomUtil.GetElementText(dom.DocumentElement, "bookType");
-                    strAccessNo = DomUtil.GetElementText(dom.DocumentElement, "accessNo");
-                    strLocation = DomUtil.GetElementText(dom.DocumentElement, "location");
-                    strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
-                    strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, "yyyy-MM-dd");
-
-
-                    string strMarcSyntax = "";
-                    MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
-                    if (record != null)
-                    {
-                        if (strMarcSyntax == "unimarc")
-                        {
-                            strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
-                            strTitle = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                            strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
-                        }
-                        else if (strMarcSyntax == "usmarc")
-                        {
-                            strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
-                            strTitle = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                            strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
-                        }
-                    }
-                    else
-                    {
-                        nRet = 0;
-                        strError = "书目信息解析错误:" + strError;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    nRet = 0;
-                    strError = strBarcode + ":读者记录解析错误:" + ex.Message;
-                }
-            }
-
-            StringBuilder sb = new StringBuilder(1024);
-            sb.Append("18").Append(strBookState).Append("0001").Append(this._dateTimeNow).Append("CF00000");
-
-            if (String.IsNullOrEmpty(strReaderBarcode) == false)
-                sb.Append("|AA").Append(strReaderBarcode);
-
-            sb.Append("|AB").Append(strBarcode);
-            if (nRet == 0)
-            {
-                sb.Append("|AF").Append("获得图书信息发生错误！").Append("|AG").Append("获得图书信息发生错误！");
-            }
-            else
-            {
-                sb.Append("|AJ").Append(strTitle).Append("|AW").Append(strAuthor).Append("|AK").Append(strISBN);
-                sb.Append("|RE").Append(strIsArrived).Append("|CK").Append(strBookType).Append("|CH").Append(strPrice);
-                sb.Append("|AH").Append(strReturningDate);
-                sb.Append("|KC").Append(strAccessNo).Append("|AQ").Append(strLocation).Append("|AF").Append("|AG");
-            }
-
-            strBackMsg = sb.ToString();
-            this.ReturnChannel(channel);
-            return nRet;
-        }
-
-#endif
 
         int SetReaderInfo(string strSIP2Package,
             out string strBackMsg,
@@ -2387,7 +681,7 @@ namespace dp2SIPServer
             if (String.IsNullOrEmpty(strOperation))
             {
                 nRet = 0;
-                strBackMsg = "82" + this._dateTimeNow + "AOdp2Library|AA" + strBarcode +
+                strBackMsg = "82" + SIPUtility.NowDateTime + "AOdp2Library|AA" + strBarcode +
                     "|XK" + strOperation +
                     "|OK0|AF修改读者记录发生错误，命令不对。|AG修改读者记录发生错误，命令不对。";
             }
@@ -2430,7 +724,7 @@ namespace dp2SIPServer
             LibraryChannel channel = this.GetChannel(this._username);
 
             StringBuilder sb = new StringBuilder(1024);
-            sb.Append("82").Append(this._dateTimeNow).Append("AOdp2Library");
+            sb.Append("82").Append(SIPUtility.NowDateTime).Append("AOdp2Library");
 
             XmlDocument dom = new XmlDocument();
             dom.LoadXml("<root />");
@@ -2954,7 +1248,7 @@ namespace dp2SIPServer
                 }
             }
             StringBuilder sb = new StringBuilder(1024);
-            sb.Append("82").Append(this._dateTimeNow).Append("AOdp2Library");
+            sb.Append("82").Append(SIPUtility.NowDateTime).Append("AOdp2Library");
             sb.Append("|AA").Append(strBarcode);
             sb.Append("|XK").Append(strOperation);
 
@@ -2988,65 +1282,6 @@ namespace dp2SIPServer
             return nRet;
         }
 
-        static MarcRecord MarcXml2MarcRecord(string strMarcXml,
-            out string strOutMarcSyntax,
-            out string strError)
-        {
-            MarcRecord record = null;
-
-            strError = "";
-            strOutMarcSyntax = "";
-
-            string strMARC = "";
-            int nRet = MarcUtil.Xml2Marc(strMarcXml,
-                false,
-                "",
-                out strOutMarcSyntax,
-                out strMARC,
-                out strError);
-            if (nRet == 0)
-                record = new MarcRecord(strMARC);
-            else
-                strError = "MarcXml转换错误:" + strError;
-
-            return record;
-        }
-
-
-        #region SIP2
-        /// <summary>
-        /// To calculate the checksum add each character as an unsigned binary number,
-        /// take the lower 16 bits of the total and perform a 2's complement. 
-        /// The checksum field is the result represented by four hex digits.
-        /// </summary>
-        /// <param name="message">
-        /// 内容中不包含 校验和(checksum)
-        /// </param>
-        /// <returns></returns>
-        private string GetChecksum(string message)
-        {
-            string checksum = "";
-
-            try
-            {
-                ushort sum = 0;
-                foreach (char c in message)
-                {
-                    sum += c;
-                }
-
-                ushort checksum_inverted_plus1 = (ushort)(~sum + 1);
-
-                checksum = checksum_inverted_plus1.ToString("X4");
-            }
-            catch (Exception ex)
-            {
-                string strError = ex.Message;
-                checksum = null;
-            }
-            return checksum;
-        }
-        #endregion
 
         static string RegularString(string input)
         {
@@ -3054,5 +1289,7 @@ namespace dp2SIPServer
             strResult = strResult.Replace("\r", "*").Replace("\n", "*").Replace("|", "*");
             return strResult;
         }
+
+        #endregion
     }
 }

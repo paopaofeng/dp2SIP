@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SCHelper.cs" />
+    <Compile Include="TcpClientWrapper.cs" />
     <Compile Include="VariableLengthField .cs" />
     <Compile Include="FixedLengthField.cs" />
     <Compile Include="Request\BlockPatron_01.cs" />

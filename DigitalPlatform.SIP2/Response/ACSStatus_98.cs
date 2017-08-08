@@ -163,7 +163,7 @@ namespace DigitalPlatform.SIP2.Response
             }
             set
             {
-                if (value.Length != 18)
+                if (value.Length != 3)
                     throw new Exception("timeout period参数长度须为3位。");
 
                 this.SetFixedFieldValue(SIPConst.F_TimeoutPeriod, value);
@@ -180,7 +180,7 @@ namespace DigitalPlatform.SIP2.Response
             }
             set
             {
-                if (value.Length != 18)
+                if (value.Length != 3)
                     throw new Exception("retries allowed参数长度须为3位。");
 
                 this.SetFixedFieldValue(SIPConst.F_RetriesAllowed, value);
@@ -193,14 +193,14 @@ namespace DigitalPlatform.SIP2.Response
         {
             get
             {
-                return this.GetFixedFieldValue(SIPConst.F_TransactionDate);
+                return this.GetFixedFieldValue(SIPConst.F_DatetimeSync);
             }
             set
             {
                 if (value.Length != 18)
                     throw new Exception("date/time sync参数长度须为18位。");
 
-                this.SetFixedFieldValue(SIPConst.F_TransactionDate, value);
+                this.SetFixedFieldValue(SIPConst.F_DatetimeSync, value);
             }
         }
 

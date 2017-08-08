@@ -24,6 +24,26 @@ namespace dp2SIPClient
             InitializeComponent();
         }
 
+        #region 连接断开服务器
+
+        // 窗体加载
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.SIPServerUrl))
+            {
+                Form_setting dlg = new Form_setting();
+                dlg.ShowDialog(this);
+            }
+
+            this.EnableControlsForConnection(false);
+            // 当配置了SIP2服务器地址时，自动连接服务器
+            if (string.IsNullOrEmpty(this.SIPServerUrl) == false)
+            {
+                string info = "";
+                this.ConnectionServer(out info);
+            }
+        }
+
         public string SIPServerUrl
         {
             get
@@ -40,37 +60,78 @@ namespace dp2SIPClient
             }
         }
 
-        // 窗体加载
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(this.SIPServerUrl))
-            {
-                Form_setting dlg = new Form_setting();
-                if (dlg.ShowDialog(this) != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
-            }
 
-            // 连接服务器
-            this.ConnectionServer();
-        }
 
-        public void ConnectionServer()
+        public void ConnectionServer(out string info)
         {
-            string error = "";
-            bool bRet = SCHelper.Instance.Connection(this.SIPServerUrl, this.SIPServerPort, out error);
-            if (bRet == false)
+            info = "";
+            bool bRet = SCHelper.Instance.Connection(this.SIPServerUrl, this.SIPServerPort, out info);
+            if (bRet == false) // 出错
             {
-                this.toolStripStatusLabel_info.Text = error;
+                this.toolStripStatusLabel_info.Text = info;
+                this.EnableControlsForConnection(false);
                 return;
             }
 
-            this.toolStripStatusLabel_info.Text = "连接SIP2服务器成功.";
-            this.toolStripLabel_send.Enabled = true;
+            // 连接成功
+            info="连接SIP2服务器成功.";
+            this.toolStripStatusLabel_info.Text = info;
+            this.EnableControlsForConnection(true);
         }
 
+        // 再次连接
+        private void toolStripLabel_ConnectSIP2Server_Click(object sender, EventArgs e)
+        {
+            this.toolStripLabel_ConnectSIP2Server.Enabled = false;
+            Application.DoEvents();
+            string info = "";
+            this.ConnectionServer(out info);
+            MessageBox.Show(this, info);
+        }
+
+        // 断开连接
+        private void toolStripLabel_DisconnectSIP2Server_Click(object sender, EventArgs e)
+        {
+            this.toolStripLabel_DisconnectSIP2Server.Enabled = false;
+            Application.DoEvents();
+           SCHelper.Instance.Close();
+            this.toolStripStatusLabel_info.Text = "断开SIP2服务器连接.";
+            this.EnableControlsForConnection(false);
+            MessageBox.Show(this, "成功断开SIP2服务器连接.");
+        }
+
+        // 设置按钮状态
+        void EnableControlsForConnection(bool isConnect)
+        {
+            if (isConnect == true)
+            {
+                this.toolStripLabel_send.Enabled = true;
+                this.toolStripLabel_ConnectSIP2Server.Enabled = false;
+                this.toolStripLabel_DisconnectSIP2Server.Enabled = true;
+            }
+            else
+            {
+                this.toolStripLabel_send.Enabled = false;
+                this.toolStripLabel_ConnectSIP2Server.Enabled = true;
+                this.toolStripLabel_DisconnectSIP2Server.Enabled = false;
+            }
+        }
+
+        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_setting dlg = new Form_setting();
+
+            //当小窗口ok时，自动连接服务器
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                string info = "";
+                this.ConnectionServer(out info);
+            }
+        }
+
+        #endregion
+
+        #region 发送接收消息
 
         //发送消息
         private void toolStripLabel_send_Click(object sender, EventArgs e)
@@ -423,6 +484,11 @@ namespace dp2SIPClient
             return txtBox.Text == "null" ? null : txtBox.Text;
         }
 
+
+        #endregion
+
+        #region 通用函数
+
         private void Print(string text)
         {
             if (this.txtInfo.Text != "")
@@ -433,15 +499,9 @@ namespace dp2SIPClient
         }
 
 
+        #endregion
 
-        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form_setting dlg = new Form_setting();
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                this.ConnectionServer();
-            }
-        }
+        #region 菜单功能
 
         private void 实用工具ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -460,11 +520,6 @@ namespace dp2SIPClient
         }
 
 
-        private void 自动测试ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void 自动测试ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Form_test dlg = new Form_test(this.toolStripStatusLabel_info.Text);
@@ -472,6 +527,7 @@ namespace dp2SIPClient
         }
 
 
+        #endregion
 
     }
 }

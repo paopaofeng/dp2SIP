@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Session - 复制.txt" />
     <Compile Include="Session.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
