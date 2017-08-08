@@ -31,7 +31,7 @@ namespace dp2SIPClient
         {
             if (string.IsNullOrEmpty(this.SIPServerUrl))
             {
-                Form_setting dlg = new Form_setting();
+                Form_Setting dlg = new Form_Setting();
                 dlg.ShowDialog(this);
             }
 
@@ -119,7 +119,7 @@ namespace dp2SIPClient
 
         private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form_setting dlg = new Form_setting();
+            Form_Setting dlg = new Form_Setting();
 
             //当小窗口ok时，自动连接服务器
             if (dlg.ShowDialog(this) == DialogResult.OK)
@@ -505,7 +505,7 @@ namespace dp2SIPClient
 
         private void 实用工具ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Form_checksum dlg = new Form_checksum();
+            Form_Checksum dlg = new Form_Checksum();
             dlg.ShowDialog(this);
         }
 
@@ -522,7 +522,7 @@ namespace dp2SIPClient
 
         private void 自动测试ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Form_test dlg = new Form_test(this.toolStripStatusLabel_info.Text);
+            Form_Test dlg = new Form_Test(this.toolStripStatusLabel_info.Text);
             dlg.Show();
         }
 

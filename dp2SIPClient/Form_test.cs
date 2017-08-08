@@ -19,10 +19,10 @@ using System.Xml;
 
 namespace dp2SIPClient
 {
-    public partial class Form_test : Form
+    public partial class Form_Test : Form
     {
 
-        public Form_test(string info)
+        public Form_Test(string info)
         {
             InitializeComponent();
 

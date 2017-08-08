@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace dp2SIPClient
 {
-    public partial class Form_checksum : Form
+    public partial class Form_Checksum : Form
     {
-        public Form_checksum()
+        public Form_Checksum()
         {
             InitializeComponent();
         }

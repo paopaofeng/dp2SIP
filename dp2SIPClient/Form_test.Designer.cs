@@ -1,6 +1,6 @@
 ﻿namespace dp2SIPClient
 {
-    partial class Form_test
+    partial class Form_Test
     {
         /// <summary>
         /// Required designer variable.

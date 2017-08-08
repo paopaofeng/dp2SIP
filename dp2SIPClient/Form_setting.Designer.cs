@@ -1,6 +1,6 @@
 ﻿namespace dp2SIPClient
 {
-    partial class Form_setting
+    partial class Form_Setting
     {
         /// <summary>
         /// Required designer variable.

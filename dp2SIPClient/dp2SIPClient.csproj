@@ -46,17 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckSum.cs" />
-    <Compile Include="Form_checksum.cs">
+    <Compile Include="Form_Checksum.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_checksum.Designer.cs">
-      <DependentUpon>Form_checksum.cs</DependentUpon>
+    <Compile Include="Form_Checksum.Designer.cs">
+      <DependentUpon>Form_Checksum.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_test.cs">
+    <Compile Include="Form_Test.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_test.Designer.cs">
-      <DependentUpon>Form_test.cs</DependentUpon>
+    <Compile Include="Form_Test.Designer.cs">
+      <DependentUpon>Form_Test.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_CreateTestEnv.cs">
       <SubType>Form</SubType>
@@ -64,11 +64,11 @@
     <Compile Include="Form_CreateTestEnv.Designer.cs">
       <DependentUpon>Form_CreateTestEnv.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_setting.cs">
+    <Compile Include="Form_Setting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form_setting.Designer.cs">
-      <DependentUpon>Form_setting.cs</DependentUpon>
+    <Compile Include="Form_Setting.Designer.cs">
+      <DependentUpon>Form_Setting.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -79,17 +79,17 @@
     <Compile Include="ManageHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form_checksum.resx">
-      <DependentUpon>Form_checksum.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Checksum.resx">
+      <DependentUpon>Form_Checksum.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form_test.resx">
-      <DependentUpon>Form_test.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Test.resx">
+      <DependentUpon>Form_Test.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_CreateTestEnv.resx">
       <DependentUpon>Form_CreateTestEnv.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form_setting.resx">
-      <DependentUpon>Form_setting.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Setting.resx">
+      <DependentUpon>Form_Setting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

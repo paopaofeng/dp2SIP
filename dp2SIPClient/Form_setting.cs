@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace dp2SIPClient
 {
-    public partial class Form_setting : Form
+    public partial class Form_Setting : Form
     {
-        public Form_setting()
+        public Form_Setting()
         {
             InitializeComponent();
         }

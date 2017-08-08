@@ -1,6 +1,6 @@
 ﻿namespace dp2SIPClient
 {
-    partial class Form_checksum
+    partial class Form_Checksum
     {
         /// <summary>
         /// Required designer variable.
