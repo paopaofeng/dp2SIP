@@ -34,13 +34,15 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox_wrongItem = new System.Windows.Forms.CheckBox();
+            this.checkBox_wrongPatron = new System.Windows.Forms.CheckBox();
             this.button_stpp = new System.Windows.Forms.Button();
             this.button_deleteTestEnv = new System.Windows.Forms.Button();
             this.textBox_93_password = new System.Windows.Forms.TextBox();
             this.textBox_93_username = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.checkBox_wrongPatron = new System.Windows.Forms.CheckBox();
             this.textBox_17_itemNum = new System.Windows.Forms.TextBox();
             this.button_itemInfo = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
@@ -74,16 +76,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.更多ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.创建流通权限ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox_wrongItem = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_createTestEnv
@@ -91,7 +91,7 @@
             this.button_createTestEnv.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button_createTestEnv.Location = new System.Drawing.Point(20, 12);
             this.button_createTestEnv.Name = "button_createTestEnv";
-            this.button_createTestEnv.Size = new System.Drawing.Size(191, 50);
+            this.button_createTestEnv.Size = new System.Drawing.Size(213, 50);
             this.button_createTestEnv.TabIndex = 0;
             this.button_createTestEnv.Text = "初始化测试环境";
             this.button_createTestEnv.UseVisualStyleBackColor = true;
@@ -166,10 +166,41 @@
             this.splitContainer1.SplitterDistance = 676;
             this.splitContainer1.TabIndex = 23;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.checkBox_wrongItem);
+            this.groupBox2.Controls.Add(this.checkBox_wrongPatron);
+            this.groupBox2.Location = new System.Drawing.Point(20, 837);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(562, 83);
+            this.groupBox2.TabIndex = 31;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "异常情况测试";
+            // 
+            // checkBox_wrongItem
+            // 
+            this.checkBox_wrongItem.AutoSize = true;
+            this.checkBox_wrongItem.Location = new System.Drawing.Point(220, 49);
+            this.checkBox_wrongItem.Name = "checkBox_wrongItem";
+            this.checkBox_wrongItem.Size = new System.Drawing.Size(186, 28);
+            this.checkBox_wrongItem.TabIndex = 26;
+            this.checkBox_wrongItem.Text = "错误图书条码";
+            this.checkBox_wrongItem.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_wrongPatron
+            // 
+            this.checkBox_wrongPatron.AutoSize = true;
+            this.checkBox_wrongPatron.Location = new System.Drawing.Point(6, 49);
+            this.checkBox_wrongPatron.Name = "checkBox_wrongPatron";
+            this.checkBox_wrongPatron.Size = new System.Drawing.Size(186, 28);
+            this.checkBox_wrongPatron.TabIndex = 25;
+            this.checkBox_wrongPatron.Text = "错误读者条码";
+            this.checkBox_wrongPatron.UseVisualStyleBackColor = true;
+            // 
             // button_stpp
             // 
             this.button_stpp.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button_stpp.Location = new System.Drawing.Point(432, 12);
+            this.button_stpp.Location = new System.Drawing.Point(462, 12);
             this.button_stpp.Name = "button_stpp";
             this.button_stpp.Size = new System.Drawing.Size(88, 50);
             this.button_stpp.TabIndex = 30;
@@ -179,9 +210,9 @@
             // button_deleteTestEnv
             // 
             this.button_deleteTestEnv.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button_deleteTestEnv.Location = new System.Drawing.Point(217, 12);
+            this.button_deleteTestEnv.Location = new System.Drawing.Point(241, 12);
             this.button_deleteTestEnv.Name = "button_deleteTestEnv";
-            this.button_deleteTestEnv.Size = new System.Drawing.Size(190, 50);
+            this.button_deleteTestEnv.Size = new System.Drawing.Size(215, 50);
             this.button_deleteTestEnv.TabIndex = 30;
             this.button_deleteTestEnv.Text = "删除测试环境";
             this.button_deleteTestEnv.UseVisualStyleBackColor = true;
@@ -220,16 +251,6 @@
             this.label13.Size = new System.Drawing.Size(82, 24);
             this.label13.TabIndex = 26;
             this.label13.Text = "用户名";
-            // 
-            // checkBox_wrongPatron
-            // 
-            this.checkBox_wrongPatron.AutoSize = true;
-            this.checkBox_wrongPatron.Location = new System.Drawing.Point(6, 49);
-            this.checkBox_wrongPatron.Name = "checkBox_wrongPatron";
-            this.checkBox_wrongPatron.Size = new System.Drawing.Size(186, 28);
-            this.checkBox_wrongPatron.TabIndex = 25;
-            this.checkBox_wrongPatron.Text = "错误读者条码";
-            this.checkBox_wrongPatron.UseVisualStyleBackColor = true;
             // 
             // textBox_17_itemNum
             // 
@@ -564,27 +585,6 @@
             this.创建流通权限ToolStripMenuItem.Text = "创建流通权限";
             this.创建流通权限ToolStripMenuItem.Click += new System.EventHandler(this.创建流通权限ToolStripMenuItem_Click);
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.checkBox_wrongItem);
-            this.groupBox2.Controls.Add(this.checkBox_wrongPatron);
-            this.groupBox2.Location = new System.Drawing.Point(20, 837);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(562, 83);
-            this.groupBox2.TabIndex = 31;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "异常情况测试";
-            // 
-            // checkBox_wrongItem
-            // 
-            this.checkBox_wrongItem.AutoSize = true;
-            this.checkBox_wrongItem.Location = new System.Drawing.Point(220, 49);
-            this.checkBox_wrongItem.Name = "checkBox_wrongItem";
-            this.checkBox_wrongItem.Size = new System.Drawing.Size(186, 28);
-            this.checkBox_wrongItem.TabIndex = 26;
-            this.checkBox_wrongItem.Text = "错误图书条码";
-            this.checkBox_wrongItem.UseVisualStyleBackColor = true;
-            // 
             // Form_test
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
@@ -604,12 +604,12 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

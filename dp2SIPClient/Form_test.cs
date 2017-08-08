@@ -954,14 +954,21 @@ namespace dp2SIPClient
         //登录
         private void button_login_Click(object sender, EventArgs e)
         {
+            this.ClearInfo();
             string error = "";
-            int nRet = this.login(out error);
+            LoginResponse_94 response94 = null;
+            string responseText = "";
+            int nRet = this.login(out response94,
+                out responseText,
+                out error);
             if (nRet == -1 || nRet == 0)
             {
-                MessageBox.Show(this, "登录失败：" + error);
+                this.Print("登录失败：" + error);
+                this.Print(responseText);
                 return;
             }
-            MessageBox.Show(this, "登录成功");
+            this.Print("登录成功");
+            this.Print(responseText);
         }
 
         /// <returns>
@@ -969,9 +976,14 @@ namespace dp2SIPClient
         /// 0 登录失败
         /// -1 出错
         /// </returns>
-        public int login(out string error)
+        public int login(out LoginResponse_94 response94,
+            out string responseText,
+            out string error)
         {
             error = "";
+            response94 = null;
+            responseText = "";
+
             string username = this.textBox_93_username.Text;
             string password = this.textBox_93_password.Text;
             if (string.IsNullOrEmpty(username) == true)
@@ -985,13 +997,18 @@ namespace dp2SIPClient
             /// 0 登录失败
             /// -1 出错
             /// </returns>
-            int nRet = SCHelper.Instance.Login(username, password, out error);
+            int nRet = SCHelper.Instance.Login(username,
+                password,
+                out response94,
+                out responseText,
+                out error);
             return nRet;
         }
 
         //SC status
         private void button_SCStatus_Click(object sender, EventArgs e)
         {
+            this.ClearInfo();
             string error = "";
             ACSStatus_98 response98 = null;
             string responseText = "";
@@ -1208,7 +1225,7 @@ namespace dp2SIPClient
                         }
                         if (nRet == 0)
                         {
-                            Print("借出失败:" + error);
+                            Print("借出失败:" +responseText);
                             continue;
                         }
                         this.Print("借书成功");
@@ -1231,7 +1248,7 @@ namespace dp2SIPClient
                         }
                         if (nRet == 0)
                         {
-                            Print("还书失败:" + error);
+                            Print("还书失败:" + responseText);
                             continue;
                         }
                         this.Print("还书成功");
@@ -1287,7 +1304,7 @@ namespace dp2SIPClient
                     }
                     if (nRet == 0)
                     {
-                        Print("还书失败:" + error);
+                        Print("还书失败:" + responseText);
                         continue;
                     }
                     this.Print("还书成功");
@@ -1360,7 +1377,7 @@ namespace dp2SIPClient
                         }
                         if (nRet == 0)
                         {
-                            Print("借出失败:" + error);
+                            Print("借出失败:" + responseText);
                             continue;
                         }
                         this.Print("借书成功");
@@ -1384,7 +1401,7 @@ namespace dp2SIPClient
                         }
                         if (nRet == 0)
                         {
-                            Print("续借失败:" + error);
+                            Print("续借失败:" + responseText);
                             continue;
                         }
                         this.Print("续借成功");

@@ -293,10 +293,15 @@ namespace DigitalPlatform.SIP2
         /// 0 登录失败
         /// -1 出错
         /// </returns>
-        public int Login(string username,string password,out string error)
+        public int Login(string username,string password,
+            out LoginResponse_94 response94,
+            out string responseText,
+            out string error)
         {
             error = "";
             int nRet = 0;
+            response94 = null;
+            responseText = "";
 
             Login_93 request = new Login_93()
             {
@@ -307,7 +312,6 @@ namespace DigitalPlatform.SIP2
 
             // 发送和接收消息
             string requestText = request.ToText();
-            string responseText = "";
             BaseMessage response = null;
             nRet = SCHelper.Instance.SendAndRecvMessage(requestText,
                 out response,
@@ -316,7 +320,7 @@ namespace DigitalPlatform.SIP2
             if (nRet == -1)
                 return -1;
 
-            LoginResponse_94 response94 = response as LoginResponse_94;
+             response94 = response as LoginResponse_94;
             if (response94 == null)
             {
                 error = "返回的不是94消息";
