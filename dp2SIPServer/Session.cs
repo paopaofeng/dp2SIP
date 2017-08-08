@@ -24,14 +24,20 @@ namespace dp2SIPServer
 {
     public class Session : IDisposable //不清楚去掉IDisposable可以吗？jane 20170808
     {
+        //TcpClient包装类，其中的TcpClient是监听收到的对象
         TcpClientWrapper _clientWrapper = null;
+        
         MainForm _mainForm = null;
 
+        // 处理接收消息与发送消息的线程
         Thread _clientThread = null;
+        //SIP消息服务器
         SIP _sip = new SIP();
 
-        string _username = "";
-        string _loginPassword = "";
+        // 登录dp2系统的帐户
+        string _dp2username = "";
+        string _dp2password = "";
+        // 3M设备工作台号
         string _locationCode = "";
 
         internal Session(TcpClient client, MainForm form)
@@ -70,16 +76,16 @@ namespace dp2SIPServer
 
         void _channelPool_BeforeLogin(object sender, BeforeLoginEventArgs e)
         {
-            if (string.IsNullOrEmpty(this._username))
+            if (string.IsNullOrEmpty(this._dp2username))
             {
                 e.Cancel = true;
                 e.ErrorInfo = "尚未设置登录信息";
             }
 
             e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
-            e.UserName = this._username;
+            e.UserName = this._dp2username;
             e.Parameters = "type=worker,client=dp2SIPServer|0.01";
-            e.Password = this._loginPassword;
+            e.Password = this._dp2password;
             e.SavePasswordLong = true;
         }
 
@@ -214,7 +220,7 @@ namespace dp2SIPServer
                         /*
                          strBackMsg = Return(strItemBarcode);
                         */
-                        LibraryChannel channel = this.GetChannel(this._username);
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
                         try
                         {
                             strBackMsg = this._sip.Checkin(channel, strPackage);
@@ -230,7 +236,7 @@ namespace dp2SIPServer
                         /*
                         strBackMsg = Borrow(false, strReaderBarcode, strItemBarcode, "auto_renew");
                         */
-                        LibraryChannel channel = this.GetChannel(this._username);
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
                         try
                         {
                             strBackMsg = this._sip.Checkout(channel, strPackage);
@@ -253,7 +259,7 @@ namespace dp2SIPServer
                             "",  // 读者条码号为空，续借
                             strItemBarcode);
                         */
-                        LibraryChannel channel = this.GetChannel(this._username);
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
                         try
                         {
                             strBackMsg = this._sip.Renew(channel, strPackage);
@@ -285,7 +291,7 @@ namespace dp2SIPServer
                 case "63":
                     {
                         // strBackMsg = GetReaderInfo(strReaderBarcode, strPassword);
-                        LibraryChannel channel = this.GetChannel(this._username);
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
                         try
                         {
                             strBackMsg = this._sip.PatronInfo(channel, strPackage);
@@ -326,8 +332,8 @@ namespace dp2SIPServer
                             strBackMsg = this._sip.Login(channel, strPackage);
                             if ("941" == strBackMsg)
                             {
-                                this._username = this._sip.LoginUserId;
-                                this._loginPassword = this._sip.LoginPassword;
+                                this._dp2username = this._sip.LoginUserId;
+                                this._dp2password = this._sip.LoginPassword;
                                 this._locationCode = this._sip.LocationCode;
                             }
                         }
@@ -444,7 +450,7 @@ namespace dp2SIPServer
 
             string strItemXml = "";
             string strBiblio = "";
-            LibraryChannel channel = this.GetChannel(this._username);
+            LibraryChannel channel = this.GetChannel(this._dp2username);
             StringBuilder sb = new StringBuilder(1024);
             try
             {
@@ -721,7 +727,7 @@ namespace dp2SIPServer
 
             string strOperation = "";
 
-            LibraryChannel channel = this.GetChannel(this._username);
+            LibraryChannel channel = this.GetChannel(this._dp2username);
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("82").Append(SIPUtility.NowDateTime).Append("AOdp2Library");
@@ -1015,7 +1021,7 @@ namespace dp2SIPServer
             strBackMsg = "";
             strError = "";
 
-            LibraryChannel channel = this.GetChannel(this._username);
+            LibraryChannel channel = this.GetChannel(this._dp2username);
 
             StringBuilder sb = new StringBuilder(1024);
             sb.Append("9220141021 100511AOdp2Library");
@@ -1185,7 +1191,7 @@ namespace dp2SIPServer
             byte[] baTimestamp,
             out string strError)
         {
-            LibraryChannel channel = this.GetChannel(this._username);
+            LibraryChannel channel = this.GetChannel(this._dp2username);
 
             string strExistingXml = "";
             string strSavedXml = "";
@@ -1252,7 +1258,7 @@ namespace dp2SIPServer
             sb.Append("|AA").Append(strBarcode);
             sb.Append("|XK").Append(strOperation);
 
-            LibraryChannel channel = this.GetChannel(this._username);
+            LibraryChannel channel = this.GetChannel(this._dp2username);
             string strMsg = "";
             long lRet = channel.ChangeReaderPassword(null,
                 strBarcode,
