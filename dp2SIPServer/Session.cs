@@ -64,12 +64,7 @@ namespace dp2SIPServer
             try
             {
 
-                // 中止接收线程
-                if (this._clientThread != null)
-                {
-                    _clientThread.Abort();
-                    LogManager.Logger.Info("中止Session中处理消息线程_clientThread.Abort()");
-                }
+
                 // 关闭TcpClient
                 if (_client != null)
                 {
@@ -100,6 +95,13 @@ namespace dp2SIPServer
                 else
                 {
                     LogManager.Logger.Warn("此Session里没有dp2 channel通道");
+                }
+
+                // 中止接收线程
+                if (this._clientThread != null)
+                {
+                    _clientThread.Abort();
+                    LogManager.Logger.Info("中止Session中处理消息线程_clientThread.Abort()");
                 }
             }
             catch (Exception ex)
@@ -227,9 +229,13 @@ namespace dp2SIPServer
                 LogManager.Logger.Error(strError);
                 return;
             }
+            catch (ThreadAbortException ex)
+            {
+                LogManager.Logger.Info("session处理消息的线程终止："+ex.Message);
+            }
             catch (Exception ex)
             {
-                LogManager.Logger.Error("Session里的Process函数异常:" + ex.Message);
+                LogManager.Logger.Error("Session里的Process函数异常:" + ExceptionUtil.GetDebugText(ex));
             }
             finally
             {
