@@ -75,8 +75,8 @@
             this.button_login = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.更多ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.创建流通权限ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.参数配置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.创建流通权限ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -580,13 +580,6 @@
             this.更多ToolStripMenuItem.Size = new System.Drawing.Size(74, 38);
             this.更多ToolStripMenuItem.Text = "更多";
             // 
-            // 创建流通权限ToolStripMenuItem
-            // 
-            this.创建流通权限ToolStripMenuItem.Name = "创建流通权限ToolStripMenuItem";
-            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.创建流通权限ToolStripMenuItem.Text = "创建流通权限";
-            this.创建流通权限ToolStripMenuItem.Click += new System.EventHandler(this.创建流通权限ToolStripMenuItem_Click);
-            // 
             // 参数配置ToolStripMenuItem
             // 
             this.参数配置ToolStripMenuItem.Name = "参数配置ToolStripMenuItem";
@@ -594,7 +587,14 @@
             this.参数配置ToolStripMenuItem.Text = "参数配置";
             this.参数配置ToolStripMenuItem.Click += new System.EventHandler(this.参数配置ToolStripMenuItem_Click);
             // 
-            // Form_test
+            // 创建流通权限ToolStripMenuItem
+            // 
+            this.创建流通权限ToolStripMenuItem.Name = "创建流通权限ToolStripMenuItem";
+            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.创建流通权限ToolStripMenuItem.Text = "创建流通权限";
+            this.创建流通权限ToolStripMenuItem.Click += new System.EventHandler(this.创建流通权限ToolStripMenuItem_Click);
+            // 
+            // Form_Test
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -603,7 +603,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form_test";
+            this.Name = "Form_Test";
             this.Text = "Form_test";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

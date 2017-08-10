@@ -42,6 +42,10 @@ namespace dp2SIPClient
                 string info = "";
                 this.ConnectionServer(out info);
             }
+
+            //SIPUtility.Logger.Info("test");
+            //SIPUtility.Logger.Error("error1");
+            //SIPUtility.Logger.Warn("警告");
         }
 
         public string SIPServerUrl
@@ -461,7 +465,9 @@ namespace dp2SIPClient
             string requestText = this.txtMsg.Text.Trim();
             string responseText ="";
             string error="";
+
             this.Print("send:" + requestText);
+            LogManager.Logger.Info("send:" + requestText);
             BaseMessage response = null;
             int nRet = SCHelper.Instance.SendAndRecvMessage(requestText,
                 out response,
@@ -471,10 +477,12 @@ namespace dp2SIPClient
             {
                 MessageBox.Show(error);
                 this.Print("error:" + error);
+                LogManager.Logger.Error("error:" + error);
                 return;
             }
 
             this.Print("recv:" + responseText);
+            LogManager.Logger.Info("recv:" + responseText);
 
         }
 

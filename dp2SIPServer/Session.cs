@@ -25,13 +25,11 @@ namespace dp2SIPServer
     public class Session : IDisposable //不清楚去掉IDisposable可以吗？jane 20170808
     {
         //TcpClient包装类，其中的TcpClient是监听收到的对象
-        TcpClientWrapper _clientWrapper = null;
-        
-        MainForm _mainForm = null;
+        TcpClientWrapper _client = null;
 
         // 处理接收消息与发送消息的线程
         Thread _clientThread = null;
-        //SIP消息服务器
+        //SIP消息服务类
         SIP _sip = new SIP();
 
         // 登录dp2系统的帐户
@@ -40,10 +38,16 @@ namespace dp2SIPServer
         // 3M设备工作台号
         string _locationCode = "";
 
-        internal Session(TcpClient client, MainForm form)
+        public string RemoteEndPoint = "";
+
+        internal Session(TcpClient client)
         {
-            this._clientWrapper = new TcpClientWrapper(client);
-            this._mainForm = form;
+            this.RemoteEndPoint = client.Client.RemoteEndPoint.ToString();
+            this._client = new TcpClientWrapper(client) 
+            {
+                Encoding=this.Encoding,
+                MessageTerminator=this.Terminator
+            };
 
             // 挂上按需登录回调事件
             this._channelPool.BeforeLogin += _channelPool_BeforeLogin;
@@ -53,23 +57,70 @@ namespace dp2SIPServer
             this._clientThread.Start();// Start proccessing
         }
 
+        // 关闭通道
         public void Close()
         {
-            if (_clientWrapper != null)
+            LogManager.Logger.Info("走进Session的Close");
+            try
             {
-                this._clientWrapper.Close();
+
+                // 中止接收线程
+                if (this._clientThread != null)
+                {
+                    _clientThread.Abort();
+                    LogManager.Logger.Info("中止Session中处理消息线程_clientThread.Abort()");
+                }
+                // 关闭TcpClient
+                if (_client != null)
+                {
+                    this._client.Close();
+                    LogManager.Logger.Info("关闭TcpClient完成。工作台为[" + this._locationCode + "],登录帐户为[" + this._dp2username + "]");
+                }
+                else
+                {
+                    LogManager.Logger.Warn("此Session的_client对象为null");
+                }
+
+                // 关闭dp2通道
+                if (this._channelList.Count > 0)
+                {
+                    foreach (LibraryChannel channel in this._channelList)
+                    {
+                        if (channel != null)
+                        {
+                            string changeUserName = channel.UserName;
+                            channel.Abort();
+                            LogManager.Logger.Info("断开dp2 channel完成。channel.UserName为[" + changeUserName + "]");
+                        }
+                    }
+
+                    this._channelList.Clear();
+                    LogManager.Logger.Info("清空dp2 channel数组完成");
+                }
+                else
+                {
+                    LogManager.Logger.Warn("此Session里没有dp2 channel通道");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Logger.Error("Session的Close异常：" + ex.Message);
+            }
+            finally
+            {
+                LogManager.Logger.Info("结束Session的Close");
             }
 
-            foreach (LibraryChannel channel in this._channelList)
-            {
-                if (channel != null)
-                    channel.Abort();
-            }
         }
 
+        // 如果调的地方都处理好关闭，还需要加这个Dispose函数吗？
         public void Dispose()
         {
+            LogManager.Logger.Info("!!!走到Session的Dispose()");
+
             this.Close();
+
+            LogManager.Logger.Info("!!!完成Session的Dispose()");
         }
 
         #region 关于dp2通道
@@ -79,7 +130,7 @@ namespace dp2SIPServer
             if (string.IsNullOrEmpty(this._dp2username))
             {
                 e.Cancel = true;
-                e.ErrorInfo = "尚未设置登录信息";
+                e.ErrorInfo = "尚未登录";
             }
 
             e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
@@ -129,11 +180,13 @@ namespace dp2SIPServer
         /// </summary>
         public void Processing()
         {
+            LogManager.Logger.Info("开始会话里的消息处理线程");
             string strPackage = "";
             string strError = "";
-            if (this._clientWrapper == null)
+            if (this._client == null)
             {
                 strError = "client尚未初始化";
+                LogManager.Logger.Warn("Session中的Client不可能为null");
                 return;
             }
 
@@ -142,34 +195,68 @@ namespace dp2SIPServer
                 while (true)
                 {
                     // 先接收消息
-                    int nRet = this._clientWrapper.RecvMessage(out strPackage, out strError);//RecvTcpPackage(out strPackage, out strError);
+                    int nRet = this._client.RecvMessage(out strPackage, out strError);//RecvTcpPackage(out strPackage, out strError);
                     if (nRet == -1)
+                    {
+                        strError = "接收消息出错：" + strError;
                         goto ERROR1;
+                    }
                     LogManager.Logger.Info("Recv:" + strPackage);
 
                     // 处理消息
                     string strBackMsg = "";
                     nRet = this.HandleOneMessage(strPackage, out strBackMsg, out strError);
                     if (nRet == -1)
+                    {
+                        strError = "处理消息出错：" + strError;
                         goto ERROR1;
+                    }
 
                     // 发送返回的消息
-                    nRet = this._clientWrapper.SendMessage(strBackMsg, out strError);
+                    nRet = this._client.SendMessage(strBackMsg, out strError);
                     if (nRet == -1)
+                    {
+                        strError = "发送消息出错：" + strError;
                         goto ERROR1;
+                    }
                     LogManager.Logger.Info("Send:" + strBackMsg);
 
                 }
+
+            ERROR1:
+                LogManager.Logger.Error(strError);
+                return;
+            }
+            catch (Exception ex)
+            {
+                LogManager.Logger.Error("Session里的Process函数异常:" + ex.Message);
             }
             finally
             {
-                this.Close();
+                LogManager.Logger.Info("走到Session的Process()的finally,触发CloseEvent事件。");
+                //this.Close();
+
+                if (CloseEvent != null)
+                {
+                    object sender = this;
+                    EventArgs e=new EventArgs();
+                    CloseEvent(sender,e);
+                }
+
             }
 
-            ERROR1:
-            LogManager.Logger.Error(strError);
-            return;
+
         }
+        public event CloseEventHandle CloseEvent;
+        void SendCloseEvent(object sender,
+            EventArgs e)
+        {
+            if (this.CloseEvent != null)
+                this.CloseEvent(sender, e);
+        }
+
+        public delegate void CloseEventHandle(object sender,
+        EventArgs e);
 
         // 处理一条消息
         private int HandleOneMessage(string strPackage, out string strBackMsg, out string strError)
@@ -180,10 +267,11 @@ namespace dp2SIPServer
 
             if (strPackage.Length < 2)
             {
-                LogManager.Logger.Error("命令错误，命令长度不够2位");
+                strError="命令错误，命令长度不够2位";
                 return -1;
             }
 
+            // 消息分隔符
             string strMessageIdentifiers = strPackage.Substring(0, 2);
 
             string strReaderBarcode = "";
@@ -212,7 +300,7 @@ namespace dp2SIPServer
                 }
             }
 
-
+            // 处理消息
             switch (strMessageIdentifiers)
             {
                 case "09":
@@ -360,6 +448,47 @@ namespace dp2SIPServer
 
         #endregion
 
+        #region 一些配置项
+
+
+        public Encoding Encoding
+        {
+            get
+            {
+                string strEndodingName = Properties.Settings.Default.EncodingName;
+                if (string.IsNullOrEmpty(strEndodingName))
+                    strEndodingName = "UTF-8";
+
+                return Encoding.GetEncoding(strEndodingName);
+            }
+        }
+
+        // 命令结束符
+        public char Terminator
+        {
+            get
+            {
+                string strTerminator = Properties.Settings.Default.Terminator;
+                if (strTerminator == "LF")
+                    return (char)10;
+                else // if(strTerminator == "CR")
+                    return (char)13;
+            }
+        }
+
+        public string DateFormat
+        {
+            get
+            {
+                string strDateFormat = Properties.Settings.Default.DateFormat;
+                if (string.IsNullOrEmpty(strDateFormat) || strDateFormat.Length < 8)
+                    strDateFormat = "yyyy-MM-dd";
+                return strDateFormat;
+            }
+        }
+
+        #endregion
+
         #region 一些内部函数
 
         // 加校验码
@@ -378,7 +507,7 @@ namespace dp2SIPServer
             //LogManager.Logger.Info("Send:" + msg.ToString());
 
             // 加消息结束符
-            msg.Append(this._mainForm.Terminator);
+            msg.Append(this.Terminator);
             return msg.ToString();
         }
 
@@ -563,7 +692,7 @@ namespace dp2SIPServer
                         strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
 
                         strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
-                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this._mainForm.DateFormat);
+                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
 
 
                         string strMarcSyntax = "";
@@ -608,6 +737,7 @@ namespace dp2SIPServer
                 sb.Append("|AB").Append(strBarcode);
                 if (nRet == 0)
                 {
+                    sb.Append("|AJ");//AJ是必备字段
                     sb.Append("|AF").Append("获得图书信息发生错误！").Append(strError).Append("|AG").Append("获得图书信息发生错误！");
                     LogManager.Logger.Error(strError);
                 }

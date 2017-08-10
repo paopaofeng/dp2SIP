@@ -7,15 +7,18 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
+//[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace DigitalPlatform.SIP2
 {
     public class SIPUtility
     {
-        /// <summary>
-        /// 日志对象
-        /// </summary>
-        public static ILog Logger = LogManager.GetLogger("dp2SIP2");
-
+        //统一用一个专门的LogManager
+        //// public static ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //public static ILog Logger = log4net.LogManager.GetLogger("dp2SIPLogging");
+        //public static void WriteLog(string message)
+        //{
+        //    Logger.Info(message);
+        //}
 
         /// <summary>
         /// 将消息字符串 解析 成对应的消息对象
@@ -147,14 +150,7 @@ namespace DigitalPlatform.SIP2
             }
         }
 
-        public static Encoding Encoding_UTF8
-        {
-            get
-            {
-                string strEndodingName = "UTF-8";
-                return Encoding.GetEncoding(strEndodingName);
-            }
-        }
+
 
         #endregion
 

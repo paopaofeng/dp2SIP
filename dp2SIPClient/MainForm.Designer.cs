@@ -286,12 +286,12 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 34);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 38);
             // 
             // toolStripLabel_sample
             // 
             this.toolStripLabel_sample.Name = "toolStripLabel_sample";
-            this.toolStripLabel_sample.Size = new System.Drawing.Size(98, 31);
+            this.toolStripLabel_sample.Size = new System.Drawing.Size(98, 35);
             this.toolStripLabel_sample.Text = "Sample";
             this.toolStripLabel_sample.Click += new System.EventHandler(this.toolStripLabel_sample_Click);
             // 
@@ -300,7 +300,7 @@
             this.toolStripLabel_ConnectSIP2Server.Enabled = false;
             this.toolStripLabel_ConnectSIP2Server.Name = "toolStripLabel_ConnectSIP2Server";
             this.toolStripLabel_ConnectSIP2Server.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolStripLabel_ConnectSIP2Server.Size = new System.Drawing.Size(110, 31);
+            this.toolStripLabel_ConnectSIP2Server.Size = new System.Drawing.Size(110, 35);
             this.toolStripLabel_ConnectSIP2Server.Text = "Connect";
             this.toolStripLabel_ConnectSIP2Server.Click += new System.EventHandler(this.toolStripLabel_ConnectSIP2Server_Click);
             // 
@@ -308,7 +308,7 @@
             // 
             this.toolStripLabel_DisconnectSIP2Server.Enabled = false;
             this.toolStripLabel_DisconnectSIP2Server.Name = "toolStripLabel_DisconnectSIP2Server";
-            this.toolStripLabel_DisconnectSIP2Server.Size = new System.Drawing.Size(141, 31);
+            this.toolStripLabel_DisconnectSIP2Server.Size = new System.Drawing.Size(141, 35);
             this.toolStripLabel_DisconnectSIP2Server.Text = "Disconnect";
             this.toolStripLabel_DisconnectSIP2Server.Click += new System.EventHandler(this.toolStripLabel_DisconnectSIP2Server_Click);
             // 
@@ -326,7 +326,7 @@
             // toolStripStatusLabel_info
             // 
             this.toolStripStatusLabel_info.Name = "toolStripStatusLabel_info";
-            this.toolStripStatusLabel_info.Size = new System.Drawing.Size(200, 33);
+            this.toolStripStatusLabel_info.Size = new System.Drawing.Size(200, 31);
             this.toolStripStatusLabel_info.Text = "尚未连接服务器...";
             // 
             // splitContainer_main
@@ -478,7 +478,7 @@
             this.tabPage_SCStatus99.Location = new System.Drawing.Point(8, 39);
             this.tabPage_SCStatus99.Name = "tabPage_SCStatus99";
             this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_SCStatus99.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_SCStatus99.Size = new System.Drawing.Size(969, 657);
             this.tabPage_SCStatus99.TabIndex = 1;
             this.tabPage_SCStatus99.Text = "SCStatus99";
             this.tabPage_SCStatus99.UseVisualStyleBackColor = true;
@@ -559,7 +559,7 @@
             this.tabPage_Checkout11.Controls.Add(this.label8);
             this.tabPage_Checkout11.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Checkout11.Name = "tabPage_Checkout11";
-            this.tabPage_Checkout11.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Checkout11.Size = new System.Drawing.Size(969, 657);
             this.tabPage_Checkout11.TabIndex = 2;
             this.tabPage_Checkout11.Text = "Checkout11";
             this.tabPage_Checkout11.UseVisualStyleBackColor = true;
@@ -778,7 +778,7 @@
             this.tabPage_Checkin09.Controls.Add(this.label28);
             this.tabPage_Checkin09.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Checkin09.Name = "tabPage_Checkin09";
-            this.tabPage_Checkin09.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Checkin09.Size = new System.Drawing.Size(969, 657);
             this.tabPage_Checkin09.TabIndex = 3;
             this.tabPage_Checkin09.Text = "Checkin09";
             this.tabPage_Checkin09.UseVisualStyleBackColor = true;
@@ -949,7 +949,7 @@
             this.tabPage_PatronInformation63.Controls.Add(this.label35);
             this.tabPage_PatronInformation63.Location = new System.Drawing.Point(8, 39);
             this.tabPage_PatronInformation63.Name = "tabPage_PatronInformation63";
-            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(969, 657);
             this.tabPage_PatronInformation63.TabIndex = 4;
             this.tabPage_PatronInformation63.Text = "PatronInformation63";
             this.tabPage_PatronInformation63.UseVisualStyleBackColor = true;
@@ -1110,7 +1110,7 @@
             this.tabPage_ItemInformation17.Controls.Add(this.label38);
             this.tabPage_ItemInformation17.Location = new System.Drawing.Point(8, 39);
             this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
-            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(969, 657);
             this.tabPage_ItemInformation17.TabIndex = 6;
             this.tabPage_ItemInformation17.Text = "ItemInformation17";
             this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
@@ -1207,7 +1207,7 @@
             this.tabPage_Renew29.Controls.Add(this.label51);
             this.tabPage_Renew29.Location = new System.Drawing.Point(8, 39);
             this.tabPage_Renew29.Name = "tabPage_Renew29";
-            this.tabPage_Renew29.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_Renew29.Size = new System.Drawing.Size(969, 657);
             this.tabPage_Renew29.TabIndex = 7;
             this.tabPage_Renew29.Text = "Renew29";
             this.tabPage_Renew29.UseVisualStyleBackColor = true;
@@ -1408,7 +1408,7 @@
             // 
             this.tabPage_EndPatronSession35.Location = new System.Drawing.Point(8, 39);
             this.tabPage_EndPatronSession35.Name = "tabPage_EndPatronSession35";
-            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(969, 653);
+            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(969, 657);
             this.tabPage_EndPatronSession35.TabIndex = 5;
             this.tabPage_EndPatronSession35.Text = "EndPatronSession35";
             this.tabPage_EndPatronSession35.UseVisualStyleBackColor = true;

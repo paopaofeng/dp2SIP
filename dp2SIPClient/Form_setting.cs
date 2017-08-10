@@ -65,5 +65,11 @@ namespace dp2SIPClient
             this.SIPServerPort = Properties.Settings.Default.SIPServerPort.ToString();
 
         }
+
+        private void button_cancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel ;
+            this.Close();
+        }
     }
 }

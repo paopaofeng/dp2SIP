@@ -126,6 +126,7 @@ namespace dp2SIPServer
                 TransactionDate_18 = SIPUtility.NowDateTime,
                 AO_InstitutionId_r = "dp2Library",
                 AJ_TitleIdentifier_o = string.Empty,
+                AQ_PermanentLocation_r = string.Empty,
             };
 
             Checkin_09 request = new Checkin_09();

@@ -98,8 +98,9 @@ namespace dp2SIPClient
         {
             e.LibraryServerUrl = this.dp2ServerUrl;
             e.UserName = this.dp2Username;
-            e.Parameters = "type=worker,client=dp2SIPClient|0.01";
             e.Password = this.dp2Password;
+            e.Parameters = "type=worker,client=dp2SIPClient|0.01";
+
             e.SavePasswordLong = true;
         }
 
@@ -125,6 +126,12 @@ namespace dp2SIPClient
             {
                 return Properties.Settings.Default.dp2Password;
             }
+        }
+
+        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_SettingForAuto dlg = new Form_SettingForAuto();
+            dlg.ShowDialog(this);
         }
 
 #endregion
@@ -232,11 +239,11 @@ namespace dp2SIPClient
             int nRet = this.DeleteTestEnv(out error);
             if (nRet == -1)
             {
-                MessageBox.Show(this, "初始化测试环境出错：" + error);
+                MessageBox.Show(this, "删除测试环境出错：" + error);
                 return;
             }
 
-            MessageBox.Show(this, "初始化测试环境完成");
+            MessageBox.Show(this, "删除测试环境完成");
             return;
         }
 
@@ -265,13 +272,17 @@ namespace dp2SIPClient
             Progress.Style = StopStyle.EnableHalfStop;
             Progress.OnStop -= new StopEventHandler(this.DoStop);
             Progress.OnStop += new StopEventHandler(this.DoStop);
-            Progress.Initial("开始删除测试环境 ...");
+            string info = "开始删除测试环境 ...";
+            Progress.Initial(info);
+            LogManager.Logger.Info(info);
             Progress.BeginLoop();
             EnableControls(false);
             try
             {
                 // 删除书目库
-                Progress.SetMessage("正在删除测试用书目库 ...");
+                info = "正在删除测试用书目库 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 string strOutputInfo = "";
                 long lRet = channel.ManageDatabase(
                     _stop,
@@ -288,7 +299,9 @@ namespace dp2SIPClient
 
 
                 // 删除读者库
-                Progress.SetMessage("正在删除测试用读者库 ...");
+                info = "正在删除测试用读者库 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 lRet = channel.ManageDatabase(
                    _stop,
                    "delete",
@@ -305,13 +318,13 @@ namespace dp2SIPClient
 
 
                 // *** 删除馆藏地
-                Progress.SetMessage("正在删除馆藏地 ...");
-
+                info = "正在删除馆藏地 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem> items = new List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem>();
                 items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试阅览室", true, true));
                 items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试流通库", true, true));
 
-                // 为系统添加新的馆藏地定义
                 nRet = ManageHelper.AddLocationTypes(
                     channel,
                     this.Progress,
@@ -322,7 +335,9 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 //***删除工作日历
-                string infos = "";
+                info = "正在删除工作日历 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 CalenderInfo[] infos1 = null;
                 lRet = channel.GetCalendar(
                     this.Progress,
@@ -336,16 +351,15 @@ namespace dp2SIPClient
                     goto ERROR1;
                 if (lRet > 0)
                 {
-                    Progress.SetMessage("正在删除工作日历 ...");
-                    CalenderInfo info = new CalenderInfo();
-                    info.Name = C_CalenderName;
-                    info.Range = "20170101-20191231";
-                    info.Comment = "";
-                    info.Content = "";
+                    CalenderInfo cInfo = new CalenderInfo();
+                    cInfo.Name = C_CalenderName;
+                    cInfo.Range = "20170101-20191231";
+                    cInfo.Comment = "";
+                    cInfo.Content = "";
                     lRet = channel.SetCalendar(
                        _stop,
                        "delete",
-                       info,
+                       cInfo,
                        out error);
                     if (lRet == -1)
                         goto ERROR1;
@@ -354,9 +368,10 @@ namespace dp2SIPClient
 
 
                 // ***删除权限流通权限
-                Progress.SetMessage("正在删除流通权限 ...");
+                info = "正在删除流通权限 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
 
-                // 先删除原来测试自动增加权限
                 nRet = this.RemoveTestRightsTable(channel, null, out error);
                 if (nRet == -1)
                     goto ERROR1;
@@ -382,8 +397,11 @@ namespace dp2SIPClient
 
 
         ERROR1:
+
+            LogManager.Logger.Error(error);
             return -1;
         }
+
 
         // 初始化测试环境
         private void button_createTestEnv_Click(object sender, EventArgs e)
@@ -392,6 +410,7 @@ namespace dp2SIPClient
             int nRet = 0;
             long lRet = 0;
             string strOutputInfo = "";
+            string info = "";
 
 
             //先删除测试环境
@@ -411,13 +430,19 @@ namespace dp2SIPClient
 
             Progress.Style = StopStyle.EnableHalfStop;
             Progress.OnStop += new StopEventHandler(this.DoStop);
-            Progress.Initial("开始初始化测试环境 ...");
+            info = "开始初始化测试环境 ...";
+            Progress.Initial(info);
+            LogManager.Logger.Info(info);
+
             Progress.BeginLoop();
             EnableControls(false);
             try
             {
                 // *** 定义测试所需的馆藏地
-                Progress.SetMessage("正在定义测试所需的馆藏地 ...");
+                info = "正在定义测试所需的馆藏地 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+
                 List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem> items = new List<DigitalPlatform.CirculationClient.ManageHelper.LocationItem>();
                 items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试阅览室", true, true));
                 items.Add(new DigitalPlatform.CirculationClient.ManageHelper.LocationItem("", "_测试流通库", true, true));
@@ -431,28 +456,36 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 //***创建工作日历
-                Progress.SetMessage("正在配置工作日历 ...");
-                CalenderInfo info = new CalenderInfo();
-                info.Name = C_CalenderName;
-                info.Range = "20170101-20191231";
-                info.Comment = "";
-                info.Content = "";
+                info = "正在创建工作日历 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+
+                CalenderInfo cInfo = new CalenderInfo();
+                cInfo.Name = C_CalenderName;
+                cInfo.Range = "20170101-20191231";
+                cInfo.Comment = "";
+                cInfo.Content = "";
                 lRet = channel.SetCalendar(
                    _stop,
                    "new",
-                   info,
+                   cInfo,
                    out error);
                 if (lRet == -1)
                     goto ERROR1;
 
                 // ***创建流通权限
-                Progress.SetMessage("正在配置测试所需的流通权限 ...");
+                info = "正在创建测试所需的流通权限 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+
                 nRet = this.AddTestRightsTable(channel, null, out error);
                 if (nRet == -1)
                     goto ERROR1;
 
                 // ***创建测试所需的书目库
-                Progress.SetMessage("正在创建测试用书目库 ...");
+                info = "正在创建测试用书目库 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 // 创建一个书目库
                 // parameters:
                 // return:
@@ -470,13 +503,19 @@ namespace dp2SIPClient
                     goto ERROR1;
 
                 // 创建书目记录
-                Progress.SetMessage("正在创建书目记录和册记录 ...");
+                info = "正在创建书目记录和册记录 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+
                 nRet = this.CreateBiblioRecord(channel, C_BiblioDbName, out error);
                 if (nRet == -1)
                     goto ERROR1;
 
-                // ***创建测试所需的读者库====
-                Progress.SetMessage("正在创建测试用读者库 ...");
+                // ***创建测试所需的读者库
+                info = "正在创建测试用读者库 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+
                 XmlDocument database_dom = new XmlDocument();
                 database_dom.LoadXml("<root />");
                 // 创建读者库
@@ -494,14 +533,17 @@ namespace dp2SIPClient
                 if (lRet == -1)
                     goto ERROR1;
 
-                Progress.SetMessage("正在创建测试读者记录 ...");
+                info = "正在创建测试读者记录 ...";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
                 lRet = this.CreateReaderRecord(channel, out error);
                 if (lRet == -1)
                     goto ERROR1;
 
-                
-
-                MessageBox.Show(this, "初始化测试环境完成");
+                info = "初始化测试环境完成";
+                Progress.SetMessage(info);
+                LogManager.Logger.Info(info);
+                MessageBox.Show(this, info);
                 return;
             }
             catch (Exception ex)
@@ -523,7 +565,9 @@ namespace dp2SIPClient
 
 
         ERROR1:
-            MessageBox.Show(this, error);
+            info = "初始化测试环境出错："+error;
+        LogManager.Logger.Info(info);
+            MessageBox.Show(this, info);
         return;
             
         }
@@ -1549,10 +1593,9 @@ namespace dp2SIPClient
 
         #endregion
 
-        private void 参数配置ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
 
-        }
+
+
 
 
     }

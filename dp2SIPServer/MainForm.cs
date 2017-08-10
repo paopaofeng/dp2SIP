@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using DigitalPlatform;
+using DigitalPlatform.SIP2;
 
 namespace dp2SIPServer
 {
@@ -104,7 +105,9 @@ namespace dp2SIPServer
             // 启动监听
             DoListen();
 
-            this.toolStripStatusLabel_port.Text = "监听端口：" + this.Port;
+            string info="监听端口：" + this.Port;
+            this.toolStripStatusLabel_port.Text =info ;
+
             this.button_start.Enabled = false;
         }
 
@@ -146,43 +149,82 @@ namespace dp2SIPServer
         // 停止监听
         private void DoStop()
         {
+            LogManager.Logger.Info("开始停止监听...");
             try
             {
+                // 中止接收线程
                 if (_acceptThread != null)
                 {
                     _acceptThread.Abort();
-                    this.WriteToLog(".....acceptThread.Abort()");
+                    LogManager.Logger.Info("接收线程_acceptThread.Abort()");
                 }
 
-                // 关闭TcpClient
+                // 关闭TcpClient，在里面记日志
                 this.CloseClients();
 
+                // 停止Listener
                 if (Listener != null)
                 {
                     Listener.Stop();
-                    this.WriteToLog(".....Listener.Stop()");
+                    LogManager.Logger.Info("监听对象Listener.Stop()");
                 }
             }
             catch (Exception ex)
             {
-                this.WriteToLog(ExceptionUtil.GetDebugText(ex));
+                LogManager.Logger.Info("停止监听出错："+ExceptionUtil.GetDebugText(ex));
             }
             finally
             {
                 this.toolStripStatusLabel1.Text = "监听已停止";
+                LogManager.Logger.Info("停止监听完成");
             }
+        }
+
+        public void CloseOneSession(Session client,bool bRemove)
+        {
+
+            string remoteEndPoint = client.RemoteEndPoint;
+
+            Session session = (Session)this._clientTable[client];
+            if (session == null)
+            {
+                LogManager.Logger.Warn("从hashtable中没有找到Session：" + remoteEndPoint + "");             
+                return;
+            }
+            LogManager.Logger.Info("开始关闭Session：" + remoteEndPoint + "...");             
+            session.Close();
+
+            LogManager.Logger.Info("关闭Session：" + remoteEndPoint + "完成");
+
+            if (bRemove == true)
+            {
+                this._clientTable.Remove(client);
+                LogManager.Logger.Info("从hashtable中移动session[" + remoteEndPoint + "]完成，目前数量" + this._clientTable.Count);
+            }
+
         }
 
         // 关闭所有TcpClient连接
         private void CloseClients()
         {
-            foreach (TcpClient client in this._clientTable.Keys)
+            if (this._clientTable.Count > 0)
             {
-                Session session = (Session)this._clientTable[client];
-                session.Close();
+
+                foreach (Session client in this._clientTable.Keys)
+                {
+                    CloseOneSession(client,false);
+                }
+
+                this._clientTable.Clear();
+                LogManager.Logger.Info("清空TcpClient Hashtable完成");
             }
-            this._clientTable.Clear();
+            else
+            {
+                LogManager.Logger.Info("TcpClient Hashtable没有成员，不需要进行清理的工作。");
+            }
         }
+
+
 
         // 启动监听端口
         private void DoListen()
@@ -195,14 +237,21 @@ namespace dp2SIPServer
                 this.toolStripStatusLabel1.Text = "正在监听...";
                 WriteHtml("启动成功");
 
+                // 20170809 jane
+                LogManager.Logger.Info("启动监听端口成功:"+this.Port);
+
+
                 //用一个线程 接收请求
                 _acceptThread = new Thread(new ThreadStart(DoAccept));
                 _acceptThread.Start();
             }
             catch (Exception ex)
             {
-                this.toolStripStatusLabel1.Text = "侦听失败!";
+                this.toolStripStatusLabel1.Text = "监听失败!";
                 WriteHtml("启动失败" + ExceptionUtil.GetDebugText(ex));
+
+                // 20170809 jane
+                LogManager.Logger.Info("启动监听端口失败:" + ExceptionUtil.GetDebugText(ex));
             }
         }
 
@@ -220,43 +269,45 @@ namespace dp2SIPServer
                 while (true)
                 {
                     TcpClient client = Listener.AcceptTcpClient();
-                    this.WriteToLog("==收到一个TcpClient请求：" + client.Client.RemoteEndPoint);
+                    LogManager.Logger.Info("收到一个TcpClient请求：" + client.Client.RemoteEndPoint);
 
                     // 发现同一台前端，断开后重连，是一个新的TcpClient对象，所有一直不会走进去
                     if (this._clientTable.ContainsKey(client) == true)
                     {
-                        this.WriteToLog("~~已存在client对象：" + client.ToString());
+                        LogManager.Logger.Info("~~已存在client对象：" + client.ToString());
                     }
 
                     // 依据TcpClient创建一个会话对象，即一根通道
-                    Session session= new Session(client, this );
+                    Session session= new Session(client);
+                    session.CloseEvent += session_CloseEvent;
+                    LogManager.Logger.Info("初始化一个会话");
 
                     // 保存到hashtable，停止时统一释放
-                    this._clientTable[client] = session;
+                    this._clientTable[session] = session;
                 }
             }
             catch(ThreadInterruptedException)
             {
                 Thread.CurrentThread.Abort();
-                this.WriteToLog("ThreadInterruptedException：.....Thread.CurrentThread.Abort()");
+                LogManager.Logger.Info("ThreadInterruptedException：.....Thread.CurrentThread.Abort()");
             }
             catch (SocketException ex)
             {
-                this.WriteToLog(ExceptionUtil.GetDebugText(ex));
+                LogManager.Logger.Info(ExceptionUtil.GetDebugText(ex));
                 Thread.CurrentThread.Abort();
-                this.WriteToLog("SocketException：.....Thread.CurrentThread.Abort()");
+                LogManager.Logger.Info("SocketException：.....Thread.CurrentThread.Abort()");
             }
         }
 
-
-        #region 写日志
-
-        public void WriteToLog(string strText)
+        void session_CloseEvent(object sender, EventArgs e)
         {
-            LogManager.Logger.Info(strText);
+            Session session = sender as Session;
+            if (session != null)
+            {
+                this.CloseOneSession(session,true);
+            }
         }
 
-        #endregion
 
         #region 输出信息
         public void WriteHtml(string strHtml)

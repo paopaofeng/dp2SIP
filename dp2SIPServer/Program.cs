@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using DigitalPlatform;
+using DigitalPlatform.SIP2;
 
 namespace dp2SIPServer
 {

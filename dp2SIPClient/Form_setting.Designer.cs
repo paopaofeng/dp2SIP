@@ -84,6 +84,7 @@
             this.button_cancel.TabIndex = 22;
             this.button_cancel.Text = "取消";
             this.button_cancel.UseVisualStyleBackColor = true;
+            this.button_cancel.Click += new System.EventHandler(this.button_cancel_Click);
             // 
             // button_ok
             // 
@@ -97,7 +98,7 @@
             this.button_ok.UseVisualStyleBackColor = true;
             this.button_ok.Click += new System.EventHandler(this.button_ok_Click);
             // 
-            // Form_setting
+            // Form_Setting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -108,7 +109,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtPort);
             this.Controls.Add(this.txtIP);
-            this.Name = "Form_setting";
+            this.Name = "Form_Setting";
             this.Text = "Form_setting";
             this.Load += new System.EventHandler(this.Form_setting_Load);
             this.ResumeLayout(false);

@@ -14,20 +14,36 @@ namespace DigitalPlatform.SIP2
         private TcpClient _client =null;
         private NetworkStream _networkStream=null;
 
+        #region 一些配置参数
+        // 字符集
+        public Encoding Encoding { get; set; }
+        // 命令结束符
+        public char MessageTerminator { get; set; }
+
+        // SIP Server Url 与 Port
+        public string SIPServerUrl { get; set; }
+        public int SIPServerPort { get; set; }
+
+        #endregion
+
         public TcpClientWrapper()
         {
-
+            this.SetDefaultParameter();
         }
 
         public TcpClientWrapper(TcpClient client)
         {
-
             this._client = client;
             this._networkStream = client.GetStream();
+            this.SetDefaultParameter();
         }
 
-        public string SIPServerUrl { get; set; }
-        public int SIPServerPort { get; set; }
+        // 设置缺省参数;
+        public void SetDefaultParameter()
+        {
+            this.Encoding = Encoding.UTF8;
+            this.MessageTerminator = (char)13;
+        }
 
         public bool Connection(string serverUrl, int port, out string error)
         {
@@ -57,6 +73,7 @@ namespace DigitalPlatform.SIP2
             return true;
         }
 
+        // 关闭通道
         public void Close()
         {
             if (_networkStream != null)
@@ -64,6 +81,7 @@ namespace DigitalPlatform.SIP2
                 //您必须先关闭 NetworkStream 您何时通过发送和接收数据。 关闭 TcpClient 不会释放 NetworkStream。
                 _networkStream.Close();
                 _networkStream = null;
+                LogManager.Logger.Info("关闭NetworkStream完成");
             }
 
             if (_client != null)
@@ -73,8 +91,16 @@ namespace DigitalPlatform.SIP2
                 TCPClient.Client.Close 关闭 被封装的Socket 连接并释放所有关联此Socket的资源。
                 TCPClient.Client.Shutdown 禁用被封装的 Socket 上的发送和接收。
                  */
-                this._client.Client.Close(); //
+
+                //this._client.Client.Shutdown(SocketShutdown.Both);
+                //this._client.Client.Close(); //
+                //LogManager.Logger.Info("关闭TcpClient封装的Socket连接完成");
+
+
+
                 this._client.Close();
+                LogManager.Logger.Info("关闭TcpClient实例连接完成");
+
                 this._client = null;
             }
         }
@@ -105,7 +131,7 @@ namespace DigitalPlatform.SIP2
                     return -1;
                 }
 
-                byte[] baPackage = SIPUtility.Encoding_UTF8.GetBytes(sendMsg);
+                byte[] baPackage = this.Encoding.GetBytes(sendMsg);
                 this._networkStream.Write(baPackage, 0, baPackage.Length);
                 this._networkStream.Flush();//刷新当前数据流中的数据
 
@@ -167,12 +193,17 @@ namespace DigitalPlatform.SIP2
                         continue;
                     }
 
-                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    error = ExceptionUtil.GetDebugText(ex);
+                    goto ERROR1;
+                }
+                catch (System.IO.IOException ex1)
+                {
+                    error =  ex1.Message;
                     goto ERROR1;
                 }
                 catch (Exception ex)
                 {
-                    error = "接收数据异常: " + ExceptionUtil.GetDebugText(ex);
+                    error =  ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
                 }
 
@@ -186,7 +217,7 @@ namespace DigitalPlatform.SIP2
                 if (nRet >= 1 || offset >= 1)
                 {
                     //没有找到结束符，继续读
-                    int nIndex = Array.IndexOf(baPackage, (byte)SIPConst.Terminator);
+                    int nIndex = Array.IndexOf(baPackage, (byte)this.MessageTerminator);
                     if (nIndex != -1)
                     {
                         nPackageLength = nIndex;
@@ -220,10 +251,11 @@ namespace DigitalPlatform.SIP2
                 baPackage = temp;
             }
 
-            recvMsg = SIPUtility.Encoding_UTF8.GetString(baPackage);
+            recvMsg = this.Encoding.GetString(baPackage);
             return 0;
 
         ERROR1:
+            LogManager.Logger.Info(error);
             baPackage = null;
             return -1;
         }
