@@ -79,9 +79,16 @@ namespace DigitalPlatform.SIP2
 
         protected string GetVariableFieldValue(string id)
         {
+
             VariableLengthField field = this.GetVariableField(id);
             if (field == null)
+            {
+                // 20170811 jane todo
+                if (id == "AY" || id == "AZ")
+                    return "";
+
                 throw new Exception("未定义变长字段" + id);
+            }
 
             return field.Value;
         }
@@ -89,9 +96,16 @@ namespace DigitalPlatform.SIP2
         // 设置某个定长字段的值
         protected void SetVariableFieldValue(string id, string value)
         {
+
             VariableLengthField field = this.GetVariableField(id);
             if (field == null)
+            {
+                // 20170811 jane todo
+                if (id == "AY" || id == "AZ")
+                    return; 
+
                 throw new Exception("未定义变长字段" + id);
+            }
 
             field.Value = value;
         }
