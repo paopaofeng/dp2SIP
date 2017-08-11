@@ -630,14 +630,18 @@ namespace dp2SIPServer
                 {
                     response.HoldItemsCount_4 = holdItemNodes.Count.ToString().PadLeft(4, '0');
 
+                    List<VariableLengthField> holdItems = new List<VariableLengthField>();
                     foreach (XmlNode node in holdItemNodes)
                     {
                         string strItemBarcode = DomUtil.GetAttr(node, "items");
                         if (string.IsNullOrEmpty(strItemBarcode))
                             continue;
 
-                        response.AS_HoldItems_o.Add(new VariableLengthField("AS", false, strItemBarcode));
+                        holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, strItemBarcode));
                     }
+
+                    if (holdItems.Count > 0)
+                        response.AS_HoldItems_o = holdItems;
                 }
 
                 // overdue items count 4 - char, fixed-length required field  -- 超期
@@ -647,6 +651,8 @@ namespace dp2SIPServer
                 {
                     response.ChargedItemsCount_4 = chargedItemNodes.Count.ToString().PadLeft(4, '0');
 
+                    List<VariableLengthField> chargedItems = new List<VariableLengthField>();
+                    List<VariableLengthField> overdueItems = new List<VariableLengthField>();
                     int nOverdueItemsCount = 0;
                     foreach (XmlNode node in chargedItemNodes)
                     {
@@ -654,7 +660,7 @@ namespace dp2SIPServer
                         if (string.IsNullOrEmpty(strItemBarcode))
                             continue;
 
-                        response.AU_ChargedItems_o.Add(new VariableLengthField("AU", false, strItemBarcode));
+                        chargedItems.Add(new VariableLengthField(SIPConst.F_AU_ChargedItems, false, strItemBarcode));
 
                         string strReturningDate = DomUtil.GetAttr(node, "returningDate");
                         if (string.IsNullOrEmpty(strReturningDate))
@@ -663,9 +669,14 @@ namespace dp2SIPServer
                         if (returningDate < DateTime.Now)
                         {
                             nOverdueItemsCount++;
-                            response.AT_OverdueItems_o.Add(new VariableLengthField("AT", false, strItemBarcode));
+                            overdueItems.Add(new VariableLengthField(SIPConst.F_AT_OverdueItems, false, strItemBarcode));
                         }
                     }
+
+                    if (chargedItems.Count > 0)
+                        response.AU_ChargedItems_o = chargedItems;
+                    if(overdueItems.Count > 0)
+                        response.AT_OverdueItems_o = overdueItems;
                 }
 
                 response.AA_PatronIdentifier_r = strBarcode;
