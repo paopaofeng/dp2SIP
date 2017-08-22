@@ -15,6 +15,7 @@ using DigitalPlatform.Xml;
 using DigitalPlatform.IO;
 using DigitalPlatform.Marc;
 using DigitalPlatform;
+using DigitalPlatform.Text;
 
 namespace dp2SIPServer
 {
@@ -274,20 +275,31 @@ namespace dp2SIPServer
             if (-1 == nRet)
             {
                 response.AF_ScreenMessage_o = strError;
+                response.AG_PrintLine_o = strError;
             }
             else
             {
-                string strItemBarcode = request.AB_ItemIdentifier_o;
-                response.AB_ItemIdentifier_r = strItemBarcode;
+                string strItemIdentifier = request.AB_ItemIdentifier_o;
+                string strPatronIdentifier = request.AA_PatronIdentifier_r;
 
-                string strReaderBarcode = request.AA_PatronIdentifier_r;
-                response.AA_PatronIdentifier_r = strReaderBarcode;
+                if (String.IsNullOrEmpty(strItemIdentifier)
+                    || String.IsNullOrEmpty(strPatronIdentifier))
+                {
+                    strError = "读者标识和图书标识都不能是空值";
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+
+                    return response.ToText();
+                }
+
+                response.AA_PatronIdentifier_r = strPatronIdentifier;
+                response.AB_ItemIdentifier_r = strItemIdentifier;
 
                 string strPatronPassword = request.AD_PatronPassword_o;
                 if (!string.IsNullOrEmpty(strPatronPassword))
                 {
                     lRet = channel.VerifyReaderPassword(null,
-                        strReaderBarcode,
+                        strPatronIdentifier,
                         strPatronPassword,
                         out strError);
                     if (-1 == lRet)
@@ -312,8 +324,8 @@ namespace dp2SIPServer
                 lRet = channel.Borrow(
                     null,   // stop,
                     true,  // 续借为 true
-                    strReaderBarcode,    //读者证条码号
-                    strItemBarcode,     // 册条码号
+                    strPatronIdentifier,    //读者证条码号
+                    strItemIdentifier,     // 册条码号
                     null, //strConfirmItemRecPath,
                     false,
                     null,   // this.OneReaderItemBarcodes,
@@ -360,7 +372,7 @@ namespace dp2SIPServer
                     }
 
                     if (String.IsNullOrEmpty(strBiblioSummary))
-                        strBiblioSummary = strItemBarcode;
+                        strBiblioSummary = strItemIdentifier;
 
                     response.AJ_TitleIdentifier_r = strBiblioSummary;
 
@@ -508,13 +520,162 @@ namespace dp2SIPServer
 
         /// <summary>
         /// 图书信息
+        /// 图书状态
+        ///  1		other -- 其他
+        ///  2		on order -- 订购中
+        ///  3		available -- 可借
+        ///  4		charged -- 在借
+        /// 12		lost -- 丢失
+        /// 13		missing -- 没有找到
+
+        ///  5		charged; not to be recalled until earliest recall date -- 在借
+        ///  6		in process -- 
+        ///  7		recalled -- 召回
+        ///  8		waiting on hold shelf -- 等待上架
+        ///  9		waiting to be re-shelved -- 倒架中
+        /// 10		in transit between library locations
+        /// 11		claimed returned
         /// </summary>
         /// <param name="channel">ILS 通道</param>
         /// <param name="message">SIP消息</param>
         /// <returns></returns>
         public string ItemInfo(LibraryChannel channel, string message)
         {
-            return string.Empty;
+            string strError = "";
+
+            ItemInformationResponse_18 response = new ItemInformationResponse_18()
+            {
+                CirculationStatus_2 = "01",
+                SecurityMarker_2 = "00",
+                FeeType_2 = "01",
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                CK_MediaType_o = SIPConst.MEDIA_TYPE_BOOK,
+            };
+
+            ItemInformation_17 request = new ItemInformation_17();
+            int nRet = request.parse(message, out strError);
+            if (-1 == nRet)
+            {
+                LogManager.Logger.Error(strError);
+                response.AF_ScreenMessage_o = strError;
+                response.AG_PrintLine_o = strError;
+            }
+            else
+            {
+                string strItemIdentifier = request.AB_ItemIdentifier_r;
+                response.AB_ItemIdentifier_r = strItemIdentifier;
+                string strItemXml = "";
+                string strBiblio = "";
+                long lRet = channel.GetItemInfo(null,
+                    strItemIdentifier,
+                    "xml",
+                    out strItemXml,
+                    "xml",
+                    out strBiblio,
+                    out strError);
+                if (-1 >= lRet)
+                {
+                    response.CirculationStatus_2 = "01";
+
+                    strError = "获得'" + strItemIdentifier + "'发生错误: " + strError;
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                }
+                else if (0 == lRet)
+                {
+                    response.CirculationStatus_2 = "13";
+
+                    strError = strItemIdentifier + " 记录不存在";
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                }
+                else if (1 < lRet)
+                {
+                    response.CirculationStatus_2 = "01";
+                    strError = strItemIdentifier + " 记录重复，需馆员处理";
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                }
+                else if (1 == lRet)
+                {
+                    XmlDocument dom = new XmlDocument();
+                    try
+                    {
+                        dom.LoadXml(strItemXml);
+
+                        string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
+                        if (String.IsNullOrEmpty(strItemState))
+                        {
+                            string strBorrower = DomUtil.GetElementText(dom.DocumentElement, "borrower");
+                            response.CirculationStatus_2 = String.IsNullOrEmpty(strBorrower) ? "03" : "04";
+
+                            XmlNodeList reservations = dom.DocumentElement.SelectNodes("reservations/request");
+                            if (reservations != null)
+                            {
+                                response.CF_HoldQueueLength_o = reservations.Count.ToString();
+                                /*
+                                if (reservations.Count > 0)
+                                    response.CirculationStatus_2 = "08"; // 预约保留架
+                                */
+                            }
+                        }
+                        else
+                        {
+                            if (StringUtil.IsInList("丢失", strItemState))
+                                response.CirculationStatus_2 = "12";
+                        }
+
+                        response.AQ_PermanentLocation_o = DomUtil.GetElementText(dom.DocumentElement, "location");
+
+                        string strBorrowDate = DomUtil.GetElementText(dom.DocumentElement, "borrowDate");
+                        if (!String.IsNullOrEmpty(strBorrowDate))
+                        {
+                            strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
+                            response.CM_HoldPickupDate_18 = strBorrowDate;
+                        }
+
+                        string strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
+                        if (!String.IsNullOrEmpty(strReturningDate))
+                        {
+                            strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
+                            response.AH_DueDate_o = strReturningDate;
+                        }
+
+                        string strMarcSyntax = "";
+                        MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
+                        if (record != null)
+                        {
+                            if (strMarcSyntax == "unimarc")
+                            {
+                                // strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
+                                response.AJ_TitleIdentifier_r = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                                // strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
+                            }
+                            else if (strMarcSyntax == "usmarc")
+                            {
+                                // strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
+                                response.AJ_TitleIdentifier_r = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
+                                // strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
+                            }
+                        }
+                        else
+                        {
+                            strError = "图书信息解析错误:" + strError;
+                            LogManager.Logger.Error(strError);
+
+                            response.AF_ScreenMessage_o = strError;
+                            response.AG_PrintLine_o = strError;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        strError = strItemIdentifier + ":图书解析错误:" + ExceptionUtil.GetDebugText(ex);
+                        LogManager.Logger.Error(strError);
+                    }
+                }
+            }
+
+            return response.ToText();
         }
 
 
@@ -675,7 +836,7 @@ namespace dp2SIPServer
 
                     if (chargedItems.Count > 0)
                         response.AU_ChargedItems_o = chargedItems;
-                    if(overdueItems.Count > 0)
+                    if (overdueItems.Count > 0)
                         response.AT_OverdueItems_o = overdueItems;
                 }
 

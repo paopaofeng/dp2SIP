@@ -280,32 +280,6 @@ namespace dp2SIPServer
             // 消息分隔符
             string strMessageIdentifiers = strPackage.Substring(0, 2);
 
-            string strReaderBarcode = "";
-            string strItemBarcode = "";
-            string strPassword = "";
-            string[] parts = strPackage.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 1; i < parts.Length; i++)
-            {
-                string part = parts[i];
-                if (part.Length < 2)
-                    continue;
-
-                switch (part.Substring(0, 2))
-                {
-                    case "AA":
-                        strReaderBarcode = part.Substring(2);
-                        break;
-                    case "AB":
-                        strItemBarcode = part.Substring(2);
-                        break;
-                    case "AD":
-                        strPassword = part.Substring(2);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
             // 处理消息
             switch (strMessageIdentifiers)
             {
@@ -343,7 +317,18 @@ namespace dp2SIPServer
                     }
                 case "17":
                     {
+                        /*
                         strBackMsg = GetItemInfo(strItemBarcode);
+                        */
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
+                        try
+                        {
+                            strBackMsg = this._sip.ItemInfo(channel, strPackage);
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
                         break;
                     }
                 case "29":
