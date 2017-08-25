@@ -527,7 +527,6 @@ namespace dp2SIPServer
         ///  4		charged -- 在借
         /// 12		lost -- 丢失
         /// 13		missing -- 没有找到
-
         ///  5		charged; not to be recalled until earliest recall date -- 在借
         ///  6		in process -- 
         ///  7		recalled -- 召回
@@ -687,6 +686,12 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string PatronInfo(LibraryChannel channel, string message)
         {
+            char[] patronStatus = new char[14];
+            for (int i = 0; i < patronStatus.Length; i++)
+            {
+                patronStatus[i] = (char)0x20; // 空格
+            }
+
             string strError = "";
             long lRet = 0;
 
@@ -785,6 +790,13 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
 
+                string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
+                if(!String.IsNullOrEmpty(strState))
+                {
+                    patronStatus[4] = 'Y';
+                }
+
+
                 // hold items count 4 - char, fixed-length required field -- 预约
                 XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
                 if (holdItemNodes != null)
@@ -837,8 +849,12 @@ namespace dp2SIPServer
                     if (chargedItems.Count > 0)
                         response.AU_ChargedItems_o = chargedItems;
                     if (overdueItems.Count > 0)
+                    {
+                        patronStatus[6] = 'Y';
                         response.AT_OverdueItems_o = overdueItems;
+                    }
                 }
+                response.PatronStatus_14 = new string(patronStatus);
 
                 response.AA_PatronIdentifier_r = strBarcode;
                 response.AE_PersonalName_r = DomUtil.GetElementText(dom.DocumentElement, "name");
@@ -864,6 +880,7 @@ namespace dp2SIPServer
             }
             return response.ToText();
         }
+
 
         /// <summary>
         /// 登录

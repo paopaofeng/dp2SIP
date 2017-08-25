@@ -81,7 +81,6 @@ namespace DigitalPlatform.SIP2.Response
             this.VariableLengthFields.Add(new VariableLengthField(SIPConst.F_AY_SequenceNumber, false));
 
         }
-
         
         //14-char, fixed-length required field
         public string PatronStatus_14
