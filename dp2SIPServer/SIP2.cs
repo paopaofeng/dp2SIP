@@ -612,10 +612,9 @@ namespace dp2SIPServer
                             if (reservations != null)
                             {
                                 response.CF_HoldQueueLength_o = reservations.Count.ToString();
-                                /*
+
                                 if (reservations.Count > 0)
-                                    response.CirculationStatus_2 = "08"; // 预约保留架
-                                */
+                                    response.CirculationStatus_2 = "08"; // 预约保留架                                
                             }
                         }
                         else
@@ -686,14 +685,15 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string PatronInfo(LibraryChannel channel, string message)
         {
+            string strMessage = "";
+            string strError = "";
+            long lRet = 0;
+
             char[] patronStatus = new char[14];
             for (int i = 0; i < patronStatus.Length; i++)
             {
                 patronStatus[i] = (char)0x20; // 空格
             }
-
-            string strError = "";
-            long lRet = 0;
 
             PatronInformationResponse_64 response = new PatronInformationResponse_64()
             {
@@ -759,20 +759,24 @@ namespace dp2SIPServer
                 if (lRet <= -1)
                 {
                     LogManager.Logger.Error(strError);
-                    response.AF_ScreenMessage_o = "查询读者信息失败：" + strError;
-                    response.AG_PrintLine_o = "查询读者信息失败：" + strError;
+
+                    strMessage = "查询读者信息失败：" + strError;
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
                     return response.ToText();
                 }
                 else if (lRet == 0)
                 {
-                    response.AF_ScreenMessage_o = "查无此证";
-                    response.AG_PrintLine_o = "查无此证";
+                    strMessage = "查无此证";
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
                     return response.ToText();
                 }
                 else if (lRet > 1)
                 {
-                    response.AF_ScreenMessage_o = "证号重复";
-                    response.AG_PrintLine_o = "证号重复";
+                    strMessage = "证号重复";
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
                     return response.ToText();
                 }
 
@@ -790,13 +794,6 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
 
-                string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
-                if(!String.IsNullOrEmpty(strState))
-                {
-                    patronStatus[4] = 'Y';
-                }
-
-
                 // hold items count 4 - char, fixed-length required field -- 预约
                 XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
                 if (holdItemNodes != null)
@@ -810,7 +807,18 @@ namespace dp2SIPServer
                         if (string.IsNullOrEmpty(strItemBarcode))
                             continue;
 
-                        holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, strItemBarcode));
+                        if (strItemBarcode.IndexOf(',') != -1)
+                        {
+                            string[] barcodes = strItemBarcode.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (string barcode in barcodes)
+                            {
+                                holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, barcode));
+                            }
+                        }
+                        else
+                        {
+                            holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, strItemBarcode));
+                        }
                     }
 
                     if (holdItems.Count > 0)
@@ -854,29 +862,64 @@ namespace dp2SIPServer
                         response.AT_OverdueItems_o = overdueItems;
                     }
                 }
-                response.PatronStatus_14 = new string(patronStatus);
+
+
+                // 超期交费项
+                XmlNodeList overdues = dom.DocumentElement.SelectNodes("overdues/overdue");
+                if (overdues != null && overdues.Count > 0)
+                {
+                    string strWords = "押金,租金";
+                    string strWords2 = "超期";
+                    foreach (XmlNode node in overdues)
+                    {
+                        string strReason = DomUtil.GetAttr(node, "reason");
+                        if (strReason.Length < 2)
+                            continue;
+                        string strPart = strReason.Substring(0, 2);
+                        if (StringUtil.IsInList(strPart, strWords) && patronStatus[11] != 'Y')
+                        {
+                            patronStatus[11] = 'Y';
+                        }
+                        else if(strPart == strWords2 && patronStatus[10] != 'Y')
+                        {
+                            patronStatus[10] = 'Y';
+                        }
+                    }
+                }
 
                 response.AA_PatronIdentifier_r = strBarcode;
                 response.AE_PersonalName_r = DomUtil.GetElementText(dom.DocumentElement, "name");
                 response.BL_ValidPatron_o = "Y";
 
-                string strCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
+                string strTotal = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
                 string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
                 response.BZ_HoldItemsLimit_o = strBorrowsCount.PadLeft(4, '0');
+                string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
+                if (String.IsNullOrEmpty(strState))
+                {
+                    if (!string.IsNullOrEmpty(strTotal))
+                    {
+                        if (!string.IsNullOrEmpty(strBorrowsCount) && strBorrowsCount != "0")
+                            strMessage = "您在本馆最多可借【" + strTotal + "】册，还可以再借【" + strBorrowsCount + "】册。";
+                        else
+                            strMessage = "您在本馆借书数已达最多可借数【" + strTotal + "】，不能继续借了!";
+                    }
+                    if (!string.IsNullOrEmpty(strMessage))
+                    {
+                        response.AF_ScreenMessage_o = strMessage;
+                        response.AG_PrintLine_o = strMessage;
+                    }
+                }
+                else
+                {
+                    patronStatus[4] = 'Y';
 
-                string strMsg = "";
-                if (!string.IsNullOrEmpty(strCount))
-                {
-                    if (!string.IsNullOrEmpty(strBorrowsCount) && strBorrowsCount != "0")
-                        strMsg += "您在本馆最多可借【" + strCount + "】册，还可以再借【" + strBorrowsCount + "】册。";
-                    else
-                        strMsg += "您在本馆借书数已达最多可借数【" + strCount + "】，不能继续借了!";
+                    string strName = DomUtil.GetElementText(dom.DocumentElement, "name");
+                    strMessage = "读者证[" + strBarcode + ":" + strName + "]已被[" + strState + "]";
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
                 }
-                if (!string.IsNullOrEmpty(strMsg))
-                {
-                    response.AF_ScreenMessage_o = strMsg;
-                    response.AG_PrintLine_o = strMsg;
-                }
+                response.PatronStatus_14 = new string(patronStatus);
             }
             return response.ToText();
         }
