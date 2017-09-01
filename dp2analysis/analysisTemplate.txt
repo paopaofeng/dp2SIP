@@ -1,0 +1,43 @@
+<html>
+	<body>
+		<div>
+			<span>姓名</span><span>%patronName%</span>
+			<span>性别</span><span>%gender%</span>
+			<span>班级</span><span>%patronName%</span>
+		</div>
+		<div>
+			最近借过的图书
+			%latestCheckoutTable%
+		</div>
+		<div>
+			首次借阅时间为%firstCheckoutDate%<br/>
+			到目前共借阅图书%checkoutCount%册</br>
+			在读者排行榜第%rank%位，击败了%rankPercentage%的读者。
+		</div>
+		<div>
+			数据分析一：<br/>
+			所借图书涵盖了%covertClcCount%个种类（图书馆共分%clcCount%个大类）</br>
+			<%clcTable%>
+		</div>
+		<div>
+			数据分析二：<br/>
+			<%naturalYearCountTable%>
+			借阅时段	借阅数量 比例
+			15年	50
+			16年	55
+			17年	33
+		</div>
+		<div>
+			数据分析三：<br/>
+			<%schoolYearTable%>
+			借阅时段	借阅数量 比例
+			高一	50
+			高二	55
+			高三	33
+		</div>
+		<div>
+			借阅历史
+			%historyTable%
+		</div>
+	</body>
+</html>

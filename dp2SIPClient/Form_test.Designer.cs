@@ -131,13 +131,13 @@
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
             this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtInfo.Size = new System.Drawing.Size(724, 923);
+            this.txtInfo.Size = new System.Drawing.Size(724, 920);
             this.txtInfo.TabIndex = 22;
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 39);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -163,7 +163,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtInfo);
-            this.splitContainer1.Size = new System.Drawing.Size(1404, 923);
+            this.splitContainer1.Size = new System.Drawing.Size(1404, 920);
             this.splitContainer1.SplitterDistance = 676;
             this.splitContainer1.TabIndex = 23;
             // 
@@ -567,7 +567,7 @@
             this.更多ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1404, 39);
+            this.menuStrip1.Size = new System.Drawing.Size(1404, 42);
             this.menuStrip1.TabIndex = 24;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -583,14 +583,14 @@
             // 参数配置ToolStripMenuItem
             // 
             this.参数配置ToolStripMenuItem.Name = "参数配置ToolStripMenuItem";
-            this.参数配置ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.参数配置ToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.参数配置ToolStripMenuItem.Text = "参数配置";
             this.参数配置ToolStripMenuItem.Click += new System.EventHandler(this.参数配置ToolStripMenuItem_Click);
             // 
             // 创建流通权限ToolStripMenuItem
             // 
             this.创建流通权限ToolStripMenuItem.Name = "创建流通权限ToolStripMenuItem";
-            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.创建流通权限ToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.创建流通权限ToolStripMenuItem.Text = "创建流通权限";
             this.创建流通权限ToolStripMenuItem.Click += new System.EventHandler(this.创建流通权限ToolStripMenuItem_Click);
             // 
