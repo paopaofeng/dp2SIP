@@ -157,7 +157,7 @@
             this.Controls.Add(this.button_ok);
             this.Controls.Add(this.groupBox4);
             this.Name = "Form_SettingForAuto";
-            this.Text = "Form_CreateTestEnv";
+            this.Text = "dp2服务器参数配置";
             this.Load += new System.EventHandler(this.Form_CreateTestEnv_Load);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
