@@ -1,6 +1,6 @@
-﻿namespace dp2SIPClient
+﻿namespace dp2analysis
 {
-    partial class Form_SettingForAuto
+    partial class Form_Setting
     {
         /// <summary>
         /// Required designer variable.
