@@ -11,8 +11,8 @@ namespace DigitalPlatform.SIP2
 {
     public class TcpClientWrapper
     {
-        private TcpClient _client =null;
-        private NetworkStream _networkStream=null;
+        private TcpClient _client = null;
+        private NetworkStream _networkStream = null;
 
         #region 一些配置参数
         // 字符集
@@ -59,7 +59,7 @@ namespace DigitalPlatform.SIP2
             {
                 IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
                 string hostName = Dns.GetHostEntry(ipAddress).HostName;
-                
+
                 TcpClient client = new TcpClient(hostName, this.SIPServerPort);
                 this._client = client;
                 this._networkStream = client.GetStream();
@@ -106,7 +106,7 @@ namespace DigitalPlatform.SIP2
         }
 
         // 发送消息
-        public  int SendMessage(string sendMsg,
+        public int SendMessage(string sendMsg,
             out string error)
         {
             error = "";
@@ -145,6 +145,16 @@ namespace DigitalPlatform.SIP2
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="recvMsg"></param>
+        /// <param name="error"></param>
+        /// <returns>
+        /// <para> 0 正确 </para>
+        /// <para> -1 错误 </para>
+        /// <para> -2 空消息 </para>
+        /// </returns>
         // 接收消息
         public int RecvMessage(out string recvMsg,
             out string error)
@@ -198,12 +208,12 @@ namespace DigitalPlatform.SIP2
                 }
                 catch (System.IO.IOException ex1)
                 {
-                    error =  ex1.Message;
+                    error = ex1.Message;
                     goto ERROR1;
                 }
                 catch (Exception ex)
                 {
-                    error =  ExceptionUtil.GetDebugText(ex);
+                    error = ExceptionUtil.GetDebugText(ex);
                     goto ERROR1;
                 }
 
@@ -254,12 +264,10 @@ namespace DigitalPlatform.SIP2
             recvMsg = this.Encoding.GetString(baPackage);
             return 0;
 
-        ERROR1:
+            ERROR1:
             LogManager.Logger.Info(error);
             baPackage = null;
             return -1;
         }
-
-
     }
 }

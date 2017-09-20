@@ -116,7 +116,7 @@ namespace dp2SIPServer
         public string Checkin(LibraryChannel channel, string message)
         {
             string strError = "";
-            string strItemBarcode = "";
+            int nRet = 0;
 
             CheckinResponse_10 response = new CheckinResponse_10()
             {
@@ -131,17 +131,23 @@ namespace dp2SIPServer
             };
 
             Checkin_09 request = new Checkin_09();
-
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
-                response.AF_ScreenMessage_o = strError;
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    response.AF_ScreenMessage_o = strError;
+                    return response.ToText();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                strItemBarcode = request.AB_ItemIdentifier_r;
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
             }
 
+            string strItemBarcode = request.AB_ItemIdentifier_r;
             if (!string.IsNullOrEmpty(strItemBarcode))
             {
                 response.AB_ItemIdentifier_r = strItemBarcode;
@@ -254,6 +260,7 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string Renew(LibraryChannel channel, string message)
         {
+            int nRet = 0;
             long lRet = 0;
 
             string strError = "";
@@ -271,30 +278,188 @@ namespace dp2SIPServer
             };
 
             Renew_29 request = new Renew_29();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                    return response.ToText();
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
+            }
+
+            string strItemIdentifier = request.AB_ItemIdentifier_o;
+            string strPatronIdentifier = request.AA_PatronIdentifier_r;
+            if (String.IsNullOrEmpty(strItemIdentifier)
+                || String.IsNullOrEmpty(strPatronIdentifier))
+            {
+                strError = "读者标识和图书标识都不能是空值";
                 response.AF_ScreenMessage_o = strError;
                 response.AG_PrintLine_o = strError;
+
+                return response.ToText();
+            }
+
+            response.AA_PatronIdentifier_r = strPatronIdentifier;
+            response.AB_ItemIdentifier_r = strItemIdentifier;
+
+            string strPatronPassword = request.AD_PatronPassword_o;
+            if (!string.IsNullOrEmpty(strPatronPassword))
+            {
+                lRet = channel.VerifyReaderPassword(null,
+                    strPatronIdentifier,
+                    strPatronPassword,
+                    out strError);
+                if (-1 == lRet)
+                {
+                    response.AF_ScreenMessage_o = "校验密码发生错误：" + strError;
+                }
+                else if (0 == lRet)
+                {
+                    response.AF_ScreenMessage_o = "失败：密码错误";
+                }
+
+                return response.ToText();
+            }
+
+
+            string[] aDupPath = null;
+            string[] item_records = null;
+            string[] reader_records = null;
+            string[] biblio_records = null;
+            string strOutputReaderBarcode = "";
+            BorrowInfo borrow_info = null;
+            lRet = channel.Borrow(
+                null,   // stop,
+                true,  // 续借为 true
+                strPatronIdentifier,    //读者证条码号
+                strItemIdentifier,     // 册条码号
+                null, //strConfirmItemRecPath,
+                false,
+                null,   // this.OneReaderItemBarcodes,
+                "auto_renew,biblio,item", // strStyle, // auto_renew,biblio,item                   //  "reader,item,biblio", // strStyle,
+                "xml:noborrowhistory",  // strItemReturnFormats,
+                out item_records,
+                "summary",    // strReaderFormatList
+                out reader_records,
+                "xml",         //strBiblioReturnFormats,
+                out biblio_records,
+                out aDupPath,
+                out strOutputReaderBarcode,
+                out borrow_info,
+                out strError);
+            if (-1 == lRet)
+            {
+                response.AF_ScreenMessage_o = "失败：" + strError;
             }
             else
             {
-                string strItemIdentifier = request.AB_ItemIdentifier_o;
-                string strPatronIdentifier = request.AA_PatronIdentifier_r;
+                response.Ok_1 = "1";
+                response.RenewalOk_1 = "Y";
 
-                if (String.IsNullOrEmpty(strItemIdentifier)
-                    || String.IsNullOrEmpty(strPatronIdentifier))
+                string strBiblioSummary = String.Empty;
+                string strMarcSyntax = "";
+                MarcRecord record = MarcXml2MarcRecord(biblio_records[0],
+                    out strMarcSyntax,
+                    out strError);
+                if (record != null)
                 {
-                    strError = "读者标识和图书标识都不能是空值";
-                    response.AF_ScreenMessage_o = strError;
-                    response.AG_PrintLine_o = strError;
-
-                    return response.ToText();
+                    if (strMarcSyntax == "unimarc")
+                    {
+                        strBiblioSummary = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                    }
+                    else if (strMarcSyntax == "usmarc")
+                    {
+                        strBiblioSummary = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
+                    }
+                }
+                else
+                {
+                    strError = "书目信息解析错误：" + strError;
+                    LogManager.Logger.Error(strError);
                 }
 
-                response.AA_PatronIdentifier_r = strPatronIdentifier;
-                response.AB_ItemIdentifier_r = strItemIdentifier;
+                if (String.IsNullOrEmpty(strBiblioSummary))
+                    strBiblioSummary = strItemIdentifier;
 
+                response.AJ_TitleIdentifier_r = strBiblioSummary;
+
+                string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, this.DateFormat);
+                response.AH_DueDate_r = strLatestReturnTime;
+
+
+                response.AF_ScreenMessage_o = "成功";
+                response.AG_PrintLine_o = "成功";
+            }
+            return response.ToText();
+        }
+
+        /// <summary>
+        /// 借书
+        /// </summary>
+        /// <param name="channel">ILS 通道</param>
+        /// <param name="message">SIP消息</param>
+        /// <returns></returns>
+        public string Checkout(LibraryChannel channel, string message)
+        {
+            int nRet = 0;
+            long lRet = 0;
+            string strError = "";
+
+            CheckoutResponse_12 response = new CheckoutResponse_12()
+            {
+                Ok_1 = "0",
+                RenewalOk_1 = "N",
+                MagneticMedia_1 = "N",
+                Desensitize_1 = "Y",
+                TransactionDate_18 = SIPUtility.NowDateTime,
+                AO_InstitutionId_r = "dp2Library",
+                AJ_TitleIdentifier_r = string.Empty,
+                AH_DueDate_r = string.Empty,
+            };
+
+            Checkout_11 request = new Checkout_11();
+            try
+            {
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    response.AF_ScreenMessage_o = strError;
+                    return response.ToText();
+                }
+            }
+            catch(Exception ex)
+            {
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
+            }
+
+
+            string strItemIdentifier = request.AB_ItemIdentifier_r;
+            string strPatronIdentifier = request.AA_PatronIdentifier_r;
+            if (String.IsNullOrEmpty(strItemIdentifier)
+                || String.IsNullOrEmpty(strPatronIdentifier))
+            {
+                strError = "读者标识和图书标识都不能是空值";
+                response.AF_ScreenMessage_o = strError;
+                response.AG_PrintLine_o = strError;
+
+                return response.ToText();
+            }
+            response.AB_ItemIdentifier_r = strItemIdentifier;
+            response.AA_PatronIdentifier_r = strPatronIdentifier;
+
+            string strCancel = request.BI_Cancel_1_o;
+            if (String.IsNullOrEmpty(strCancel) || "N" == strCancel)
+            {
                 string strPatronPassword = request.AD_PatronPassword_o;
                 if (!string.IsNullOrEmpty(strPatronPassword))
                 {
@@ -314,7 +479,6 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
 
-
                 string[] aDupPath = null;
                 string[] item_records = null;
                 string[] reader_records = null;
@@ -323,7 +487,7 @@ namespace dp2SIPServer
                 BorrowInfo borrow_info = null;
                 lRet = channel.Borrow(
                     null,   // stop,
-                    true,  // 续借为 true
+                    false,  // 续借为 true
                     strPatronIdentifier,    //读者证条码号
                     strItemIdentifier,     // 册条码号
                     null, //strConfirmItemRecPath,
@@ -347,7 +511,6 @@ namespace dp2SIPServer
                 else
                 {
                     response.Ok_1 = "1";
-                    response.RenewalOk_1 = "Y";
 
                     string strBiblioSummary = String.Empty;
                     string strMarcSyntax = "";
@@ -388,137 +551,6 @@ namespace dp2SIPServer
         }
 
         /// <summary>
-        /// 借书
-        /// </summary>
-        /// <param name="channel">ILS 通道</param>
-        /// <param name="message">SIP消息</param>
-        /// <returns></returns>
-        public string Checkout(LibraryChannel channel, string message)
-        {
-            long lRet = 0;
-            string strError = "";
-
-            CheckoutResponse_12 response = new CheckoutResponse_12()
-            {
-                Ok_1 = "0",
-                RenewalOk_1 = "N",
-                MagneticMedia_1 = "N",
-                Desensitize_1 = "Y",
-                TransactionDate_18 = SIPUtility.NowDateTime,
-                AO_InstitutionId_r = "dp2Library",
-                AJ_TitleIdentifier_r = string.Empty,
-                AH_DueDate_r = string.Empty,
-            };
-
-            Checkout_11 request = new Checkout_11();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
-            {
-                response.AF_ScreenMessage_o = strError;
-            }
-            else
-            {
-                string strItemBarcode = request.AB_ItemIdentifier_r;
-                response.AB_ItemIdentifier_r = strItemBarcode;
-
-                string strReaderBarcode = request.AA_PatronIdentifier_r;
-                response.AA_PatronIdentifier_r = strReaderBarcode;
-
-                string strCancel = request.BI_Cancel_1_o;
-                if (String.IsNullOrEmpty(strCancel) || "N" == strCancel)
-                {
-                    string strPatronPassword = request.AD_PatronPassword_o;
-                    if (!string.IsNullOrEmpty(strPatronPassword))
-                    {
-                        lRet = channel.VerifyReaderPassword(null,
-                            strReaderBarcode,
-                            strPatronPassword,
-                            out strError);
-                        if (-1 == lRet)
-                        {
-                            response.AF_ScreenMessage_o = "校验密码发生错误：" + strError;
-                        }
-                        else if (0 == lRet)
-                        {
-                            response.AF_ScreenMessage_o = "失败：密码错误";
-                        }
-
-                        return response.ToText();
-                    }
-
-                    string[] aDupPath = null;
-                    string[] item_records = null;
-                    string[] reader_records = null;
-                    string[] biblio_records = null;
-                    string strOutputReaderBarcode = "";
-                    BorrowInfo borrow_info = null;
-                    lRet = channel.Borrow(
-                        null,   // stop,
-                        false,  // 续借为 true
-                        strReaderBarcode,    //读者证条码号
-                        strItemBarcode,     // 册条码号
-                        null, //strConfirmItemRecPath,
-                        false,
-                        null,   // this.OneReaderItemBarcodes,
-                        "auto_renew,biblio,item", // strStyle, // auto_renew,biblio,item                   //  "reader,item,biblio", // strStyle,
-                        "xml:noborrowhistory",  // strItemReturnFormats,
-                        out item_records,
-                        "summary",    // strReaderFormatList
-                        out reader_records,
-                        "xml",         //strBiblioReturnFormats,
-                        out biblio_records,
-                        out aDupPath,
-                        out strOutputReaderBarcode,
-                        out borrow_info,
-                        out strError);
-                    if (-1 == lRet)
-                    {
-                        response.AF_ScreenMessage_o = "失败：" + strError;
-                    }
-                    else
-                    {
-                        response.Ok_1 = "1";
-
-                        string strBiblioSummary = String.Empty;
-                        string strMarcSyntax = "";
-                        MarcRecord record = MarcXml2MarcRecord(biblio_records[0],
-                            out strMarcSyntax,
-                            out strError);
-                        if (record != null)
-                        {
-                            if (strMarcSyntax == "unimarc")
-                            {
-                                strBiblioSummary = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                            }
-                            else if (strMarcSyntax == "usmarc")
-                            {
-                                strBiblioSummary = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                            }
-                        }
-                        else
-                        {
-                            strError = "书目信息解析错误：" + strError;
-                            LogManager.Logger.Error(strError);
-                        }
-
-                        if (String.IsNullOrEmpty(strBiblioSummary))
-                            strBiblioSummary = strItemBarcode;
-
-                        response.AJ_TitleIdentifier_r = strBiblioSummary;
-
-                        string strLatestReturnTime = DateTimeUtil.Rfc1123DateTimeStringToLocal(borrow_info.LatestReturnTime, this.DateFormat);
-                        response.AH_DueDate_r = strLatestReturnTime;
-
-
-                        response.AF_ScreenMessage_o = "成功";
-                        response.AG_PrintLine_o = "成功";
-                    }
-                }
-            }
-            return response.ToText();
-        }
-
-        /// <summary>
         /// 图书信息
         /// 图书状态
         ///  1		other -- 其他
@@ -540,6 +572,7 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string ItemInfo(LibraryChannel channel, string message)
         {
+            int nRet = 0;
             string strError = "";
 
             ItemInformationResponse_18 response = new ItemInformationResponse_18()
@@ -552,124 +585,132 @@ namespace dp2SIPServer
             };
 
             ItemInformation_17 request = new ItemInformation_17();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
-                LogManager.Logger.Error(strError);
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    LogManager.Logger.Error(strError);
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                    return response.ToText();
+                }
+            }
+            catch(Exception ex)
+            {
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
+            }
+
+            string strItemIdentifier = request.AB_ItemIdentifier_r;
+            response.AB_ItemIdentifier_r = strItemIdentifier;
+            string strItemXml = "";
+            string strBiblio = "";
+            long lRet = channel.GetItemInfo(null,
+                strItemIdentifier,
+                "xml",
+                out strItemXml,
+                "xml",
+                out strBiblio,
+                out strError);
+            if (-1 >= lRet)
+            {
+                response.CirculationStatus_2 = "01";
+
+                strError = "获得'" + strItemIdentifier + "'发生错误: " + strError;
                 response.AF_ScreenMessage_o = strError;
                 response.AG_PrintLine_o = strError;
             }
-            else
+            else if (0 == lRet)
             {
-                string strItemIdentifier = request.AB_ItemIdentifier_r;
-                response.AB_ItemIdentifier_r = strItemIdentifier;
-                string strItemXml = "";
-                string strBiblio = "";
-                long lRet = channel.GetItemInfo(null,
-                    strItemIdentifier,
-                    "xml",
-                    out strItemXml,
-                    "xml",
-                    out strBiblio,
-                    out strError);
-                if (-1 >= lRet)
-                {
-                    response.CirculationStatus_2 = "01";
+                response.CirculationStatus_2 = "13";
 
-                    strError = "获得'" + strItemIdentifier + "'发生错误: " + strError;
-                    response.AF_ScreenMessage_o = strError;
-                    response.AG_PrintLine_o = strError;
-                }
-                else if (0 == lRet)
+                strError = strItemIdentifier + " 记录不存在";
+                response.AF_ScreenMessage_o = strError;
+                response.AG_PrintLine_o = strError;
+            }
+            else if (1 < lRet)
+            {
+                response.CirculationStatus_2 = "01";
+                strError = strItemIdentifier + " 记录重复，需馆员处理";
+                response.AF_ScreenMessage_o = strError;
+                response.AG_PrintLine_o = strError;
+            }
+            else if (1 == lRet)
+            {
+                XmlDocument dom = new XmlDocument();
+                try
                 {
-                    response.CirculationStatus_2 = "13";
+                    dom.LoadXml(strItemXml);
 
-                    strError = strItemIdentifier + " 记录不存在";
-                    response.AF_ScreenMessage_o = strError;
-                    response.AG_PrintLine_o = strError;
-                }
-                else if (1 < lRet)
-                {
-                    response.CirculationStatus_2 = "01";
-                    strError = strItemIdentifier + " 记录重复，需馆员处理";
-                    response.AF_ScreenMessage_o = strError;
-                    response.AG_PrintLine_o = strError;
-                }
-                else if (1 == lRet)
-                {
-                    XmlDocument dom = new XmlDocument();
-                    try
+                    string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
+                    if (String.IsNullOrEmpty(strItemState))
                     {
-                        dom.LoadXml(strItemXml);
+                        string strBorrower = DomUtil.GetElementText(dom.DocumentElement, "borrower");
+                        response.CirculationStatus_2 = String.IsNullOrEmpty(strBorrower) ? "03" : "04";
 
-                        string strItemState = DomUtil.GetElementText(dom.DocumentElement, "state");
-                        if (String.IsNullOrEmpty(strItemState))
+                        XmlNodeList reservations = dom.DocumentElement.SelectNodes("reservations/request");
+                        if (reservations != null)
                         {
-                            string strBorrower = DomUtil.GetElementText(dom.DocumentElement, "borrower");
-                            response.CirculationStatus_2 = String.IsNullOrEmpty(strBorrower) ? "03" : "04";
+                            response.CF_HoldQueueLength_o = reservations.Count.ToString();
 
-                            XmlNodeList reservations = dom.DocumentElement.SelectNodes("reservations/request");
-                            if (reservations != null)
-                            {
-                                response.CF_HoldQueueLength_o = reservations.Count.ToString();
-
-                                if (reservations.Count > 0)
-                                    response.CirculationStatus_2 = "08"; // 预约保留架                                
-                            }
-                        }
-                        else
-                        {
-                            if (StringUtil.IsInList("丢失", strItemState))
-                                response.CirculationStatus_2 = "12";
-                        }
-
-                        response.AQ_PermanentLocation_o = DomUtil.GetElementText(dom.DocumentElement, "location");
-
-                        string strBorrowDate = DomUtil.GetElementText(dom.DocumentElement, "borrowDate");
-                        if (!String.IsNullOrEmpty(strBorrowDate))
-                        {
-                            strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
-                            response.CM_HoldPickupDate_18 = strBorrowDate;
-                        }
-
-                        string strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
-                        if (!String.IsNullOrEmpty(strReturningDate))
-                        {
-                            strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
-                            response.AH_DueDate_o = strReturningDate;
-                        }
-
-                        string strMarcSyntax = "";
-                        MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
-                        if (record != null)
-                        {
-                            if (strMarcSyntax == "unimarc")
-                            {
-                                // strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
-                                response.AJ_TitleIdentifier_r = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
-                                // strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
-                            }
-                            else if (strMarcSyntax == "usmarc")
-                            {
-                                // strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
-                                response.AJ_TitleIdentifier_r = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
-                                // strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
-                            }
-                        }
-                        else
-                        {
-                            strError = "图书信息解析错误:" + strError;
-                            LogManager.Logger.Error(strError);
-
-                            response.AF_ScreenMessage_o = strError;
-                            response.AG_PrintLine_o = strError;
+                            if (reservations.Count > 0)
+                                response.CirculationStatus_2 = "08"; // 预约保留架                                
                         }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        strError = strItemIdentifier + ":图书解析错误:" + ExceptionUtil.GetDebugText(ex);
+                        if (StringUtil.IsInList("丢失", strItemState))
+                            response.CirculationStatus_2 = "12";
+                    }
+
+                    response.AQ_PermanentLocation_o = DomUtil.GetElementText(dom.DocumentElement, "location");
+
+                    string strBorrowDate = DomUtil.GetElementText(dom.DocumentElement, "borrowDate");
+                    if (!String.IsNullOrEmpty(strBorrowDate))
+                    {
+                        strBorrowDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strBorrowDate, "yyyyMMdd    HHmmss");
+                        response.CM_HoldPickupDate_18 = strBorrowDate;
+                    }
+
+                    string strReturningDate = DomUtil.GetElementText(dom.DocumentElement, "returningDate");
+                    if (!String.IsNullOrEmpty(strReturningDate))
+                    {
+                        strReturningDate = DateTimeUtil.Rfc1123DateTimeStringToLocal(strReturningDate, this.DateFormat);
+                        response.AH_DueDate_o = strReturningDate;
+                    }
+
+                    string strMarcSyntax = "";
+                    MarcRecord record = MarcXml2MarcRecord(strBiblio, out strMarcSyntax, out strError);
+                    if (record != null)
+                    {
+                        if (strMarcSyntax == "unimarc")
+                        {
+                            // strISBN = record.select("field[@name='010']/subfield[@name='a']").FirstContent;
+                            response.AJ_TitleIdentifier_r = record.select("field[@name='200']/subfield[@name='a']").FirstContent;
+                            // strAuthor = record.select("field[@name='200']/subfield[@name='f']").FirstContent;
+                        }
+                        else if (strMarcSyntax == "usmarc")
+                        {
+                            // strISBN = record.select("field[@name='020']/subfield[@name='a']").FirstContent;
+                            response.AJ_TitleIdentifier_r = record.select("field[@name='245']/subfield[@name='a']").FirstContent;
+                            // strAuthor = record.select("field[@name='245']/subfield[@name='c']").FirstContent;
+                        }
+                    }
+                    else
+                    {
+                        strError = "图书信息解析错误:" + strError;
                         LogManager.Logger.Error(strError);
+
+                        response.AF_ScreenMessage_o = strError;
+                        response.AG_PrintLine_o = strError;
                     }
+                }
+                catch (Exception ex)
+                {
+                    strError = strItemIdentifier + ":图书解析错误:" + ExceptionUtil.GetDebugText(ex);
+                    LogManager.Logger.Error(strError);
                 }
             }
 
@@ -687,6 +728,7 @@ namespace dp2SIPServer
         {
             string strMessage = "";
             string strError = "";
+            int nRet = 0;
             long lRet = 0;
 
             char[] patronStatus = new char[14];
@@ -715,212 +757,219 @@ namespace dp2SIPServer
             };
 
             PatronInformation_63 request = new PatronInformation_63();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
-                LogManager.Logger.Error(strError);
-                response.AF_ScreenMessage_o = strError;
-                response.AG_PrintLine_o = strError;
-            }
-            else
-            {
-                string strPassword = request.AD_PatronPassword_o;
-                string strBarcode = request.AA_PatronIdentifier_r;
-
-                if (!string.IsNullOrEmpty(strPassword))
-                {
-                    lRet = channel.VerifyReaderPassword(null,
-                        strBarcode,
-                        strPassword,
-                        out strError);
-                    if (lRet == -1)
-                    {
-                        response.AF_ScreenMessage_o = "校验密码发生错误：" + strError;
-                        response.AG_PrintLine_o = "校验密码发生错误：" + strError;
-
-                        return response.ToText();
-                    }
-                    else if (lRet == 0)
-                    {
-                        response.AF_ScreenMessage_o = "卡号或密码不正确";
-                        response.AG_PrintLine_o = "卡号或密码不正确";
-                        return response.ToText();
-                    }
-
-                    response.CQ_ValidPatronPassword_o = "Y";
-                }
-
-                string[] results = null;
-                lRet = channel.GetReaderInfo(null,
-                    strBarcode, //读者卡号,
-                    "advancexml",   // this.RenderFormat, // "html",
-                    out results,
-                    out strError);
-                if (lRet <= -1)
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
                 {
                     LogManager.Logger.Error(strError);
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                    return response.ToText();
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
+            }
 
-                    strMessage = "查询读者信息失败：" + strError;
-                    response.AF_ScreenMessage_o = strMessage;
-                    response.AG_PrintLine_o = strMessage;
+            string strPassword = request.AD_PatronPassword_o;
+            string strBarcode = request.AA_PatronIdentifier_r;
+            if (!string.IsNullOrEmpty(strPassword))
+            {
+                lRet = channel.VerifyReaderPassword(null,
+                    strBarcode,
+                    strPassword,
+                    out strError);
+                if (lRet == -1)
+                {
+                    response.AF_ScreenMessage_o = "校验密码发生错误：" + strError;
+                    response.AG_PrintLine_o = "校验密码发生错误：" + strError;
+
                     return response.ToText();
                 }
                 else if (lRet == 0)
                 {
-                    strMessage = "查无此证";
-                    response.AF_ScreenMessage_o = strMessage;
-                    response.AG_PrintLine_o = strMessage;
-                    return response.ToText();
-                }
-                else if (lRet > 1)
-                {
-                    strMessage = "证号重复";
-                    response.AF_ScreenMessage_o = strMessage;
-                    response.AG_PrintLine_o = strMessage;
+                    response.AF_ScreenMessage_o = "卡号或密码不正确";
+                    response.AG_PrintLine_o = "卡号或密码不正确";
                     return response.ToText();
                 }
 
-                XmlDocument dom = new XmlDocument();
-                string strReaderXml = results[0];
-                try
-                {
-                    dom.LoadXml(strReaderXml);
-                }
-                catch (Exception ex)
-                {
-                    LogManager.Logger.Error("读者信息解析错误：" + ExceptionUtil.GetDebugText(ex));
-                    response.AF_ScreenMessage_o = "读者信息解析错误";
-                    response.AG_PrintLine_o = "读者信息解析错误";
-                    return response.ToText();
-                }
-
-                // hold items count 4 - char, fixed-length required field -- 预约
-                XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
-                if (holdItemNodes != null)
-                {
-                    response.HoldItemsCount_4 = holdItemNodes.Count.ToString().PadLeft(4, '0');
-
-                    List<VariableLengthField> holdItems = new List<VariableLengthField>();
-                    foreach (XmlNode node in holdItemNodes)
-                    {
-                        string strItemBarcode = DomUtil.GetAttr(node, "items");
-                        if (string.IsNullOrEmpty(strItemBarcode))
-                            continue;
-
-                        if (strItemBarcode.IndexOf(',') != -1)
-                        {
-                            string[] barcodes = strItemBarcode.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            foreach (string barcode in barcodes)
-                            {
-                                holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, barcode));
-                            }
-                        }
-                        else
-                        {
-                            holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, strItemBarcode));
-                        }
-                    }
-
-                    if (holdItems.Count > 0)
-                        response.AS_HoldItems_o = holdItems;
-                }
-
-                // overdue items count 4 - char, fixed-length required field  -- 超期
-                // charged items count 4 - char, fixed-length required field -- 在借
-                XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
-                if (chargedItemNodes != null)
-                {
-                    response.ChargedItemsCount_4 = chargedItemNodes.Count.ToString().PadLeft(4, '0');
-
-                    List<VariableLengthField> chargedItems = new List<VariableLengthField>();
-                    List<VariableLengthField> overdueItems = new List<VariableLengthField>();
-                    int nOverdueItemsCount = 0;
-                    foreach (XmlNode node in chargedItemNodes)
-                    {
-                        string strItemBarcode = DomUtil.GetAttr(node, "barcode");
-                        if (string.IsNullOrEmpty(strItemBarcode))
-                            continue;
-
-                        chargedItems.Add(new VariableLengthField(SIPConst.F_AU_ChargedItems, false, strItemBarcode));
-
-                        string strReturningDate = DomUtil.GetAttr(node, "returningDate");
-                        if (string.IsNullOrEmpty(strReturningDate))
-                            continue;
-                        DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
-                        if (returningDate < DateTime.Now)
-                        {
-                            nOverdueItemsCount++;
-                            overdueItems.Add(new VariableLengthField(SIPConst.F_AT_OverdueItems, false, strItemBarcode));
-                        }
-                    }
-
-                    if (chargedItems.Count > 0)
-                        response.AU_ChargedItems_o = chargedItems;
-                    if (overdueItems.Count > 0)
-                    {
-                        patronStatus[6] = 'Y';
-                        response.AT_OverdueItems_o = overdueItems;
-                    }
-                }
-
-
-                // 超期交费项
-                XmlNodeList overdues = dom.DocumentElement.SelectNodes("overdues/overdue");
-                if (overdues != null && overdues.Count > 0)
-                {
-                    string strWords = "押金,租金";
-                    string strWords2 = "超期";
-                    foreach (XmlNode node in overdues)
-                    {
-                        string strReason = DomUtil.GetAttr(node, "reason");
-                        if (strReason.Length < 2)
-                            continue;
-                        string strPart = strReason.Substring(0, 2);
-                        if (StringUtil.IsInList(strPart, strWords) && patronStatus[11] != 'Y')
-                        {
-                            patronStatus[11] = 'Y';
-                        }
-                        else if(strPart == strWords2 && patronStatus[10] != 'Y')
-                        {
-                            patronStatus[10] = 'Y';
-                        }
-                    }
-                }
-
-                response.AA_PatronIdentifier_r = strBarcode;
-                response.AE_PersonalName_r = DomUtil.GetElementText(dom.DocumentElement, "name");
-                response.BL_ValidPatron_o = "Y";
-
-                string strTotal = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
-                string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
-                response.BZ_HoldItemsLimit_o = strBorrowsCount.PadLeft(4, '0');
-                string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
-                if (String.IsNullOrEmpty(strState))
-                {
-                    if (!string.IsNullOrEmpty(strTotal))
-                    {
-                        if (!string.IsNullOrEmpty(strBorrowsCount) && strBorrowsCount != "0")
-                            strMessage = "您在本馆最多可借【" + strTotal + "】册，还可以再借【" + strBorrowsCount + "】册。";
-                        else
-                            strMessage = "您在本馆借书数已达最多可借数【" + strTotal + "】，不能继续借了!";
-                    }
-                    if (!string.IsNullOrEmpty(strMessage))
-                    {
-                        response.AF_ScreenMessage_o = strMessage;
-                        response.AG_PrintLine_o = strMessage;
-                    }
-                }
-                else
-                {
-                    patronStatus[4] = 'Y';
-
-                    string strName = DomUtil.GetElementText(dom.DocumentElement, "name");
-                    strMessage = "读者证[" + strBarcode + ":" + strName + "]已被[" + strState + "]";
-                    response.AF_ScreenMessage_o = strMessage;
-                    response.AG_PrintLine_o = strMessage;
-                }
-                response.PatronStatus_14 = new string(patronStatus);
+                response.CQ_ValidPatronPassword_o = "Y";
             }
+
+            string[] results = null;
+            lRet = channel.GetReaderInfo(null,
+                strBarcode, //读者卡号,
+                "advancexml",   // this.RenderFormat, // "html",
+                out results,
+                out strError);
+            if (lRet <= -1)
+            {
+                LogManager.Logger.Error(strError);
+
+                strMessage = "查询读者信息失败：" + strError;
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+            else if (lRet == 0)
+            {
+                strMessage = "查无此证";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+            else if (lRet > 1)
+            {
+                strMessage = "证号重复";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+            XmlDocument dom = new XmlDocument();
+            string strReaderXml = results[0];
+            try
+            {
+                dom.LoadXml(strReaderXml);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Logger.Error("读者信息解析错误：" + ExceptionUtil.GetDebugText(ex));
+                response.AF_ScreenMessage_o = "读者信息解析错误";
+                response.AG_PrintLine_o = "读者信息解析错误";
+                return response.ToText();
+            }
+
+            // hold items count 4 - char, fixed-length required field -- 预约
+            XmlNodeList holdItemNodes = dom.DocumentElement.SelectNodes("reservations/request");
+            if (holdItemNodes != null)
+            {
+                response.HoldItemsCount_4 = holdItemNodes.Count.ToString().PadLeft(4, '0');
+
+                List<VariableLengthField> holdItems = new List<VariableLengthField>();
+                foreach (XmlNode node in holdItemNodes)
+                {
+                    string strItemBarcode = DomUtil.GetAttr(node, "items");
+                    if (string.IsNullOrEmpty(strItemBarcode))
+                        continue;
+
+                    if (strItemBarcode.IndexOf(',') != -1)
+                    {
+                        string[] barcodes = strItemBarcode.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string barcode in barcodes)
+                        {
+                            holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, barcode));
+                        }
+                    }
+                    else
+                    {
+                        holdItems.Add(new VariableLengthField(SIPConst.F_AS_HoldItems, false, strItemBarcode));
+                    }
+                }
+
+                if (holdItems.Count > 0)
+                    response.AS_HoldItems_o = holdItems;
+            }
+
+            // overdue items count 4 - char, fixed-length required field  -- 超期
+            // charged items count 4 - char, fixed-length required field -- 在借
+            XmlNodeList chargedItemNodes = dom.DocumentElement.SelectNodes("borrows/borrow");
+            if (chargedItemNodes != null)
+            {
+                response.ChargedItemsCount_4 = chargedItemNodes.Count.ToString().PadLeft(4, '0');
+
+                List<VariableLengthField> chargedItems = new List<VariableLengthField>();
+                List<VariableLengthField> overdueItems = new List<VariableLengthField>();
+                int nOverdueItemsCount = 0;
+                foreach (XmlNode node in chargedItemNodes)
+                {
+                    string strItemBarcode = DomUtil.GetAttr(node, "barcode");
+                    if (string.IsNullOrEmpty(strItemBarcode))
+                        continue;
+
+                    chargedItems.Add(new VariableLengthField(SIPConst.F_AU_ChargedItems, false, strItemBarcode));
+
+                    string strReturningDate = DomUtil.GetAttr(node, "returningDate");
+                    if (string.IsNullOrEmpty(strReturningDate))
+                        continue;
+                    DateTime returningDate = DateTimeUtil.FromRfc1123DateTimeString(strReturningDate);
+                    if (returningDate < DateTime.Now)
+                    {
+                        nOverdueItemsCount++;
+                        overdueItems.Add(new VariableLengthField(SIPConst.F_AT_OverdueItems, false, strItemBarcode));
+                    }
+                }
+
+                if (chargedItems.Count > 0)
+                    response.AU_ChargedItems_o = chargedItems;
+                if (overdueItems.Count > 0)
+                {
+                    patronStatus[6] = 'Y';
+                    response.AT_OverdueItems_o = overdueItems;
+                }
+            }
+
+
+            // 超期交费项
+            XmlNodeList overdues = dom.DocumentElement.SelectNodes("overdues/overdue");
+            if (overdues != null && overdues.Count > 0)
+            {
+                string strWords = "押金,租金";
+                string strWords2 = "超期";
+                foreach (XmlNode node in overdues)
+                {
+                    string strReason = DomUtil.GetAttr(node, "reason");
+                    if (strReason.Length < 2)
+                        continue;
+                    string strPart = strReason.Substring(0, 2);
+                    if (StringUtil.IsInList(strPart, strWords) && patronStatus[11] != 'Y')
+                    {
+                        patronStatus[11] = 'Y';
+                    }
+                    else if (strPart == strWords2 && patronStatus[10] != 'Y')
+                    {
+                        patronStatus[10] = 'Y';
+                    }
+                }
+            }
+
+            response.AA_PatronIdentifier_r = strBarcode;
+            response.AE_PersonalName_r = DomUtil.GetElementText(dom.DocumentElement, "name");
+            response.BL_ValidPatron_o = "Y";
+
+            string strTotal = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
+            string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
+            response.BZ_HoldItemsLimit_o = strBorrowsCount.PadLeft(4, '0');
+            string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
+            if (String.IsNullOrEmpty(strState))
+            {
+                if (!string.IsNullOrEmpty(strTotal))
+                {
+                    if (!string.IsNullOrEmpty(strBorrowsCount) && strBorrowsCount != "0")
+                        strMessage = "您在本馆最多可借【" + strTotal + "】册，还可以再借【" + strBorrowsCount + "】册。";
+                    else
+                        strMessage = "您在本馆借书数已达最多可借数【" + strTotal + "】，不能继续借了!";
+                }
+                if (!string.IsNullOrEmpty(strMessage))
+                {
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
+                }
+            }
+            else
+            {
+                patronStatus[4] = 'Y';
+
+                string strName = DomUtil.GetElementText(dom.DocumentElement, "name");
+                strMessage = "读者证[" + strBarcode + ":" + strName + "]已被[" + strState + "]";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+            }
+            response.PatronStatus_14 = new string(patronStatus);
             return response.ToText();
         }
 
@@ -933,6 +982,7 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string Login(LibraryChannel channel, string message)
         {
+            int nRet = 0;
             string strError = "";
 
             string strUserID = "";
@@ -946,39 +996,45 @@ namespace dp2SIPServer
             };
 
             Login_93 request = new Login_93();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    LogManager.Logger.Error(strError);
+                    return response.ToText();
+                }
+            }
+            catch(Exception ex)
+            {
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
                 return response.ToText();
+            }
+
+            strUserID = request.CN_LoginUserId_r;
+            strPassword = request.CO_LoginPassword_r;
+            strLocationCode = request.CP_LocationCode_o;
+            long lRet = channel.Login(strUserID,
+                strPassword,
+                "type=worker,client=dp2SIPServer|0.01",
+                out strError);
+            if (lRet == -1)
+            {
+                LogManager.Logger.Error(strError);
+            }
+            else if (lRet == 0)
+            {
+                LogManager.Logger.Error(strError);
             }
             else
             {
-                strUserID = request.CN_LoginUserId_r;
-                strPassword = request.CO_LoginPassword_r;
-                strLocationCode = request.CP_LocationCode_o;
+                response.Ok_1 = "1";
 
-                long lRet = channel.Login(strUserID,
-                    strPassword,
-                    "type=worker,client=dp2SIPServer|0.01",
-                    out strError);
-                if (lRet == -1)
-                {
-                    LogManager.Logger.Error(strError);
-                }
-                else if (lRet == 0)
-                {
-                    LogManager.Logger.Error(strError);
-                }
-                else
-                {
-                    response.Ok_1 = "1";
+                this.LocationCode = strLocationCode;
+                this.LoginUserId = strUserID;
+                this.LoginPassword = strPassword;
 
-                    this.LocationCode = strLocationCode;
-                    this.LoginUserId = strUserID;
-                    this.LoginPassword = strPassword;
-
-                    LogManager.Logger.Info("终端 " + strLocationCode + " : " + strUserID + " 接入");
-                }
+                LogManager.Logger.Info("终端 " + strLocationCode + " : " + strUserID + " 接入");
             }
 
             return response.ToText();
@@ -1019,6 +1075,7 @@ namespace dp2SIPServer
         /// <returns></returns>
         public string EndPatronSession(string message)
         {
+            int nRet = 0;
             string strError = "";
 
             EndSessionResponse_36 response = new EndSessionResponse_36()
@@ -1029,18 +1086,26 @@ namespace dp2SIPServer
             };
 
             EndPatronSession_35 request = new EndPatronSession_35();
-            int nRet = request.parse(message, out strError);
-            if (-1 == nRet)
+            try
             {
-                LogManager.Logger.Error(strError);
-                response.AF_ScreenMessage_o = strError;
-                response.AG_PrintLine_o = strError;
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    LogManager.Logger.Error(strError);
+                    response.AF_ScreenMessage_o = strError;
+                    response.AG_PrintLine_o = strError;
+                }
+                else
+                {
+                    response.AA_PatronIdentifier_r = request.AA_PatronIdentifier_r;
+                    response.AF_ScreenMessage_o = "结束操作成功";
+                    response.AG_PrintLine_o = "结束操作成功";
+                }
             }
-            else
+            catch(Exception ex)
             {
-                response.AA_PatronIdentifier_r = request.AA_PatronIdentifier_r;
-                response.AF_ScreenMessage_o = "结束操作成功";
-                response.AG_PrintLine_o = "结束操作成功";
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
             }
 
             return response.ToText();
