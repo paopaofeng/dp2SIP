@@ -341,7 +341,9 @@ namespace dp2SIPClient
                 //20170630    141630
                 string transactionDate = SIPUtility.NowDateTime;
                 string returnDate = SIPUtility.NowDateTime;
-                text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|ABDPB000051|AC|BIN|";
+               text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|ABDPB000051|AC|BIN|";
+
+                //text = "09N20170906    170441|AB378344|AOhuanshuji|AC|BIN|AP|AY1AZEFA4";
                 Checkin_09 request09 = new Checkin_09();
                 nRet = request09.parse(text, out error);
                 if (nRet == -1)
