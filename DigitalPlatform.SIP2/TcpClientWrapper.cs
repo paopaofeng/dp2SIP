@@ -57,10 +57,13 @@ namespace DigitalPlatform.SIP2
 
             try
             {
-                IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
-                string hostName = Dns.GetHostEntry(ipAddress).HostName;
+                // 这段代码当ip地址对应的服务器没有对应域名时，会抛异常。例如腾讯云的几台服务器
+                // IPAddress ipAddress = IPAddress.Parse(this.SIPServerUrl);
+                // string hostName = Dns.GetHostEntry(ipAddress).HostName;
+                // TcpClient client = new TcpClient(hostName, this.SIPServerPort); 
 
-                TcpClient client = new TcpClient(hostName, this.SIPServerPort);
+                TcpClient client = new TcpClient();
+                client.Connect(IPAddress.Parse(this.SIPServerUrl), this.SIPServerPort);
                 this._client = client;
                 this._networkStream = client.GetStream();
             }

@@ -232,8 +232,9 @@ namespace dp2SIPServer
             try
             {
                 // 启动监听
-                Listener = new TcpListener(IPAddress.Any, this.Port);
+                Listener = new TcpListener(IPAddress.Any, this.Port);  //IPAddress.Parse("0.0.0.0")
                 Listener.Start();
+
                 this.toolStripStatusLabel1.Text = "正在监听...";
                 WriteHtml("启动成功");
 
