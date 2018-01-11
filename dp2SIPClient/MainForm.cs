@@ -1,6 +1,7 @@
 ﻿using DigitalPlatform;
 using DigitalPlatform.SIP2;
 using DigitalPlatform.SIP2.Request;
+using SIP2;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,7 +79,8 @@ namespace dp2SIPClient
             }
 
             // 连接成功
-            info="连接SIP2服务器成功.";
+            string text = this.SIPServerUrl + ":" + this.SIPServerPort.ToString();
+            info="连接SIP2服务器["+text+"]成功.";
             this.toolStripStatusLabel_info.Text = info;
             this.EnableControlsForConnection(true);
         }
@@ -274,6 +276,22 @@ namespace dp2SIPClient
 
         }
 
+        private string SamplePatron
+        {
+            get
+            {
+                return Properties.Settings.Default.Patron;
+            }
+        }
+
+        private string SampleItem
+        {
+            get
+            {
+                return Properties.Settings.Default.Item;
+            }
+        }
+
         private void toolStripLabel_sample_Click(object sender, EventArgs e)
         {
             this.txtMsg.Text = "";
@@ -311,7 +329,7 @@ namespace dp2SIPClient
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
             {
                 //20170630    141135
-                text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AAFZXP00001|ABDPB000051|AC|BON|BIN|";
+                text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AA"+ SamplePatron + "|AB"+ SampleItem+ "|AC|BON|BIN|";
                 Checkout_11 request11 = new Checkout_11();
                 nRet = request11.parse(text, out error);
                 if (nRet == -1)
@@ -341,7 +359,7 @@ namespace dp2SIPClient
                 //20170630    141630
                 string transactionDate = SIPUtility.NowDateTime;
                 string returnDate = SIPUtility.NowDateTime;
-               text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|ABDPB000051|AC|BIN|";
+               text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|AB"+ SampleItem+ "|AC|BIN|";
 
                 //text = "09N20170906    170441|AB378344|AOhuanshuji|AC|BIN|AP|AY1AZEFA4";
                 Checkin_09 request09 = new Checkin_09();
@@ -368,7 +386,7 @@ namespace dp2SIPClient
             {
                 //6301920170630    090808  Y       AOdp2Library|AAA005312|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "63019" + transactionDate + "  Y       AOdp2Library|AAFZXP00001|";
+                text = "63019" + transactionDate + "  Y       AOdp2Library|AA"+ SamplePatron + "|";
                 PatronInformation_63 request63 = new PatronInformation_63();
                 nRet = request63.parse(text, out error);
                 if (nRet == -1)
@@ -390,7 +408,7 @@ namespace dp2SIPClient
             {
                 //1720170623    151645AOdp2Library|AB700635|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "17" + transactionDate + "AOdp2Library|ABDPB000051|";
+                text = "17" + transactionDate + "AOdp2Library|AB"+ SampleItem+ "|";
                 ItemInformation_17 request17 = new ItemInformation_17();
                 nRet = request17.parse(text, out error);
                 if (nRet == -1)
@@ -409,7 +427,7 @@ namespace dp2SIPClient
             {
                 //29NN20170630    144419                  AOdp2Library|AAL905071|AB510105|BON|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "29NN" + transactionDate + "                  AOdp2Library|AAFZXP00001|ABDPB000051|BON|";
+                text = "29NN" + transactionDate + "                  AOdp2Library|AA"+ SamplePatron + "|AB"+ SampleItem+ "|BON|";
                 Renew_29 request29 = new Renew_29();
                 nRet = request29.parse(text, out error);
                 if (nRet == -1)
@@ -536,8 +554,14 @@ namespace dp2SIPClient
             dlg.Show();
         }
 
+        private void sample参数设置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_SampleParam dlg = new Form_SampleParam();
+            dlg.ShowDialog(this);
+        }
 
         #endregion
+
 
     }
 }

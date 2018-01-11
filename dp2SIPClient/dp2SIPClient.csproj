@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckSum.cs" />
+    <Compile Include="Form_SampleParam.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_SampleParam.Designer.cs">
+      <DependentUpon>Form_SampleParam.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Checksum.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +91,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form_Checksum.resx">
       <DependentUpon>Form_Checksum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_SampleParam.resx">
+      <DependentUpon>Form_SampleParam.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Test.resx">
       <DependentUpon>Form_Test.cs</DependentUpon>

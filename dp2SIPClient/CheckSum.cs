@@ -114,4 +114,6 @@ namespace SIP2
             return  (Convert.ToInt16(strNewBinVal, 2)).ToString("X");
         }
     }
+
+
 }
