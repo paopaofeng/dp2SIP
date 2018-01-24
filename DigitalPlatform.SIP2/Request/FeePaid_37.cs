@@ -23,7 +23,7 @@ namespace DigitalPlatform.SIP2.Request
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_TransactionDate, 18));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_BT_FeeType, 2));
             this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_PaymentType, 2));
-            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_BH_CurrencyType, 1));
+            this.FixedLengthFields.Add(new FixedLengthField(SIPConst.F_BH_CurrencyType, 3));
 
             //==后面变长字段
             //<fee amount><institution id><patron identifier><terminal password><patron password><fee identifier><transaction id>

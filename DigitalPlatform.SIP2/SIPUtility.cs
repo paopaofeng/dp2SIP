@@ -125,6 +125,16 @@ namespace DigitalPlatform.SIP2
                         message = new RenewResponse_30();
                         break;
                     }
+                case "37":
+                    {
+                        message = new FeePaid_37();
+                        break;
+                    }
+                case "38":
+                    {
+                        message = new FeePaidResponse_38();
+                        break;
+                    }
                 default:
                     error = "不支持的命令'" + cmdIdentifiers + "'";
                     return -1;

@@ -152,116 +152,139 @@ namespace dp2SIPClient
                         UIDAlgorithm_1 = this.textBox_Login93_UIDAlgorithm_1.Text,
                         PWDAlgorithm_1 = this.textBox_Login93_PWDAlgorithm_1.Text,
 
-                        CN_LoginUserId_r=getText(this.textBox_Login93_loginUserId_CN_r),//.Text == "null" ? null : this.textBox_Login93_loginUserId_CN_r.Text
-                        CO_LoginPassword_r=getText(this.textBox_Login93_loginPassword_CO_r),//.Text == "null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
-                        CP_LocationCode_o= getText(this.textBox_Login93_locationCode_CP_o),//.Text == "null" ? null : this.textBox_Login93_locationCode_CP_o.Text
+                        CN_LoginUserId_r = getText(this.textBox_Login93_loginUserId_CN_r),//.Text == "null" ? null : this.textBox_Login93_loginUserId_CN_r.Text
+                        CO_LoginPassword_r = getText(this.textBox_Login93_loginPassword_CO_r),//.Text == "null" ? null : this.textBox_Login93_loginPassword_CO_r.Text,
+                        CP_LocationCode_o = getText(this.textBox_Login93_locationCode_CP_o),//.Text == "null" ? null : this.textBox_Login93_locationCode_CP_o.Text
                     };
-                    cmdText=request93.ToText();
+                    cmdText = request93.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_SCStatus99)
                 {
                     SCStatus_99 request = new SCStatus_99()
                     {
-                        StatusCode_1=this.textBox_SCStatus99_statusCode_1.Text,
-                        MaxPrintWidth_3= this.textBox_SCStatus99_maxPrintWidth_3.Text,
-                        ProtocolVersion_4=this.textBox_SCStatus99_protocolVersion_4.Text
-                     };
+                        StatusCode_1 = this.textBox_SCStatus99_statusCode_1.Text,
+                        MaxPrintWidth_3 = this.textBox_SCStatus99_maxPrintWidth_3.Text,
+                        ProtocolVersion_4 = this.textBox_SCStatus99_protocolVersion_4.Text
+                    };
                     cmdText = request.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
                 {
                     Checkout_11 request = new Checkout_11()
                     {
-                        SCRenewalPolicy_1=this.textBox_Checkout11_SCRenewalPolicy_1.Text,
-                        NoBlock_1=this.textBox_Checkout11_noBlock_1.Text,
-                        TransactionDate_18= this.textBox_Checkout11_transactionDate_18.Text,
-                        NbDueDate_18=this.textBox_Checkout11_nbDueDate_18.Text,
+                        SCRenewalPolicy_1 = this.textBox_Checkout11_SCRenewalPolicy_1.Text,
+                        NoBlock_1 = this.textBox_Checkout11_noBlock_1.Text,
+                        TransactionDate_18 = this.textBox_Checkout11_transactionDate_18.Text,
+                        NbDueDate_18 = this.textBox_Checkout11_nbDueDate_18.Text,
 
-                        AO_InstitutionId_r=getText(this.textBox_Checkout11_institutionId_AO_r),//.Text == "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
-                        AA_PatronIdentifier_r=getText(this.textBox_Checkout11_patronIdentifier_AA_r),//.Text == "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
-                        AB_ItemIdentifier_r=getText(this.textBox_Checkout11_itemIdentifier_AB_r),//.Text == "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
+                        AO_InstitutionId_r = getText(this.textBox_Checkout11_institutionId_AO_r),//.Text == "null" ? null : this.textBox_Checkout11_institutionId_AO_r.Text,
+                        AA_PatronIdentifier_r = getText(this.textBox_Checkout11_patronIdentifier_AA_r),//.Text == "null" ? null : this.textBox_Checkout11_patronIdentifier_AA_r.Text,
+                        AB_ItemIdentifier_r = getText(this.textBox_Checkout11_itemIdentifier_AB_r),//.Text == "null" ? null : this.textBox_Checkout11_itemIdentifier_AB_r.Text,
 
-                        AC_TerminalPassword_r=getText(this.textBox_Checkout11_terminalPassword_AC_r),//.Text == "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text;
-                        CH_ItemProperties_o=getText(this.textBox_Checkout11_itemProperties_CH_o),
-                        AD_PatronPassword_o=getText(this.textBox_Checkout11_patronPassword_AD_o),
-                        BO_FeeAcknowledged_1_o=getText(this.textBox_Checkout11_feeAcknowledged_BO_1_o),
-                        BI_Cancel_1_o=getText(this.textBox_Checkout11_cancel_BI_1_o),
+                        AC_TerminalPassword_r = getText(this.textBox_Checkout11_terminalPassword_AC_r),//.Text == "null" ? null : this.textBox_Checkout11_terminalPassword_AC_r.Text;
+                        CH_ItemProperties_o = getText(this.textBox_Checkout11_itemProperties_CH_o),
+                        AD_PatronPassword_o = getText(this.textBox_Checkout11_patronPassword_AD_o),
+                        BO_FeeAcknowledged_1_o = getText(this.textBox_Checkout11_feeAcknowledged_BO_1_o),
+                        BI_Cancel_1_o = getText(this.textBox_Checkout11_cancel_BI_1_o),
                     };
                     cmdText = request.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_Checkin09)
                 {
-                    Checkin_09 request = new Checkin_09() 
+                    Checkin_09 request = new Checkin_09()
                     {
-                        NoBlock_1=this.textBox_Checkin09_noBlock_1.Text,
-                        TransactionDate_18=this.textBox_Checkin09_transactionDate_18.Text,
-                        ReturnDate_18=this.textBox_Checkin09_returnDate_18.Text,
+                        NoBlock_1 = this.textBox_Checkin09_noBlock_1.Text,
+                        TransactionDate_18 = this.textBox_Checkin09_transactionDate_18.Text,
+                        ReturnDate_18 = this.textBox_Checkin09_returnDate_18.Text,
 
-                        AP_CurrentLocation_r=getText(this.textBox_Checkin09_currentLocation_AP_r),
-                        AO_InstitutionId_r=getText(this.textBox_Checkin09_institutionId_AO_r),
-                        AB_ItemIdentifier_r=getText(this.textBox_Checkin09_itemIdentifier_AB_r),
+                        AP_CurrentLocation_r = getText(this.textBox_Checkin09_currentLocation_AP_r),
+                        AO_InstitutionId_r = getText(this.textBox_Checkin09_institutionId_AO_r),
+                        AB_ItemIdentifier_r = getText(this.textBox_Checkin09_itemIdentifier_AB_r),
 
-                        AC_TerminalPassword_r=getText(this.textBox_Checkin09_terminalPassword_AC_r),
-                        CH_ItemProperties_o=getText(this.textBox_Checkin09_itemProperties_CH_o),
-                        BI_Cancel_1_o=getText(this.textBox_Checkin09_cancel_BI_1_o),
+                        AC_TerminalPassword_r = getText(this.textBox_Checkin09_terminalPassword_AC_r),
+                        CH_ItemProperties_o = getText(this.textBox_Checkin09_itemProperties_CH_o),
+                        BI_Cancel_1_o = getText(this.textBox_Checkin09_cancel_BI_1_o),
                     };
                     cmdText = request.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_PatronInformation63)
                 {
-                    PatronInformation_63 request = new PatronInformation_63() 
+                    PatronInformation_63 request = new PatronInformation_63()
                     {
-                        Language_3=this.textBox_PatronInformation63_language_3.Text,
-                        TransactionDate_18=this.textBox_PatronInformation63_transactionDate_18.Text,
-                        Summary_10=this.textBox_PatronInformation63_summary_10.Text,
+                        Language_3 = this.textBox_PatronInformation63_language_3.Text,
+                        TransactionDate_18 = this.textBox_PatronInformation63_transactionDate_18.Text,
+                        Summary_10 = this.textBox_PatronInformation63_summary_10.Text,
 
-                        AO_InstitutionId_r=getText(this.textBox_PatronInformation63_institutionId_AO_r),
-                        AA_PatronIdentifier_r=getText(this.textBox_PatronInformation63_patronIdentifier_AA_r),
-                        AC_TerminalPassword_o=getText(this.textBox_PatronInformation63_terminalPassword_AC_o),
+                        AO_InstitutionId_r = getText(this.textBox_PatronInformation63_institutionId_AO_r),
+                        AA_PatronIdentifier_r = getText(this.textBox_PatronInformation63_patronIdentifier_AA_r),
+                        AC_TerminalPassword_o = getText(this.textBox_PatronInformation63_terminalPassword_AC_o),
 
-                        AD_PatronPassword_o=getText(this.textBox_PatronInformation63_patronPassword_AD_o),
-                        BP_StartItem_o=getText(this.textBox_PatronInformation63_startItem_BP_o),
-                        BQ_EndItem_o=getText(this.textBox_PatronInformation63_endItem_BQ_o),
+                        AD_PatronPassword_o = getText(this.textBox_PatronInformation63_patronPassword_AD_o),
+                        BP_StartItem_o = getText(this.textBox_PatronInformation63_startItem_BP_o),
+                        BQ_EndItem_o = getText(this.textBox_PatronInformation63_endItem_BQ_o),
                     };
                     cmdText = request.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_ItemInformation17)
                 {
 
-                    ItemInformation_17 request = new ItemInformation_17() 
+                    ItemInformation_17 request = new ItemInformation_17()
                     {
-                        TransactionDate_18=this.textBox_ItemInformation17_transactionDate_18.Text,
+                        TransactionDate_18 = this.textBox_ItemInformation17_transactionDate_18.Text,
 
-                        AO_InstitutionId_r=getText(this.textBox_ItemInformation17_institutionId_AO_r),
-                        AB_ItemIdentifier_r=getText(this.textBox_ItemInformation17_itemIdentifier_AB_r),
-                        AC_TerminalPassword_o=getText( this.textBox_ItemInformation17_terminalPassword_AC_o),
+                        AO_InstitutionId_r = getText(this.textBox_ItemInformation17_institutionId_AO_r),
+                        AB_ItemIdentifier_r = getText(this.textBox_ItemInformation17_itemIdentifier_AB_r),
+                        AC_TerminalPassword_o = getText(this.textBox_ItemInformation17_terminalPassword_AC_o),
                     };
                     cmdText = request.ToText();
                 }
                 else if (this.tabControl_main.SelectedTab == this.tabPage_Renew29)
                 {
-                    Renew_29 request = new Renew_29() 
+                    Renew_29 request = new Renew_29()
                     {
-                        ThirdPartyAllowed_1=this.textBox_Renew29_thirdPartyAllowed_1.Text,
-                        NoBlock_1=this.textBox_Renew29_noBlock_1.Text,
-                        TransactionDate_18=this.textBox_Renew29_transactionDate_18.Text,
-                        NbDueDate_18=this.textBox_Renew29_nbDueDate_18.Text,
+                        ThirdPartyAllowed_1 = this.textBox_Renew29_thirdPartyAllowed_1.Text,
+                        NoBlock_1 = this.textBox_Renew29_noBlock_1.Text,
+                        TransactionDate_18 = this.textBox_Renew29_transactionDate_18.Text,
+                        NbDueDate_18 = this.textBox_Renew29_nbDueDate_18.Text,
 
-                        AO_InstitutionId_r=getText(this.textBox_Renew29_institutionId_AO_r),
-                        AA_PatronIdentifier_r=getText(this.textBox_Renew29_patronIdentifier_AA_r),
+                        AO_InstitutionId_r = getText(this.textBox_Renew29_institutionId_AO_r),
+                        AA_PatronIdentifier_r = getText(this.textBox_Renew29_patronIdentifier_AA_r),
 
-                        AD_PatronPassword_o=getText(this.textBox_Renew29_patronPassword_AD_o),
-                        AB_ItemIdentifier_o=getText(this.textBox_Renew29_itemIdentifier_AB_o),
-                        AJ_TitleIdentifier_o=getText(this.textBox_Renew29_titleIdentifier_AJ_o),
+                        AD_PatronPassword_o = getText(this.textBox_Renew29_patronPassword_AD_o),
+                        AB_ItemIdentifier_o = getText(this.textBox_Renew29_itemIdentifier_AB_o),
+                        AJ_TitleIdentifier_o = getText(this.textBox_Renew29_titleIdentifier_AJ_o),
 
-                        AC_TerminalPassword_o=getText(this.textBox_Renew29_terminalPassword_AC_o),
-                        CH_ItemProperties_o=getText(this.textBox_Renew29_itemProperties_CH_o),
-                        BO_FeeAcknowledged_1_o=getText( this.textBox_Renew29_feeAcknowledged_BO_1_o),
+                        AC_TerminalPassword_o = getText(this.textBox_Renew29_terminalPassword_AC_o),
+                        CH_ItemProperties_o = getText(this.textBox_Renew29_itemProperties_CH_o),
+                        BO_FeeAcknowledged_1_o = getText(this.textBox_Renew29_feeAcknowledged_BO_1_o),
                     };
 
                     cmdText = request.ToText();
 
                 }
+                else if (this.tabControl_main.SelectedTab == this.tabPage_FeePaid37)
+                {
+                    FeePaid_37 request = new FeePaid_37()
+                    {
+                        TransactionDate_18 = getText(this.textBox_FeePaid37_transactionDate_18),
+                        FeeType_2 = getText(this.textBox_FeePaid37_feeType),
+                        PaymentType_2 = getText(this.textBox_FeePaid37_paymentType),
+                        CurrencyType_3 = getText(this.textBox_FeePaid37_currencyType),
+
+                        BV_FeeAmount_r = getText(this.textBox_FeePaid37_feeAmount),
+                        AO_InstitutionId_r = getText(this.textBox_FeePaid37_institutionId_AO_r),
+                        AA_PatronIdentifier_r = getText(this.textBox_FeePaid37_patronIdentifier_AA_r),
+                        AC_TerminalPassword_o = getText(this.textBox_FeePaid37_terminalPassword_AC_o),
+
+                        AD_PatronPassword_o = getText(this.textBox_FeePaid37_patronPassword_AD_o),
+                        CG_FeeIdentifier_o = getText(this.textBox_FeePaid37_feeIdentifier_CG_o),
+                        BK_TransactionId_o = getText(this.textBox_FeePaid37_transactionId_BK_o),
+                    };
+                    cmdText = request.ToText();
+                }
+
+
+
                 //发送命令
                 this.txtMsg.Text = cmdText;
                 this.sendCmd();
@@ -329,13 +352,13 @@ namespace dp2SIPClient
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkout11)
             {
                 //20170630    141135
-                text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AA"+ SamplePatron + "|AB"+ SampleItem+ "|AC|BON|BIN|";
+                text = "11YN" + SIPUtility.NowDateTime + "                  AOdp2Library|AA" + SamplePatron + "|AB" + SampleItem + "|AC|BON|BIN|";
                 Checkout_11 request11 = new Checkout_11();
                 nRet = request11.parse(text, out error);
                 if (nRet == -1)
                     goto ERROR1;
 
-                
+
                 this.textBox_Checkout11_SCRenewalPolicy_1.Text = request11.SCRenewalPolicy_1;//.GetFixedFieldValue(SIPConst.F_SCRenewalPolicy);//.SCRenewalPolicy_1;
                 this.textBox_Checkout11_noBlock_1.Text = request11.NoBlock_1;//.GetFixedFieldValue(SIPConst.F_NoBlock);//.NoBlock_1;
                 this.textBox_Checkout11_transactionDate_18.Text = request11.TransactionDate_18;//.GetFixedFieldValue(SIPConst.F_TransactionDate);//.TransactionDate_18;
@@ -351,15 +374,15 @@ namespace dp2SIPClient
                 this.textBox_Checkout11_patronPassword_AD_o.Text = request11.AD_PatronPassword_o;//.GetVariableFieldValue(SIPConst.F_AD_PatronPassword);//.PatronPassword_AD_o;
                 this.textBox_Checkout11_feeAcknowledged_BO_1_o.Text = request11.BO_FeeAcknowledged_1_o;//.GetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged);//.FeeAcknowledged_BO_1_o;
                 this.textBox_Checkout11_cancel_BI_1_o.Text = request11.BI_Cancel_1_o;//.GetVariableFieldValue(SIPConst.F_BI_Cancel);//Cancel_BI_1_o;
-            
-                 
+
+
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Checkin09)
             {
                 //20170630    141630
                 string transactionDate = SIPUtility.NowDateTime;
                 string returnDate = SIPUtility.NowDateTime;
-               text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|AB"+ SampleItem+ "|AC|BIN|";
+                text = "09N" + transactionDate + returnDate + "AP|AOdp2Library|AB" + SampleItem + "|AC|BIN|";
 
                 //text = "09N20170906    170441|AB378344|AOhuanshuji|AC|BIN|AP|AY1AZEFA4";
                 Checkin_09 request09 = new Checkin_09();
@@ -367,7 +390,7 @@ namespace dp2SIPClient
                 if (nRet == -1)
                     goto ERROR1;
 
-                
+
                 this.textBox_Checkin09_noBlock_1.Text = request09.NoBlock_1;//.GetFixedFieldValue(SIPConst.F_NoBlock);//.F_no.NoBlock_1;
                 this.textBox_Checkin09_transactionDate_18.Text = request09.TransactionDate_18;//.GetFixedFieldValue(SIPConst.F_TransactionDate);//_18;
                 this.textBox_Checkin09_returnDate_18.Text = request09.ReturnDate_18;//.GetFixedFieldValue(SIPConst.F_ReturnDate);
@@ -379,19 +402,19 @@ namespace dp2SIPClient
                 this.textBox_Checkin09_terminalPassword_AC_r.Text = request09.AC_TerminalPassword_r;//.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);
                 this.textBox_Checkin09_itemProperties_CH_o.Text = request09.CH_ItemProperties_o;//.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);
                 this.textBox_Checkin09_cancel_BI_1_o.Text = request09.BI_Cancel_1_o;//.GetVariableFieldValue(SIPConst.F_BI_Cancel);
-            
-                 
+
+
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_PatronInformation63)
             {
                 //6301920170630    090808  Y       AOdp2Library|AAA005312|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "63019" + transactionDate + "  Y       AOdp2Library|AA"+ SamplePatron + "|";
+                text = "63019" + transactionDate + "  Y       AOdp2Library|AA" + SamplePatron + "|";
                 PatronInformation_63 request63 = new PatronInformation_63();
                 nRet = request63.parse(text, out error);
                 if (nRet == -1)
                     goto ERROR1;
-                
+
                 this.textBox_PatronInformation63_language_3.Text = request63.Language_3;//.GetFixedFieldValue(SIPConst.F_Language);
                 this.textBox_PatronInformation63_transactionDate_18.Text = request63.TransactionDate_18;//.GetFixedFieldValue(SIPConst.F_TransactionDate);//.TransactionDate_18;
                 this.textBox_PatronInformation63_summary_10.Text = request63.Summary_10;//.GetFixedFieldValue(SIPConst.F_Summary);//.Summary_10;
@@ -408,31 +431,31 @@ namespace dp2SIPClient
             {
                 //1720170623    151645AOdp2Library|AB700635|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "17" + transactionDate + "AOdp2Library|AB"+ SampleItem+ "|";
+                text = "17" + transactionDate + "AOdp2Library|AB" + SampleItem + "|";
                 ItemInformation_17 request17 = new ItemInformation_17();
                 nRet = request17.parse(text, out error);
                 if (nRet == -1)
                     goto ERROR1;
 
-                
+
                 this.textBox_ItemInformation17_transactionDate_18.Text = request17.TransactionDate_18;//.GetFixedFieldValue(SIPConst.F_TransactionDate);//.TransactionDate_18;
 
                 this.textBox_ItemInformation17_institutionId_AO_r.Text = request17.AO_InstitutionId_r;//.GetVariableFieldValue(SIPConst.F_AO_InstitutionId);//.InstitutionId_AO_r;
                 this.textBox_ItemInformation17_itemIdentifier_AB_r.Text = request17.AB_ItemIdentifier_r;//.GetVariableFieldValue(SIPConst.F_AB_ItemIdentifier);//.ItemIdentifier_AB_r;
                 this.textBox_ItemInformation17_terminalPassword_AC_o.Text = request17.AC_TerminalPassword_o;//.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);//.TerminalPassword_AC_o;
-            
-                 
+
+
             }
             else if (this.tabControl_main.SelectedTab == this.tabPage_Renew29)
             {
                 //29NN20170630    144419                  AOdp2Library|AAL905071|AB510105|BON|
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "29NN" + transactionDate + "                  AOdp2Library|AA"+ SamplePatron + "|AB"+ SampleItem+ "|BON|";
+                text = "29NN" + transactionDate + "                  AOdp2Library|AA" + SamplePatron + "|AB" + SampleItem + "|BON|";
                 Renew_29 request29 = new Renew_29();
                 nRet = request29.parse(text, out error);
                 if (nRet == -1)
                     goto ERROR1;
-                
+
                 this.textBox_Renew29_thirdPartyAllowed_1.Text = request29.ThirdPartyAllowed_1;//.GetFixedFieldValue(SIPConst.F_ThirdPartyAllowed);//.ThirdPartyAllowed_1;
                 this.textBox_Renew29_noBlock_1.Text = request29.NoBlock_1;//.GetFixedFieldValue(SIPConst.F_NoBlock);//.NoBlock_1;
                 this.textBox_Renew29_transactionDate_18.Text = request29.TransactionDate_18;//.GetFixedFieldValue(SIPConst.F_TransactionDate);//.TransactionDate_18;
@@ -450,10 +473,34 @@ namespace dp2SIPClient
                 this.textBox_Renew29_terminalPassword_AC_o.Text = request29.AC_TerminalPassword_o;//.GetVariableFieldValue(SIPConst.F_AC_TerminalPassword);//.TerminalPassword_AC_o;
                 this.textBox_Renew29_itemProperties_CH_o.Text = request29.CH_ItemProperties_o;//.GetVariableFieldValue(SIPConst.F_CH_ItemProperties);//.ItemProperties_CH_o;
                 this.textBox_Renew29_feeAcknowledged_BO_1_o.Text = request29.BO_FeeAcknowledged_1_o;//.GetVariableFieldValue(SIPConst.F_BO_FeeAcknowledged);//.FeeAcknowledged_BO_1_o;
-            
-                 
+
+
             }
-            return;
+            else if (this.tabControl_main.SelectedTab == this.tabPage_FeePaid37)
+            {
+                //3720180118    1309170100USDBV0.1|AOj163-z1|AAL120100000000000002|AY3AZEFFC
+                string transactionDate = SIPUtility.NowDateTime;
+                text = "37" + transactionDate + "0100USDBV0.1|AOj163-z1|AA"+SamplePatron+"|AY3AZEFFC";
+                FeePaid_37 request37 = new FeePaid_37();
+                nRet = request37.parse(text, out error);
+                if (nRet == -1)
+                    goto ERROR1;
+
+                this.textBox_FeePaid37_transactionDate_18.Text = request37.TransactionDate_18;
+                this.textBox_FeePaid37_feeType.Text = request37.FeeType_2;
+                this.textBox_FeePaid37_paymentType.Text = request37.PaymentType_2;
+                this.textBox_FeePaid37_currencyType.Text = request37.CurrencyType_3;
+
+                this.textBox_FeePaid37_feeAmount.Text = request37.BV_FeeAmount_r;
+                this.textBox_FeePaid37_institutionId_AO_r.Text = request37.AO_InstitutionId_r;
+                this.textBox_FeePaid37_patronIdentifier_AA_r.Text = request37.AA_PatronIdentifier_r;
+                this.textBox_FeePaid37_terminalPassword_AC_o.Text = request37.AC_TerminalPassword_o;
+
+                this.textBox_FeePaid37_patronPassword_AD_o.Text = request37.AD_PatronPassword_o;
+                this.textBox_FeePaid37_feeIdentifier_CG_o.Text = request37.CG_FeeIdentifier_o;
+                this.textBox_FeePaid37_transactionId_BK_o.Text = request37.BK_TransactionId_o;
+            }
+                return;
 
         ERROR1:
             this.Print("error:" + error);

@@ -354,6 +354,19 @@ namespace dp2SIPServer
                         strBackMsg = this._sip.EndPatronSession(strPackage);
                         break;
                     }
+                case "37":
+                    {
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
+                        try
+                        {
+                            strBackMsg = this._sip.Amerce(channel, strPackage);
+                        }
+                        finally
+                        {
+                            this.ReturnChannel(channel);
+                        }
+                        break;
+                    }
                 case "85":
                     {
                         /*

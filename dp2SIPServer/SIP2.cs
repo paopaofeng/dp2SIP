@@ -550,6 +550,199 @@ namespace dp2SIPServer
             return response.ToText();
         }
 
+
+        // 交费
+        public string Amerce(LibraryChannel channel, string message)
+        {
+            int nRet = 0;
+            long lRet = 0;
+            string strError = "";
+
+            // 初始化返回的 38命令
+            FeePaidResponse_38 response = new FeePaidResponse_38()
+            {
+                PaymentAccepted_1 = "N",
+                TransactionDate_18 = SIPUtility.NowDateTime,
+
+                AO_InstitutionId_r = "dp2Library",
+                AA_PatronIdentifier_r = string.Empty,
+                BK_TransactionId_o = string.Empty,
+                AF_ScreenMessage_o = string.Empty,
+                AG_PrintLine_o = string.Empty,
+            };
+
+            // 解析37命令
+            FeePaid_37 request = new FeePaid_37();
+            try
+            {
+                nRet = request.parse(message, out strError);
+                if (-1 == nRet)
+                {
+                    response.AF_ScreenMessage_o = strError;
+                    return response.ToText();
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AF_ScreenMessage_o = ex.Message;
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
+                return response.ToText();
+            }
+
+            string strMessage = "";
+
+            string strPatronIdentifier = request.AA_PatronIdentifier_r;
+
+            // 先查到读者记录
+            string[] results = null;
+            lRet = channel.GetReaderInfo(null,
+                strPatronIdentifier, //读者卡号,
+                "advancexml",   // this.RenderFormat, // "html",
+                out results,
+                out strError);
+            if (lRet <= -1)
+            {
+                LogManager.Logger.Error(strError);
+
+                strMessage = "查询读者信息失败：" + strError;
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+            else if (lRet == 0)
+            {
+                strMessage = "查无此证";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+            else if (lRet > 1)
+            {
+                strMessage = "证号重复";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+            XmlDocument dom = new XmlDocument();
+            string strReaderXml = results[0];
+            try
+            {
+                dom.LoadXml(strReaderXml);
+            }
+            catch (Exception ex)
+            {
+                LogManager.Logger.Error("读者信息解析错误：" + ExceptionUtil.GetDebugText(ex));
+                response.AF_ScreenMessage_o = "读者信息解析错误";
+                response.AG_PrintLine_o = "读者信息解析错误";
+                return response.ToText();
+            }
+
+            decimal feeAmount = 0;
+            try
+            {
+                feeAmount = Convert.ToDecimal(request.BV_FeeAmount_r);
+            }
+            catch (Exception ex)
+            {
+                strMessage = "传来的金额不正确" + ex.Message;
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+            // 交费项
+            List<AmerceItem> amerce_itemList = new List<AmerceItem>();
+            XmlNodeList overdues = dom.DocumentElement.SelectNodes("overdues/overdue");
+            if (overdues == null || overdues.Count == 0)
+            {
+                strMessage = "当前读者没有欠款";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+
+            List<string> prices = new List<string>();
+            foreach (XmlNode node in overdues)
+            {
+                string strID = DomUtil.GetAttr(node, "id");
+                string price = DomUtil.GetAttr(node, "price");
+                prices.Add(price);
+
+                AmerceItem amerceItem = new AmerceItem();
+                amerceItem.ID = strID;
+                amerceItem.NewPrice = price;
+                amerceItem.NewComment = "自助机交费";
+                amerce_itemList.Add(amerceItem);
+            }
+
+            // 累计欠款金额
+            string totlePrice = PriceUtil.TotalPrice(prices);
+            CurrencyItem currItem = null;
+            nRet = PriceUtil.ParseSinglePrice(totlePrice, out currItem, out strError);
+            if (nRet == -1)
+            {
+                strMessage = "计算读者违约金额出错：" + strError;
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+            if (request.CurrencyType_3 != currItem.Prefix)
+            {
+                strMessage = "货币类型不一致";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+            // 金额要与欠款总额保持一致
+            if (feeAmount != currItem.Value)
+            {
+                strMessage = "传来的金额应该与读者欠款总额完全一致";
+                response.AF_ScreenMessage_o = strMessage;
+                response.AG_PrintLine_o = strMessage;
+                return response.ToText();
+            }
+
+
+            // 对所有记录进行交费
+            AmerceItem[] amerce_items = new AmerceItem[amerce_itemList.Count];
+            amerce_itemList.CopyTo(amerce_items);
+            AmerceItem[] failed_items = null;
+            string patronXml = "";
+            lRet = channel.Amerce(
+               null,//stop,
+               "amerce",
+               strPatronIdentifier,
+               amerce_items,
+               out failed_items,
+               out patronXml,
+               out strError);
+            if (lRet == -1)
+            {
+                response.AF_ScreenMessage_o = "失败：" + strError;
+            }
+            else
+            {
+                if (failed_items != null && failed_items.Length > 0)
+                {
+                    strMessage= "有" + failed_items.Length.ToString() + "个事项交费未成功。";
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = "交费成功";
+                }
+                else
+                {
+                    response.PaymentAccepted_1 = "Y";
+                    response.AF_ScreenMessage_o = "交费成功";
+                    response.AG_PrintLine_o = "交费成功";
+                }
+            }
+
+            return response.ToText();
+        }
+
         /// <summary>
         /// 图书信息
         /// 图书状态
@@ -918,23 +1111,44 @@ namespace dp2SIPServer
             XmlNodeList overdues = dom.DocumentElement.SelectNodes("overdues/overdue");
             if (overdues != null && overdues.Count > 0)
             {
+                List<string> prices = new List<string>();
+
                 string strWords = "押金,租金";
-                string strWords2 = "超期";
+                string strWords2 = "超期,丢失";
                 foreach (XmlNode node in overdues)
                 {
                     string strReason = DomUtil.GetAttr(node, "reason");
-                    if (strReason.Length < 2)
-                        continue;
-                    string strPart = strReason.Substring(0, 2);
+                    string strPart = "";
+                    if (strReason.Length > 2)
+                         strPart = strReason.Substring(0, 2);
                     if (StringUtil.IsInList(strPart, strWords) && patronStatus[11] != 'Y')
                     {
                         patronStatus[11] = 'Y';
                     }
-                    else if (strPart == strWords2 && patronStatus[10] != 'Y')
+                    else if (StringUtil.IsInList(strPart, strWords2) && patronStatus[10] != 'Y')
                     {
                         patronStatus[10] = 'Y';
                     }
+
+                    // 计算金额
+                    string price = DomUtil.GetAttr(node, "price");
+                    prices.Add(price);
+
                 }
+
+                // 累计欠款金额
+                string totlePrice= PriceUtil.TotalPrice(prices);
+                CurrencyItem currItem = null;
+                nRet = PriceUtil.ParseSinglePrice(totlePrice, out currItem, out strError);
+                if (nRet == -1)
+                {
+                    strMessage = "计算读者违约金额出错："+strError;
+                    response.AF_ScreenMessage_o = strMessage;
+                    response.AG_PrintLine_o = strMessage;
+                    return response.ToText();
+                }
+                response.BV_feeAmount_o = "-"+currItem.Value.ToString(); //设为负值
+                response.BH_CurrencyType_3 = currItem.Prefix; 
             }
 
             response.AA_PatronIdentifier_r = strBarcode;

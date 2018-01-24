@@ -36,6 +36,7 @@
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.清空信息区ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.实用工具ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.sample参数设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.自动测试ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel_send = new System.Windows.Forms.ToolStripLabel();
@@ -163,7 +164,29 @@
             this.textBox_Renew29_thirdPartyAllowed_1 = new System.Windows.Forms.TextBox();
             this.label51 = new System.Windows.Forms.Label();
             this.tabPage_EndPatronSession35 = new System.Windows.Forms.TabPage();
-            this.sample参数设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage_FeePaid37 = new System.Windows.Forms.TabPage();
+            this.textBox_FeePaid37_feeIdentifier_CG_o = new System.Windows.Forms.TextBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_patronPassword_AD_o = new System.Windows.Forms.TextBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_terminalPassword_AC_o = new System.Windows.Forms.TextBox();
+            this.label54 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_patronIdentifier_AA_r = new System.Windows.Forms.TextBox();
+            this.label55 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_institutionId_AO_r = new System.Windows.Forms.TextBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_feeAmount = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_currencyType = new System.Windows.Forms.TextBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_paymentType = new System.Windows.Forms.TextBox();
+            this.label59 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_feeType = new System.Windows.Forms.TextBox();
+            this.label60 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_transactionDate_18 = new System.Windows.Forms.TextBox();
+            this.label61 = new System.Windows.Forms.Label();
+            this.textBox_FeePaid37_transactionId_BK_o = new System.Windows.Forms.TextBox();
+            this.label62 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -179,6 +202,7 @@
             this.tabPage_PatronInformation63.SuspendLayout();
             this.tabPage_ItemInformation17.SuspendLayout();
             this.tabPage_Renew29.SuspendLayout();
+            this.tabPage_FeePaid37.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtMsg
@@ -187,7 +211,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMsg.BackColor = System.Drawing.Color.Silver;
             this.txtMsg.Location = new System.Drawing.Point(5, 0);
-            this.txtMsg.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMsg.Margin = new System.Windows.Forms.Padding(4);
             this.txtMsg.Name = "txtMsg";
             this.txtMsg.Size = new System.Drawing.Size(657, 25);
             this.txtMsg.TabIndex = 18;
@@ -198,11 +222,11 @@
             this.txtInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.txtInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtInfo.Location = new System.Drawing.Point(0, 0);
-            this.txtInfo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtInfo.Margin = new System.Windows.Forms.Padding(2);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
-            this.txtInfo.Size = new System.Drawing.Size(454, 462);
+            this.txtInfo.Size = new System.Drawing.Size(454, 502);
             this.txtInfo.TabIndex = 21;
             // 
             // menuStrip1
@@ -257,6 +281,13 @@
             this.实用工具ToolStripMenuItem1.Size = new System.Drawing.Size(196, 26);
             this.实用工具ToolStripMenuItem1.Text = "实用工具";
             this.实用工具ToolStripMenuItem1.Click += new System.EventHandler(this.实用工具ToolStripMenuItem1_Click);
+            // 
+            // sample参数设置ToolStripMenuItem
+            // 
+            this.sample参数设置ToolStripMenuItem.Name = "sample参数设置ToolStripMenuItem";
+            this.sample参数设置ToolStripMenuItem.Size = new System.Drawing.Size(196, 26);
+            this.sample参数设置ToolStripMenuItem.Text = "sample参数设置";
+            this.sample参数设置ToolStripMenuItem.Click += new System.EventHandler(this.sample参数设置ToolStripMenuItem_Click);
             // 
             // 自动测试ToolStripMenuItem1
             // 
@@ -321,7 +352,7 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_info});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 513);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 553);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 9, 0);
             this.statusStrip1.Size = new System.Drawing.Size(1120, 25);
@@ -338,7 +369,7 @@
             // 
             this.splitContainer_main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer_main.Location = new System.Drawing.Point(0, 51);
-            this.splitContainer_main.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer_main.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer_main.Name = "splitContainer_main";
             // 
             // splitContainer_main.Panel1
@@ -349,7 +380,7 @@
             // splitContainer_main.Panel2
             // 
             this.splitContainer_main.Panel2.Controls.Add(this.txtInfo);
-            this.splitContainer_main.Size = new System.Drawing.Size(1120, 462);
+            this.splitContainer_main.Size = new System.Drawing.Size(1120, 502);
             this.splitContainer_main.SplitterDistance = 663;
             this.splitContainer_main.SplitterWidth = 3;
             this.splitContainer_main.TabIndex = 27;
@@ -367,11 +398,12 @@
             this.tabControl_main.Controls.Add(this.tabPage_ItemInformation17);
             this.tabControl_main.Controls.Add(this.tabPage_Renew29);
             this.tabControl_main.Controls.Add(this.tabPage_EndPatronSession35);
+            this.tabControl_main.Controls.Add(this.tabPage_FeePaid37);
             this.tabControl_main.Location = new System.Drawing.Point(5, 28);
-            this.tabControl_main.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabControl_main.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl_main.Name = "tabControl_main";
             this.tabControl_main.SelectedIndex = 0;
-            this.tabControl_main.Size = new System.Drawing.Size(657, 433);
+            this.tabControl_main.Size = new System.Drawing.Size(656, 473);
             this.tabControl_main.TabIndex = 19;
             this.tabControl_main.SelectedIndexChanged += new System.EventHandler(this.tabControl_main_SelectedIndexChanged);
             // 
@@ -388,10 +420,10 @@
             this.tabPage_Login93.Controls.Add(this.textBox_Login93_UIDAlgorithm_1);
             this.tabPage_Login93.Controls.Add(this.label_UIDAlgorithm);
             this.tabPage_Login93.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_Login93.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_Login93.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_Login93.Name = "tabPage_Login93";
-            this.tabPage_Login93.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_Login93.Size = new System.Drawing.Size(649, 404);
+            this.tabPage_Login93.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPage_Login93.Size = new System.Drawing.Size(648, 444);
             this.tabPage_Login93.TabIndex = 0;
             this.tabPage_Login93.Text = "Login93";
             this.tabPage_Login93.UseVisualStyleBackColor = true;
@@ -399,7 +431,7 @@
             // textBox_Login93_locationCode_CP_o
             // 
             this.textBox_Login93_locationCode_CP_o.Location = new System.Drawing.Point(159, 148);
-            this.textBox_Login93_locationCode_CP_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Login93_locationCode_CP_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Login93_locationCode_CP_o.Name = "textBox_Login93_locationCode_CP_o";
             this.textBox_Login93_locationCode_CP_o.Size = new System.Drawing.Size(182, 25);
             this.textBox_Login93_locationCode_CP_o.TabIndex = 9;
@@ -417,7 +449,7 @@
             // textBox_Login93_loginPassword_CO_r
             // 
             this.textBox_Login93_loginPassword_CO_r.Location = new System.Drawing.Point(159, 114);
-            this.textBox_Login93_loginPassword_CO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Login93_loginPassword_CO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Login93_loginPassword_CO_r.Name = "textBox_Login93_loginPassword_CO_r";
             this.textBox_Login93_loginPassword_CO_r.Size = new System.Drawing.Size(182, 25);
             this.textBox_Login93_loginPassword_CO_r.TabIndex = 7;
@@ -435,7 +467,7 @@
             // textBox_Login93_loginUserId_CN_r
             // 
             this.textBox_Login93_loginUserId_CN_r.Location = new System.Drawing.Point(159, 79);
-            this.textBox_Login93_loginUserId_CN_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Login93_loginUserId_CN_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Login93_loginUserId_CN_r.Name = "textBox_Login93_loginUserId_CN_r";
             this.textBox_Login93_loginUserId_CN_r.Size = new System.Drawing.Size(182, 25);
             this.textBox_Login93_loginUserId_CN_r.TabIndex = 5;
@@ -453,7 +485,7 @@
             // textBox_Login93_PWDAlgorithm_1
             // 
             this.textBox_Login93_PWDAlgorithm_1.Location = new System.Drawing.Point(159, 42);
-            this.textBox_Login93_PWDAlgorithm_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Login93_PWDAlgorithm_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Login93_PWDAlgorithm_1.Name = "textBox_Login93_PWDAlgorithm_1";
             this.textBox_Login93_PWDAlgorithm_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Login93_PWDAlgorithm_1.TabIndex = 3;
@@ -471,7 +503,7 @@
             // textBox_Login93_UIDAlgorithm_1
             // 
             this.textBox_Login93_UIDAlgorithm_1.Location = new System.Drawing.Point(159, 9);
-            this.textBox_Login93_UIDAlgorithm_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Login93_UIDAlgorithm_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Login93_UIDAlgorithm_1.Name = "textBox_Login93_UIDAlgorithm_1";
             this.textBox_Login93_UIDAlgorithm_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Login93_UIDAlgorithm_1.TabIndex = 1;
@@ -495,10 +527,10 @@
             this.tabPage_SCStatus99.Controls.Add(this.textBox_SCStatus99_statusCode_1);
             this.tabPage_SCStatus99.Controls.Add(this.label4);
             this.tabPage_SCStatus99.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_SCStatus99.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_SCStatus99.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_SCStatus99.Name = "tabPage_SCStatus99";
-            this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage_SCStatus99.Size = new System.Drawing.Size(649, 404);
+            this.tabPage_SCStatus99.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPage_SCStatus99.Size = new System.Drawing.Size(648, 444);
             this.tabPage_SCStatus99.TabIndex = 1;
             this.tabPage_SCStatus99.Text = "SCStatus99";
             this.tabPage_SCStatus99.UseVisualStyleBackColor = true;
@@ -506,7 +538,7 @@
             // textBox_SCStatus99_protocolVersion_4
             // 
             this.textBox_SCStatus99_protocolVersion_4.Location = new System.Drawing.Point(167, 78);
-            this.textBox_SCStatus99_protocolVersion_4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_SCStatus99_protocolVersion_4.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_SCStatus99_protocolVersion_4.Name = "textBox_SCStatus99_protocolVersion_4";
             this.textBox_SCStatus99_protocolVersion_4.Size = new System.Drawing.Size(57, 25);
             this.textBox_SCStatus99_protocolVersion_4.TabIndex = 9;
@@ -524,7 +556,7 @@
             // textBox_SCStatus99_maxPrintWidth_3
             // 
             this.textBox_SCStatus99_maxPrintWidth_3.Location = new System.Drawing.Point(167, 45);
-            this.textBox_SCStatus99_maxPrintWidth_3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_SCStatus99_maxPrintWidth_3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_SCStatus99_maxPrintWidth_3.Name = "textBox_SCStatus99_maxPrintWidth_3";
             this.textBox_SCStatus99_maxPrintWidth_3.Size = new System.Drawing.Size(57, 25);
             this.textBox_SCStatus99_maxPrintWidth_3.TabIndex = 7;
@@ -542,7 +574,7 @@
             // textBox_SCStatus99_statusCode_1
             // 
             this.textBox_SCStatus99_statusCode_1.Location = new System.Drawing.Point(167, 12);
-            this.textBox_SCStatus99_statusCode_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_SCStatus99_statusCode_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_SCStatus99_statusCode_1.Name = "textBox_SCStatus99_statusCode_1";
             this.textBox_SCStatus99_statusCode_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_SCStatus99_statusCode_1.TabIndex = 5;
@@ -584,9 +616,9 @@
             this.tabPage_Checkout11.Controls.Add(this.textBox_Checkout11_SCRenewalPolicy_1);
             this.tabPage_Checkout11.Controls.Add(this.label8);
             this.tabPage_Checkout11.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_Checkout11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_Checkout11.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_Checkout11.Name = "tabPage_Checkout11";
-            this.tabPage_Checkout11.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_Checkout11.Size = new System.Drawing.Size(648, 444);
             this.tabPage_Checkout11.TabIndex = 2;
             this.tabPage_Checkout11.Text = "Checkout11";
             this.tabPage_Checkout11.UseVisualStyleBackColor = true;
@@ -594,7 +626,7 @@
             // textBox_Checkout11_cancel_BI_1_o
             // 
             this.textBox_Checkout11_cancel_BI_1_o.Location = new System.Drawing.Point(197, 354);
-            this.textBox_Checkout11_cancel_BI_1_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_cancel_BI_1_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_cancel_BI_1_o.Name = "textBox_Checkout11_cancel_BI_1_o";
             this.textBox_Checkout11_cancel_BI_1_o.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkout11_cancel_BI_1_o.TabIndex = 33;
@@ -612,7 +644,7 @@
             // textBox_Checkout11_feeAcknowledged_BO_1_o
             // 
             this.textBox_Checkout11_feeAcknowledged_BO_1_o.Location = new System.Drawing.Point(197, 326);
-            this.textBox_Checkout11_feeAcknowledged_BO_1_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_feeAcknowledged_BO_1_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_feeAcknowledged_BO_1_o.Name = "textBox_Checkout11_feeAcknowledged_BO_1_o";
             this.textBox_Checkout11_feeAcknowledged_BO_1_o.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkout11_feeAcknowledged_BO_1_o.TabIndex = 31;
@@ -630,7 +662,7 @@
             // textBox_Checkout11_patronPassword_AD_o
             // 
             this.textBox_Checkout11_patronPassword_AD_o.Location = new System.Drawing.Point(197, 296);
-            this.textBox_Checkout11_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_patronPassword_AD_o.Name = "textBox_Checkout11_patronPassword_AD_o";
             this.textBox_Checkout11_patronPassword_AD_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_patronPassword_AD_o.TabIndex = 29;
@@ -648,7 +680,7 @@
             // textBox_Checkout11_itemProperties_CH_o
             // 
             this.textBox_Checkout11_itemProperties_CH_o.Location = new System.Drawing.Point(197, 265);
-            this.textBox_Checkout11_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_itemProperties_CH_o.Name = "textBox_Checkout11_itemProperties_CH_o";
             this.textBox_Checkout11_itemProperties_CH_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_itemProperties_CH_o.TabIndex = 27;
@@ -666,7 +698,7 @@
             // textBox_Checkout11_terminalPassword_AC_r
             // 
             this.textBox_Checkout11_terminalPassword_AC_r.Location = new System.Drawing.Point(197, 233);
-            this.textBox_Checkout11_terminalPassword_AC_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_terminalPassword_AC_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_terminalPassword_AC_r.Name = "textBox_Checkout11_terminalPassword_AC_r";
             this.textBox_Checkout11_terminalPassword_AC_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_terminalPassword_AC_r.TabIndex = 25;
@@ -684,7 +716,7 @@
             // textBox_Checkout11_itemIdentifier_AB_r
             // 
             this.textBox_Checkout11_itemIdentifier_AB_r.Location = new System.Drawing.Point(197, 203);
-            this.textBox_Checkout11_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_itemIdentifier_AB_r.Name = "textBox_Checkout11_itemIdentifier_AB_r";
             this.textBox_Checkout11_itemIdentifier_AB_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_itemIdentifier_AB_r.TabIndex = 23;
@@ -702,7 +734,7 @@
             // textBox_Checkout11_patronIdentifier_AA_r
             // 
             this.textBox_Checkout11_patronIdentifier_AA_r.Location = new System.Drawing.Point(197, 170);
-            this.textBox_Checkout11_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_patronIdentifier_AA_r.Name = "textBox_Checkout11_patronIdentifier_AA_r";
             this.textBox_Checkout11_patronIdentifier_AA_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_patronIdentifier_AA_r.TabIndex = 21;
@@ -720,7 +752,7 @@
             // textBox_Checkout11_institutionId_AO_r
             // 
             this.textBox_Checkout11_institutionId_AO_r.Location = new System.Drawing.Point(197, 137);
-            this.textBox_Checkout11_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_institutionId_AO_r.Name = "textBox_Checkout11_institutionId_AO_r";
             this.textBox_Checkout11_institutionId_AO_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkout11_institutionId_AO_r.TabIndex = 19;
@@ -738,7 +770,7 @@
             // textBox_Checkout11_nbDueDate_18
             // 
             this.textBox_Checkout11_nbDueDate_18.Location = new System.Drawing.Point(197, 107);
-            this.textBox_Checkout11_nbDueDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_nbDueDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_nbDueDate_18.Name = "textBox_Checkout11_nbDueDate_18";
             this.textBox_Checkout11_nbDueDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Checkout11_nbDueDate_18.TabIndex = 17;
@@ -756,7 +788,7 @@
             // textBox_Checkout11_transactionDate_18
             // 
             this.textBox_Checkout11_transactionDate_18.Location = new System.Drawing.Point(197, 77);
-            this.textBox_Checkout11_transactionDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_transactionDate_18.Name = "textBox_Checkout11_transactionDate_18";
             this.textBox_Checkout11_transactionDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Checkout11_transactionDate_18.TabIndex = 15;
@@ -774,7 +806,7 @@
             // textBox_Checkout11_noBlock_1
             // 
             this.textBox_Checkout11_noBlock_1.Location = new System.Drawing.Point(197, 44);
-            this.textBox_Checkout11_noBlock_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_noBlock_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_noBlock_1.Name = "textBox_Checkout11_noBlock_1";
             this.textBox_Checkout11_noBlock_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkout11_noBlock_1.TabIndex = 13;
@@ -792,7 +824,7 @@
             // textBox_Checkout11_SCRenewalPolicy_1
             // 
             this.textBox_Checkout11_SCRenewalPolicy_1.Location = new System.Drawing.Point(197, 11);
-            this.textBox_Checkout11_SCRenewalPolicy_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkout11_SCRenewalPolicy_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkout11_SCRenewalPolicy_1.Name = "textBox_Checkout11_SCRenewalPolicy_1";
             this.textBox_Checkout11_SCRenewalPolicy_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkout11_SCRenewalPolicy_1.TabIndex = 11;
@@ -828,9 +860,9 @@
             this.tabPage_Checkin09.Controls.Add(this.textBox_Checkin09_noBlock_1);
             this.tabPage_Checkin09.Controls.Add(this.label28);
             this.tabPage_Checkin09.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_Checkin09.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_Checkin09.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_Checkin09.Name = "tabPage_Checkin09";
-            this.tabPage_Checkin09.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_Checkin09.Size = new System.Drawing.Size(648, 444);
             this.tabPage_Checkin09.TabIndex = 3;
             this.tabPage_Checkin09.Text = "Checkin09";
             this.tabPage_Checkin09.UseVisualStyleBackColor = true;
@@ -848,7 +880,7 @@
             // textBox_Checkin09_currentLocation_AP_r
             // 
             this.textBox_Checkin09_currentLocation_AP_r.Location = new System.Drawing.Point(197, 111);
-            this.textBox_Checkin09_currentLocation_AP_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_currentLocation_AP_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_currentLocation_AP_r.Name = "textBox_Checkin09_currentLocation_AP_r";
             this.textBox_Checkin09_currentLocation_AP_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkin09_currentLocation_AP_r.TabIndex = 45;
@@ -856,7 +888,7 @@
             // textBox_Checkin09_cancel_BI_1_o
             // 
             this.textBox_Checkin09_cancel_BI_1_o.Location = new System.Drawing.Point(197, 268);
-            this.textBox_Checkin09_cancel_BI_1_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_cancel_BI_1_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_cancel_BI_1_o.Name = "textBox_Checkin09_cancel_BI_1_o";
             this.textBox_Checkin09_cancel_BI_1_o.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkin09_cancel_BI_1_o.TabIndex = 57;
@@ -874,7 +906,7 @@
             // textBox_Checkin09_itemProperties_CH_o
             // 
             this.textBox_Checkin09_itemProperties_CH_o.Location = new System.Drawing.Point(197, 235);
-            this.textBox_Checkin09_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_itemProperties_CH_o.Name = "textBox_Checkin09_itemProperties_CH_o";
             this.textBox_Checkin09_itemProperties_CH_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkin09_itemProperties_CH_o.TabIndex = 51;
@@ -892,7 +924,7 @@
             // textBox_Checkin09_terminalPassword_AC_r
             // 
             this.textBox_Checkin09_terminalPassword_AC_r.Location = new System.Drawing.Point(197, 203);
-            this.textBox_Checkin09_terminalPassword_AC_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_terminalPassword_AC_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_terminalPassword_AC_r.Name = "textBox_Checkin09_terminalPassword_AC_r";
             this.textBox_Checkin09_terminalPassword_AC_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkin09_terminalPassword_AC_r.TabIndex = 49;
@@ -910,7 +942,7 @@
             // textBox_Checkin09_itemIdentifier_AB_r
             // 
             this.textBox_Checkin09_itemIdentifier_AB_r.Location = new System.Drawing.Point(197, 173);
-            this.textBox_Checkin09_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_itemIdentifier_AB_r.Name = "textBox_Checkin09_itemIdentifier_AB_r";
             this.textBox_Checkin09_itemIdentifier_AB_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkin09_itemIdentifier_AB_r.TabIndex = 47;
@@ -928,7 +960,7 @@
             // textBox_Checkin09_institutionId_AO_r
             // 
             this.textBox_Checkin09_institutionId_AO_r.Location = new System.Drawing.Point(197, 139);
-            this.textBox_Checkin09_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_institutionId_AO_r.Name = "textBox_Checkin09_institutionId_AO_r";
             this.textBox_Checkin09_institutionId_AO_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Checkin09_institutionId_AO_r.TabIndex = 43;
@@ -946,7 +978,7 @@
             // textBox_Checkin09_returnDate_18
             // 
             this.textBox_Checkin09_returnDate_18.Location = new System.Drawing.Point(197, 77);
-            this.textBox_Checkin09_returnDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_returnDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_returnDate_18.Name = "textBox_Checkin09_returnDate_18";
             this.textBox_Checkin09_returnDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Checkin09_returnDate_18.TabIndex = 41;
@@ -964,7 +996,7 @@
             // textBox_Checkin09_transactionDate_18
             // 
             this.textBox_Checkin09_transactionDate_18.Location = new System.Drawing.Point(197, 47);
-            this.textBox_Checkin09_transactionDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_transactionDate_18.Name = "textBox_Checkin09_transactionDate_18";
             this.textBox_Checkin09_transactionDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Checkin09_transactionDate_18.TabIndex = 39;
@@ -982,7 +1014,7 @@
             // textBox_Checkin09_noBlock_1
             // 
             this.textBox_Checkin09_noBlock_1.Location = new System.Drawing.Point(197, 14);
-            this.textBox_Checkin09_noBlock_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Checkin09_noBlock_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Checkin09_noBlock_1.Name = "textBox_Checkin09_noBlock_1";
             this.textBox_Checkin09_noBlock_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Checkin09_noBlock_1.TabIndex = 37;
@@ -1018,9 +1050,9 @@
             this.tabPage_PatronInformation63.Controls.Add(this.textBox_PatronInformation63_language_3);
             this.tabPage_PatronInformation63.Controls.Add(this.label35);
             this.tabPage_PatronInformation63.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_PatronInformation63.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_PatronInformation63.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_PatronInformation63.Name = "tabPage_PatronInformation63";
-            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_PatronInformation63.Size = new System.Drawing.Size(648, 444);
             this.tabPage_PatronInformation63.TabIndex = 4;
             this.tabPage_PatronInformation63.Text = "PatronInformation63";
             this.tabPage_PatronInformation63.UseVisualStyleBackColor = true;
@@ -1038,7 +1070,7 @@
             // textBox_PatronInformation63_institutionId_AO_r
             // 
             this.textBox_PatronInformation63_institutionId_AO_r.Location = new System.Drawing.Point(199, 111);
-            this.textBox_PatronInformation63_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_institutionId_AO_r.Name = "textBox_PatronInformation63_institutionId_AO_r";
             this.textBox_PatronInformation63_institutionId_AO_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_PatronInformation63_institutionId_AO_r.TabIndex = 67;
@@ -1046,7 +1078,7 @@
             // textBox_PatronInformation63_endItem_BQ_o
             // 
             this.textBox_PatronInformation63_endItem_BQ_o.Location = new System.Drawing.Point(199, 268);
-            this.textBox_PatronInformation63_endItem_BQ_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_endItem_BQ_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_endItem_BQ_o.Name = "textBox_PatronInformation63_endItem_BQ_o";
             this.textBox_PatronInformation63_endItem_BQ_o.Size = new System.Drawing.Size(107, 25);
             this.textBox_PatronInformation63_endItem_BQ_o.TabIndex = 75;
@@ -1064,7 +1096,7 @@
             // textBox_PatronInformation63_startItem_BP_o
             // 
             this.textBox_PatronInformation63_startItem_BP_o.Location = new System.Drawing.Point(199, 235);
-            this.textBox_PatronInformation63_startItem_BP_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_startItem_BP_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_startItem_BP_o.Name = "textBox_PatronInformation63_startItem_BP_o";
             this.textBox_PatronInformation63_startItem_BP_o.Size = new System.Drawing.Size(107, 25);
             this.textBox_PatronInformation63_startItem_BP_o.TabIndex = 73;
@@ -1082,7 +1114,7 @@
             // textBox_PatronInformation63_patronPassword_AD_o
             // 
             this.textBox_PatronInformation63_patronPassword_AD_o.Location = new System.Drawing.Point(199, 203);
-            this.textBox_PatronInformation63_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_patronPassword_AD_o.Name = "textBox_PatronInformation63_patronPassword_AD_o";
             this.textBox_PatronInformation63_patronPassword_AD_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_PatronInformation63_patronPassword_AD_o.TabIndex = 71;
@@ -1100,7 +1132,7 @@
             // textBox_PatronInformation63_terminalPassword_AC_o
             // 
             this.textBox_PatronInformation63_terminalPassword_AC_o.Location = new System.Drawing.Point(199, 173);
-            this.textBox_PatronInformation63_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_terminalPassword_AC_o.Name = "textBox_PatronInformation63_terminalPassword_AC_o";
             this.textBox_PatronInformation63_terminalPassword_AC_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_PatronInformation63_terminalPassword_AC_o.TabIndex = 69;
@@ -1118,7 +1150,7 @@
             // textBox_PatronInformation63_patronIdentifier_AA_r
             // 
             this.textBox_PatronInformation63_patronIdentifier_AA_r.Location = new System.Drawing.Point(199, 139);
-            this.textBox_PatronInformation63_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_patronIdentifier_AA_r.Name = "textBox_PatronInformation63_patronIdentifier_AA_r";
             this.textBox_PatronInformation63_patronIdentifier_AA_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_PatronInformation63_patronIdentifier_AA_r.TabIndex = 65;
@@ -1136,7 +1168,7 @@
             // textBox_PatronInformation63_summary_10
             // 
             this.textBox_PatronInformation63_summary_10.Location = new System.Drawing.Point(199, 77);
-            this.textBox_PatronInformation63_summary_10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_summary_10.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_summary_10.Name = "textBox_PatronInformation63_summary_10";
             this.textBox_PatronInformation63_summary_10.Size = new System.Drawing.Size(311, 25);
             this.textBox_PatronInformation63_summary_10.TabIndex = 63;
@@ -1154,7 +1186,7 @@
             // textBox_PatronInformation63_transactionDate_18
             // 
             this.textBox_PatronInformation63_transactionDate_18.Location = new System.Drawing.Point(199, 47);
-            this.textBox_PatronInformation63_transactionDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_transactionDate_18.Name = "textBox_PatronInformation63_transactionDate_18";
             this.textBox_PatronInformation63_transactionDate_18.Size = new System.Drawing.Size(311, 25);
             this.textBox_PatronInformation63_transactionDate_18.TabIndex = 61;
@@ -1172,7 +1204,7 @@
             // textBox_PatronInformation63_language_3
             // 
             this.textBox_PatronInformation63_language_3.Location = new System.Drawing.Point(199, 14);
-            this.textBox_PatronInformation63_language_3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_PatronInformation63_language_3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_PatronInformation63_language_3.Name = "textBox_PatronInformation63_language_3";
             this.textBox_PatronInformation63_language_3.Size = new System.Drawing.Size(57, 25);
             this.textBox_PatronInformation63_language_3.TabIndex = 59;
@@ -1198,9 +1230,9 @@
             this.tabPage_ItemInformation17.Controls.Add(this.textBox_ItemInformation17_transactionDate_18);
             this.tabPage_ItemInformation17.Controls.Add(this.label38);
             this.tabPage_ItemInformation17.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_ItemInformation17.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_ItemInformation17.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_ItemInformation17.Name = "tabPage_ItemInformation17";
-            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_ItemInformation17.Size = new System.Drawing.Size(648, 444);
             this.tabPage_ItemInformation17.TabIndex = 6;
             this.tabPage_ItemInformation17.Text = "ItemInformation17";
             this.tabPage_ItemInformation17.UseVisualStyleBackColor = true;
@@ -1228,7 +1260,7 @@
             // textBox_ItemInformation17_itemIdentifier_AB_r
             // 
             this.textBox_ItemInformation17_itemIdentifier_AB_r.Location = new System.Drawing.Point(197, 84);
-            this.textBox_ItemInformation17_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_ItemInformation17_itemIdentifier_AB_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ItemInformation17_itemIdentifier_AB_r.Name = "textBox_ItemInformation17_itemIdentifier_AB_r";
             this.textBox_ItemInformation17_itemIdentifier_AB_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_ItemInformation17_itemIdentifier_AB_r.TabIndex = 74;
@@ -1236,7 +1268,7 @@
             // textBox_ItemInformation17_terminalPassword_AC_o
             // 
             this.textBox_ItemInformation17_terminalPassword_AC_o.Location = new System.Drawing.Point(197, 112);
-            this.textBox_ItemInformation17_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_ItemInformation17_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ItemInformation17_terminalPassword_AC_o.Name = "textBox_ItemInformation17_terminalPassword_AC_o";
             this.textBox_ItemInformation17_terminalPassword_AC_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_ItemInformation17_terminalPassword_AC_o.TabIndex = 72;
@@ -1254,7 +1286,7 @@
             // textBox_ItemInformation17_institutionId_AO_r
             // 
             this.textBox_ItemInformation17_institutionId_AO_r.Location = new System.Drawing.Point(197, 50);
-            this.textBox_ItemInformation17_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_ItemInformation17_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ItemInformation17_institutionId_AO_r.Name = "textBox_ItemInformation17_institutionId_AO_r";
             this.textBox_ItemInformation17_institutionId_AO_r.Size = new System.Drawing.Size(311, 25);
             this.textBox_ItemInformation17_institutionId_AO_r.TabIndex = 70;
@@ -1262,7 +1294,7 @@
             // textBox_ItemInformation17_transactionDate_18
             // 
             this.textBox_ItemInformation17_transactionDate_18.Location = new System.Drawing.Point(197, 20);
-            this.textBox_ItemInformation17_transactionDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_ItemInformation17_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ItemInformation17_transactionDate_18.Name = "textBox_ItemInformation17_transactionDate_18";
             this.textBox_ItemInformation17_transactionDate_18.Size = new System.Drawing.Size(311, 25);
             this.textBox_ItemInformation17_transactionDate_18.TabIndex = 69;
@@ -1304,9 +1336,9 @@
             this.tabPage_Renew29.Controls.Add(this.textBox_Renew29_thirdPartyAllowed_1);
             this.tabPage_Renew29.Controls.Add(this.label51);
             this.tabPage_Renew29.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_Renew29.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_Renew29.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_Renew29.Name = "tabPage_Renew29";
-            this.tabPage_Renew29.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_Renew29.Size = new System.Drawing.Size(648, 444);
             this.tabPage_Renew29.TabIndex = 7;
             this.tabPage_Renew29.Text = "Renew29";
             this.tabPage_Renew29.UseVisualStyleBackColor = true;
@@ -1314,7 +1346,7 @@
             // textBox_Renew29_feeAcknowledged_BO_1_o
             // 
             this.textBox_Renew29_feeAcknowledged_BO_1_o.Location = new System.Drawing.Point(201, 356);
-            this.textBox_Renew29_feeAcknowledged_BO_1_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_feeAcknowledged_BO_1_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_feeAcknowledged_BO_1_o.Name = "textBox_Renew29_feeAcknowledged_BO_1_o";
             this.textBox_Renew29_feeAcknowledged_BO_1_o.Size = new System.Drawing.Size(57, 25);
             this.textBox_Renew29_feeAcknowledged_BO_1_o.TabIndex = 57;
@@ -1332,7 +1364,7 @@
             // textBox_Renew29_itemProperties_CH_o
             // 
             this.textBox_Renew29_itemProperties_CH_o.Location = new System.Drawing.Point(201, 328);
-            this.textBox_Renew29_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_itemProperties_CH_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_itemProperties_CH_o.Name = "textBox_Renew29_itemProperties_CH_o";
             this.textBox_Renew29_itemProperties_CH_o.Size = new System.Drawing.Size(57, 25);
             this.textBox_Renew29_itemProperties_CH_o.TabIndex = 55;
@@ -1350,7 +1382,7 @@
             // textBox_Renew29_terminalPassword_AC_o
             // 
             this.textBox_Renew29_terminalPassword_AC_o.Location = new System.Drawing.Point(201, 298);
-            this.textBox_Renew29_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_terminalPassword_AC_o.Name = "textBox_Renew29_terminalPassword_AC_o";
             this.textBox_Renew29_terminalPassword_AC_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_terminalPassword_AC_o.TabIndex = 53;
@@ -1368,7 +1400,7 @@
             // textBox_Renew29_titleIdentifier_AJ_o
             // 
             this.textBox_Renew29_titleIdentifier_AJ_o.Location = new System.Drawing.Point(201, 266);
-            this.textBox_Renew29_titleIdentifier_AJ_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_titleIdentifier_AJ_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_titleIdentifier_AJ_o.Name = "textBox_Renew29_titleIdentifier_AJ_o";
             this.textBox_Renew29_titleIdentifier_AJ_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_titleIdentifier_AJ_o.TabIndex = 51;
@@ -1386,7 +1418,7 @@
             // textBox_Renew29_itemIdentifier_AB_o
             // 
             this.textBox_Renew29_itemIdentifier_AB_o.Location = new System.Drawing.Point(201, 234);
-            this.textBox_Renew29_itemIdentifier_AB_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_itemIdentifier_AB_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_itemIdentifier_AB_o.Name = "textBox_Renew29_itemIdentifier_AB_o";
             this.textBox_Renew29_itemIdentifier_AB_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_itemIdentifier_AB_o.TabIndex = 49;
@@ -1404,7 +1436,7 @@
             // textBox_Renew29_patronPassword_AD_o
             // 
             this.textBox_Renew29_patronPassword_AD_o.Location = new System.Drawing.Point(201, 204);
-            this.textBox_Renew29_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_patronPassword_AD_o.Name = "textBox_Renew29_patronPassword_AD_o";
             this.textBox_Renew29_patronPassword_AD_o.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_patronPassword_AD_o.TabIndex = 47;
@@ -1422,7 +1454,7 @@
             // textBox_Renew29_patronIdentifier_AA_r
             // 
             this.textBox_Renew29_patronIdentifier_AA_r.Location = new System.Drawing.Point(201, 171);
-            this.textBox_Renew29_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_patronIdentifier_AA_r.Name = "textBox_Renew29_patronIdentifier_AA_r";
             this.textBox_Renew29_patronIdentifier_AA_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_patronIdentifier_AA_r.TabIndex = 45;
@@ -1440,7 +1472,7 @@
             // textBox_Renew29_institutionId_AO_r
             // 
             this.textBox_Renew29_institutionId_AO_r.Location = new System.Drawing.Point(201, 138);
-            this.textBox_Renew29_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_institutionId_AO_r.Name = "textBox_Renew29_institutionId_AO_r";
             this.textBox_Renew29_institutionId_AO_r.Size = new System.Drawing.Size(238, 25);
             this.textBox_Renew29_institutionId_AO_r.TabIndex = 43;
@@ -1458,7 +1490,7 @@
             // textBox_Renew29_nbDueDate_18
             // 
             this.textBox_Renew29_nbDueDate_18.Location = new System.Drawing.Point(201, 108);
-            this.textBox_Renew29_nbDueDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_nbDueDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_nbDueDate_18.Name = "textBox_Renew29_nbDueDate_18";
             this.textBox_Renew29_nbDueDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Renew29_nbDueDate_18.TabIndex = 41;
@@ -1476,7 +1508,7 @@
             // textBox_Renew29_transactionDate_18
             // 
             this.textBox_Renew29_transactionDate_18.Location = new System.Drawing.Point(201, 78);
-            this.textBox_Renew29_transactionDate_18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_transactionDate_18.Name = "textBox_Renew29_transactionDate_18";
             this.textBox_Renew29_transactionDate_18.Size = new System.Drawing.Size(349, 25);
             this.textBox_Renew29_transactionDate_18.TabIndex = 39;
@@ -1494,7 +1526,7 @@
             // textBox_Renew29_noBlock_1
             // 
             this.textBox_Renew29_noBlock_1.Location = new System.Drawing.Point(201, 45);
-            this.textBox_Renew29_noBlock_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_noBlock_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_noBlock_1.Name = "textBox_Renew29_noBlock_1";
             this.textBox_Renew29_noBlock_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Renew29_noBlock_1.TabIndex = 37;
@@ -1512,7 +1544,7 @@
             // textBox_Renew29_thirdPartyAllowed_1
             // 
             this.textBox_Renew29_thirdPartyAllowed_1.Location = new System.Drawing.Point(201, 12);
-            this.textBox_Renew29_thirdPartyAllowed_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_Renew29_thirdPartyAllowed_1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Renew29_thirdPartyAllowed_1.Name = "textBox_Renew29_thirdPartyAllowed_1";
             this.textBox_Renew29_thirdPartyAllowed_1.Size = new System.Drawing.Size(57, 25);
             this.textBox_Renew29_thirdPartyAllowed_1.TabIndex = 35;
@@ -1530,31 +1562,253 @@
             // tabPage_EndPatronSession35
             // 
             this.tabPage_EndPatronSession35.Location = new System.Drawing.Point(4, 25);
-            this.tabPage_EndPatronSession35.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage_EndPatronSession35.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage_EndPatronSession35.Name = "tabPage_EndPatronSession35";
-            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(649, 409);
+            this.tabPage_EndPatronSession35.Size = new System.Drawing.Size(648, 444);
             this.tabPage_EndPatronSession35.TabIndex = 5;
             this.tabPage_EndPatronSession35.Text = "EndPatronSession35";
             this.tabPage_EndPatronSession35.UseVisualStyleBackColor = true;
             // 
-            // sample参数设置ToolStripMenuItem
+            // tabPage_FeePaid37
             // 
-            this.sample参数设置ToolStripMenuItem.Name = "sample参数设置ToolStripMenuItem";
-            this.sample参数设置ToolStripMenuItem.Size = new System.Drawing.Size(196, 26);
-            this.sample参数设置ToolStripMenuItem.Text = "sample参数设置";
-            this.sample参数设置ToolStripMenuItem.Click += new System.EventHandler(this.sample参数设置ToolStripMenuItem_Click);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_transactionId_BK_o);
+            this.tabPage_FeePaid37.Controls.Add(this.label62);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_feeIdentifier_CG_o);
+            this.tabPage_FeePaid37.Controls.Add(this.label52);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_patronPassword_AD_o);
+            this.tabPage_FeePaid37.Controls.Add(this.label53);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_terminalPassword_AC_o);
+            this.tabPage_FeePaid37.Controls.Add(this.label54);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_patronIdentifier_AA_r);
+            this.tabPage_FeePaid37.Controls.Add(this.label55);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_institutionId_AO_r);
+            this.tabPage_FeePaid37.Controls.Add(this.label56);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_feeAmount);
+            this.tabPage_FeePaid37.Controls.Add(this.label57);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_currencyType);
+            this.tabPage_FeePaid37.Controls.Add(this.label58);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_paymentType);
+            this.tabPage_FeePaid37.Controls.Add(this.label59);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_feeType);
+            this.tabPage_FeePaid37.Controls.Add(this.label60);
+            this.tabPage_FeePaid37.Controls.Add(this.textBox_FeePaid37_transactionDate_18);
+            this.tabPage_FeePaid37.Controls.Add(this.label61);
+            this.tabPage_FeePaid37.Location = new System.Drawing.Point(4, 25);
+            this.tabPage_FeePaid37.Name = "tabPage_FeePaid37";
+            this.tabPage_FeePaid37.Size = new System.Drawing.Size(648, 444);
+            this.tabPage_FeePaid37.TabIndex = 8;
+            this.tabPage_FeePaid37.Text = "FeePaid37";
+            this.tabPage_FeePaid37.UseVisualStyleBackColor = true;
+            // 
+            // textBox_FeePaid37_feeIdentifier_CG_o
+            // 
+            this.textBox_FeePaid37_feeIdentifier_CG_o.Location = new System.Drawing.Point(208, 300);
+            this.textBox_FeePaid37_feeIdentifier_CG_o.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_feeIdentifier_CG_o.Name = "textBox_FeePaid37_feeIdentifier_CG_o";
+            this.textBox_FeePaid37_feeIdentifier_CG_o.Size = new System.Drawing.Size(57, 25);
+            this.textBox_FeePaid37_feeIdentifier_CG_o.TabIndex = 81;
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(20, 300);
+            this.label52.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(159, 15);
+            this.label52.TabIndex = 80;
+            this.label52.Text = "fee identifier_CG_o";
+            // 
+            // textBox_FeePaid37_patronPassword_AD_o
+            // 
+            this.textBox_FeePaid37_patronPassword_AD_o.Location = new System.Drawing.Point(208, 272);
+            this.textBox_FeePaid37_patronPassword_AD_o.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_patronPassword_AD_o.Name = "textBox_FeePaid37_patronPassword_AD_o";
+            this.textBox_FeePaid37_patronPassword_AD_o.Size = new System.Drawing.Size(57, 25);
+            this.textBox_FeePaid37_patronPassword_AD_o.TabIndex = 79;
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(20, 272);
+            this.label53.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(159, 15);
+            this.label53.TabIndex = 78;
+            this.label53.Text = "patronPassword_AD_o";
+            // 
+            // textBox_FeePaid37_terminalPassword_AC_o
+            // 
+            this.textBox_FeePaid37_terminalPassword_AC_o.Location = new System.Drawing.Point(208, 242);
+            this.textBox_FeePaid37_terminalPassword_AC_o.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_terminalPassword_AC_o.Name = "textBox_FeePaid37_terminalPassword_AC_o";
+            this.textBox_FeePaid37_terminalPassword_AC_o.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_terminalPassword_AC_o.TabIndex = 77;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(20, 242);
+            this.label54.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(175, 15);
+            this.label54.TabIndex = 76;
+            this.label54.Text = "terminalPassword_AC_o";
+            // 
+            // textBox_FeePaid37_patronIdentifier_AA_r
+            // 
+            this.textBox_FeePaid37_patronIdentifier_AA_r.Location = new System.Drawing.Point(208, 210);
+            this.textBox_FeePaid37_patronIdentifier_AA_r.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_patronIdentifier_AA_r.Name = "textBox_FeePaid37_patronIdentifier_AA_r";
+            this.textBox_FeePaid37_patronIdentifier_AA_r.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_patronIdentifier_AA_r.TabIndex = 75;
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(20, 210);
+            this.label55.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(175, 15);
+            this.label55.TabIndex = 74;
+            this.label55.Text = "patronIdentifier_AA_r";
+            // 
+            // textBox_FeePaid37_institutionId_AO_r
+            // 
+            this.textBox_FeePaid37_institutionId_AO_r.Location = new System.Drawing.Point(208, 178);
+            this.textBox_FeePaid37_institutionId_AO_r.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_institutionId_AO_r.Name = "textBox_FeePaid37_institutionId_AO_r";
+            this.textBox_FeePaid37_institutionId_AO_r.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_institutionId_AO_r.TabIndex = 73;
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(20, 178);
+            this.label56.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(159, 15);
+            this.label56.TabIndex = 72;
+            this.label56.Text = "institution id_AO_r";
+            // 
+            // textBox_FeePaid37_feeAmount
+            // 
+            this.textBox_FeePaid37_feeAmount.Location = new System.Drawing.Point(208, 148);
+            this.textBox_FeePaid37_feeAmount.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_feeAmount.Name = "textBox_FeePaid37_feeAmount";
+            this.textBox_FeePaid37_feeAmount.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_feeAmount.TabIndex = 71;
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(20, 148);
+            this.label57.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(87, 15);
+            this.label57.TabIndex = 70;
+            this.label57.Text = "fee amount";
+            // 
+            // textBox_FeePaid37_currencyType
+            // 
+            this.textBox_FeePaid37_currencyType.Location = new System.Drawing.Point(208, 115);
+            this.textBox_FeePaid37_currencyType.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_currencyType.Name = "textBox_FeePaid37_currencyType";
+            this.textBox_FeePaid37_currencyType.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_currencyType.TabIndex = 69;
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(20, 115);
+            this.label58.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(111, 15);
+            this.label58.TabIndex = 68;
+            this.label58.Text = "currency type";
+            // 
+            // textBox_FeePaid37_paymentType
+            // 
+            this.textBox_FeePaid37_paymentType.Location = new System.Drawing.Point(208, 82);
+            this.textBox_FeePaid37_paymentType.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_paymentType.Name = "textBox_FeePaid37_paymentType";
+            this.textBox_FeePaid37_paymentType.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_paymentType.TabIndex = 67;
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(20, 84);
+            this.label59.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(103, 15);
+            this.label59.TabIndex = 66;
+            this.label59.Text = "payment type";
+            // 
+            // textBox_FeePaid37_feeType
+            // 
+            this.textBox_FeePaid37_feeType.Location = new System.Drawing.Point(208, 52);
+            this.textBox_FeePaid37_feeType.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_feeType.Name = "textBox_FeePaid37_feeType";
+            this.textBox_FeePaid37_feeType.Size = new System.Drawing.Size(238, 25);
+            this.textBox_FeePaid37_feeType.TabIndex = 65;
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Location = new System.Drawing.Point(20, 52);
+            this.label60.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(71, 15);
+            this.label60.TabIndex = 64;
+            this.label60.Text = "fee type";
+            // 
+            // textBox_FeePaid37_transactionDate_18
+            // 
+            this.textBox_FeePaid37_transactionDate_18.Location = new System.Drawing.Point(208, 22);
+            this.textBox_FeePaid37_transactionDate_18.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_transactionDate_18.Name = "textBox_FeePaid37_transactionDate_18";
+            this.textBox_FeePaid37_transactionDate_18.Size = new System.Drawing.Size(349, 25);
+            this.textBox_FeePaid37_transactionDate_18.TabIndex = 63;
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Location = new System.Drawing.Point(20, 22);
+            this.label61.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(151, 15);
+            this.label61.TabIndex = 62;
+            this.label61.Text = "transactionDate_18";
+            // 
+            // textBox_FeePaid37_transactionId_BK_o
+            // 
+            this.textBox_FeePaid37_transactionId_BK_o.Location = new System.Drawing.Point(208, 334);
+            this.textBox_FeePaid37_transactionId_BK_o.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_transactionId_BK_o.Name = "textBox_FeePaid37_transactionId_BK_o";
+            this.textBox_FeePaid37_transactionId_BK_o.Size = new System.Drawing.Size(57, 25);
+            this.textBox_FeePaid37_transactionId_BK_o.TabIndex = 83;
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Location = new System.Drawing.Point(20, 334);
+            this.label62.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(159, 15);
+            this.label62.TabIndex = 82;
+            this.label62.Text = "transaction id_BK_o";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1120, 538);
+            this.ClientSize = new System.Drawing.Size(1120, 578);
             this.Controls.Add(this.splitContainer_main);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.Text = "SIP2 Client";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -1585,6 +1839,8 @@
             this.tabPage_ItemInformation17.PerformLayout();
             this.tabPage_Renew29.ResumeLayout(false);
             this.tabPage_Renew29.PerformLayout();
+            this.tabPage_FeePaid37.ResumeLayout(false);
+            this.tabPage_FeePaid37.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1728,6 +1984,29 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel_ConnectSIP2Server;
         private System.Windows.Forms.ToolStripLabel toolStripLabel_DisconnectSIP2Server;
         private System.Windows.Forms.ToolStripMenuItem sample参数设置ToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabPage_FeePaid37;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_transactionId_BK_o;
+        private System.Windows.Forms.Label label62;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_feeIdentifier_CG_o;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_patronPassword_AD_o;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_terminalPassword_AC_o;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_patronIdentifier_AA_r;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_institutionId_AO_r;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_feeAmount;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_currencyType;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_paymentType;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_feeType;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.TextBox textBox_FeePaid37_transactionDate_18;
+        private System.Windows.Forms.Label label61;
     }
 }
 
