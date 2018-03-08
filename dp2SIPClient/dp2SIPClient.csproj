@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiffPlex">
+      <HintPath>..\dlls\DiffPlex.dll</HintPath>
+    </Reference>
     <Reference Include="DigitalPlatform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dlls\DigitalPlatform.dll</HintPath>
@@ -47,6 +50,9 @@
     <Reference Include="DigitalPlatform.MarcQuery, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\dlls\DigitalPlatform.MarcQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.Range">
+      <HintPath>..\dlls\DigitalPlatform.Range.dll</HintPath>
     </Reference>
     <Reference Include="DigitalPlatform.Text, Version=2.0.6570.26427, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
