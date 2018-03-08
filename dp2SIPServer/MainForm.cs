@@ -171,7 +171,7 @@ namespace dp2SIPServer
             }
             catch (Exception ex)
             {
-                LogManager.Logger.Info("停止监听出错："+ExceptionUtil.GetDebugText(ex));
+                LogManager.Logger.Info("停止监听出错：" + ExceptionUtil.GetDebugText(ex));
             }
             finally
             {

@@ -36,6 +36,34 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DigitalPlatform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.IO, Version=2.0.6570.26428, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.LibraryClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.LibraryClient.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.MarcKernel, Version=2.0.6570.26429, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.MarcKernel.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.MarcQuery, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.MarcQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.Text, Version=2.0.6570.26427, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.Xml, Version=2.0.6570.26427, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -105,37 +133,9 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DigitalPlatform.IO\DigitalPlatform.IO.csproj">
-      <Project>{441cb814-af78-4503-91ef-dce5f3269502}</Project>
-      <Name>DigitalPlatform.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform.LibraryClient\DigitalPlatform.LibraryClient.csproj">
-      <Project>{3541ec0b-82f5-4829-afc3-5ef48254175d}</Project>
-      <Name>DigitalPlatform.LibraryClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform.MarcKernel\DigitalPlatform.MarcKernel.csproj">
-      <Project>{74242530-ef96-457e-852d-5c21a3ea8449}</Project>
-      <Name>DigitalPlatform.MarcKernel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform.MarcQuery\DigitalPlatform.MarcQuery.csproj">
-      <Project>{57fe2fb1-4134-409b-876c-8a1c0776b498}</Project>
-      <Name>DigitalPlatform.MarcQuery</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DigitalPlatform.SIP2\DigitalPlatform.SIP2.csproj">
       <Project>{b69729ce-4797-4706-8a2f-823ed24a0aec}</Project>
       <Name>DigitalPlatform.SIP2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform.Text\DigitalPlatform.Text.csproj">
-      <Project>{26f96cc3-a4a9-4bc4-a10a-bc7e25581ff6}</Project>
-      <Name>DigitalPlatform.Text</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform.Xml\DigitalPlatform.Xml.csproj">
-      <Project>{e6489e89-1349-4ee7-a00b-ac96b9912587}</Project>
-      <Name>DigitalPlatform.Xml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DigitalPlatform\4.0\DigitalPlatform.csproj">
-      <Project>{bdd43275-eaa0-4670-8ba3-0db5cd7598dd}</Project>
-      <Name>DigitalPlatform</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

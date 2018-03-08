@@ -30,6 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DigitalPlatform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DigitalPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="DigitalPlatform.Xml">
+      <HintPath>..\dlls\DigitalPlatform.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\dp2SIPServer\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -89,12 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DigitalPlatform\4.0\DigitalPlatform.csproj">
-      <Project>{bdd43275-eaa0-4670-8ba3-0db5cd7598dd}</Project>
-      <Name>DigitalPlatform</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

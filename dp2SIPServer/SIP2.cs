@@ -9,13 +9,14 @@ using DigitalPlatform.SIP2;
 using DigitalPlatform.SIP2.Request;
 using DigitalPlatform.SIP2.Response;
 
-using DigitalPlatform.LibraryClient;
-using DigitalPlatform.LibraryClient.localhost;
+using DigitalPlatform;
 using DigitalPlatform.Xml;
 using DigitalPlatform.IO;
 using DigitalPlatform.Marc;
-using DigitalPlatform;
 using DigitalPlatform.Text;
+using DigitalPlatform.LibraryClient;
+using DigitalPlatform.LibraryClient.localhost;
+
 
 namespace dp2SIPServer
 {
