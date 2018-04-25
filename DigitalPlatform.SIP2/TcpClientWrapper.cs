@@ -14,6 +14,7 @@ namespace DigitalPlatform.SIP2
         private TcpClient _client = null;
         private NetworkStream _networkStream = null;
 
+
         #region 一些配置参数
         // 字符集
         public Encoding Encoding { get; set; }

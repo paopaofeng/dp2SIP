@@ -129,6 +129,7 @@ namespace dp2SIPServer
                 AO_InstitutionId_r = "dp2Library",
                 AJ_TitleIdentifier_o = string.Empty,
                 AQ_PermanentLocation_r = string.Empty,
+                CL_SortBin_o = "sort bin",
             };
 
             Checkin_09 request = new Checkin_09();
@@ -494,7 +495,7 @@ namespace dp2SIPServer
                     null, //strConfirmItemRecPath,
                     false,
                     null,   // this.OneReaderItemBarcodes,
-                    "auto_renew,biblio,item", // strStyle, // auto_renew,biblio,item                   //  "reader,item,biblio", // strStyle,
+                    "auto_renew,biblio,item", // strStyle, // auto_renew,biblio,item  //  "reader,item,biblio", // strStyle,
                     "xml:noborrowhistory",  // strItemReturnFormats,
                     out item_records,
                     "summary",    // strReaderFormatList
@@ -1195,7 +1196,7 @@ namespace dp2SIPServer
         /// <param name="channel">ILS 通道</param>
         /// <param name="message">SIP消息</param>
         /// <returns></returns>
-        public string Login(LibraryChannel channel, string message)
+        public string Login(LibraryChannel channel,string strClientIP, string message)
         {
             int nRet = 0;
             string strError = "";
@@ -1231,7 +1232,7 @@ namespace dp2SIPServer
             strLocationCode = request.CP_LocationCode_o;
             long lRet = channel.Login(strUserID,
                 strPassword,
-                "type=worker,client=dp2SIPServer|0.01",
+                "type=worker,client=dp2SIPServer|0.01,location=#SIP@" + strClientIP,
                 out strError);
             if (lRet == -1)
             {

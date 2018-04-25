@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -40,13 +41,17 @@ namespace dp2SIPServer
 
         public string RemoteEndPoint = "";
 
+        public string ClientIP { set; get; }
+
         internal Session(TcpClient client)
         {
             this.RemoteEndPoint = client.Client.RemoteEndPoint.ToString();
-            this._client = new TcpClientWrapper(client) 
+            this.ClientIP = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+
+            this._client = new TcpClientWrapper(client)
             {
-                Encoding=this.Encoding,
-                MessageTerminator=this.Terminator
+                Encoding = this.Encoding,
+                MessageTerminator = this.Terminator
             };
 
             // 挂上按需登录回调事件
@@ -63,8 +68,6 @@ namespace dp2SIPServer
             LogManager.Logger.Info("走进Session的Close");
             try
             {
-
-
                 // 关闭TcpClient
                 if (_client != null)
                 {
@@ -112,7 +115,6 @@ namespace dp2SIPServer
             {
                 LogManager.Logger.Info("结束Session的Close");
             }
-
         }
 
         // 如果调的地方都处理好关闭，还需要加这个Dispose函数吗？
@@ -145,17 +147,35 @@ namespace dp2SIPServer
         public LibraryChannelPool _channelPool = new LibraryChannelPool();
         List<LibraryChannel> _channelList = new List<LibraryChannel>();
 
+
+        public string DefaultUsername
+        {
+            get
+            {
+                return Properties.Settings.Default.Username;
+            }
+        }
+
+        public string DefaultLibraryServerUrl
+        {
+            get
+            {
+                return Properties.Settings.Default.LibraryServerUrl;
+            }
+        }
+
         // parameters:
         //      style    风格。如果为 GUI，表示会自动添加 Idle 事件，并在其中执行 Application.DoEvents
         public LibraryChannel GetChannel(string strUsername = "")
         {
-            if (strUsername == "")
-                strUsername = Properties.Settings.Default.Username;
+            if (string.IsNullOrEmpty(strUsername))
+                strUsername = this.DefaultUsername;
 
-            LibraryChannel channel = this._channelPool.GetChannel(Properties.Settings.Default.LibraryServerUrl,
+            LibraryChannel channel = this._channelPool.GetChannel(this.DefaultLibraryServerUrl,
                 strUsername);
             channel.Idle += channel_Idle;
             _channelList.Add(channel);
+
             // TODO: 检查数组是否溢出
             return channel;
         }
@@ -222,16 +242,15 @@ namespace dp2SIPServer
                         goto ERROR1;
                     }
                     LogManager.Logger.Info("Send:" + strBackMsg);
-
                 }
 
-            ERROR1:
+                ERROR1:
                 LogManager.Logger.Error(strError);
                 return;
             }
             catch (ThreadAbortException ex)
             {
-                LogManager.Logger.Info("session处理消息的线程终止："+ex.Message);
+                LogManager.Logger.Info("session处理消息的线程终止：" + ex.Message);
             }
             catch (Exception ex)
             {
@@ -245,13 +264,10 @@ namespace dp2SIPServer
                 if (CloseEvent != null)
                 {
                     object sender = this;
-                    EventArgs e=new EventArgs();
-                    CloseEvent(sender,e);
+                    EventArgs e = new EventArgs();
+                    CloseEvent(sender, e);
                 }
-
             }
-
-
         }
         public event CloseEventHandle CloseEvent;
         void SendCloseEvent(object sender,
@@ -273,7 +289,7 @@ namespace dp2SIPServer
 
             if (strPackage.Length < 2)
             {
-                strError="命令错误，命令长度不够2位";
+                strError = "命令错误，命令长度不够2位";
                 return -1;
             }
 
@@ -418,10 +434,10 @@ namespace dp2SIPServer
                     {
                         // strBackMsg = Login(strPackage);
 
-                        LibraryChannel channel = this.GetChannel();
+                        LibraryChannel channel = this.GetChannel(this._dp2username);
                         try
                         {
-                            strBackMsg = this._sip.Login(channel, strPackage);
+                            strBackMsg = this._sip.Login(channel, ClientIP, strPackage);
                             if ("941" == strBackMsg)
                             {
                                 this._dp2username = this._sip.LoginUserId;
@@ -1238,7 +1254,7 @@ namespace dp2SIPServer
 
             int nRet = 0;
 
-            LibraryChannel channel = this.GetChannel();
+            LibraryChannel channel = this.GetChannel(this._dp2username);
 
             byte[] baTimestamp = null;
             string strRecPath = "";

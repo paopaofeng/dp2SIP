@@ -182,7 +182,6 @@ namespace dp2SIPServer
 
         public void CloseOneSession(Session client,bool bRemove)
         {
-
             string remoteEndPoint = client.RemoteEndPoint;
 
             Session session = (Session)this._clientTable[client];
@@ -201,7 +200,6 @@ namespace dp2SIPServer
                 this._clientTable.Remove(client);
                 LogManager.Logger.Info("从hashtable中移动session[" + remoteEndPoint + "]完成，目前数量" + this._clientTable.Count);
             }
-
         }
 
         // 关闭所有TcpClient连接
