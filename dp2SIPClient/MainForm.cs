@@ -80,7 +80,7 @@ namespace dp2SIPClient
 
             // 连接成功
             string text = this.SIPServerUrl + ":" + this.SIPServerPort.ToString();
-            info="连接SIP2服务器["+text+"]成功.";
+            info = "连接SIP2服务器[" + text + "]成功.";
             this.toolStripStatusLabel_info.Text = info;
             this.EnableControlsForConnection(true);
         }
@@ -100,7 +100,7 @@ namespace dp2SIPClient
         {
             this.toolStripLabel_DisconnectSIP2Server.Enabled = false;
             Application.DoEvents();
-           SCHelper.Instance.Close();
+            SCHelper.Instance.Close();
             this.toolStripStatusLabel_info.Text = "断开SIP2服务器连接.";
             this.EnableControlsForConnection(false);
             MessageBox.Show(this, "成功断开SIP2服务器连接.");
@@ -480,7 +480,7 @@ namespace dp2SIPClient
             {
                 //3720180118    1309170100USDBV0.1|AOj163-z1|AAL120100000000000002|AY3AZEFFC
                 string transactionDate = SIPUtility.NowDateTime;
-                text = "37" + transactionDate + "0100USDBV0.1|AOj163-z1|AA"+SamplePatron+"|AY3AZEFFC";
+                text = "37" + transactionDate + "0100USDBV0.1|AOj163-z1|AA" + SamplePatron + "|AY3AZEFFC";
                 FeePaid_37 request37 = new FeePaid_37();
                 nRet = request37.parse(text, out error);
                 if (nRet == -1)
@@ -500,9 +500,9 @@ namespace dp2SIPClient
                 this.textBox_FeePaid37_feeIdentifier_CG_o.Text = request37.CG_FeeIdentifier_o;
                 this.textBox_FeePaid37_transactionId_BK_o.Text = request37.BK_TransactionId_o;
             }
-                return;
+            return;
 
-        ERROR1:
+            ERROR1:
             this.Print("error:" + error);
 
 
@@ -530,8 +530,8 @@ namespace dp2SIPClient
             }
 
             string requestText = this.txtMsg.Text.Trim();
-            string responseText ="";
-            string error="";
+            string responseText = "";
+            string error = "";
 
             this.Print("send:" + requestText);
             LogManager.Logger.Info("send:" + requestText);
@@ -568,8 +568,9 @@ namespace dp2SIPClient
         {
             if (this.txtInfo.Text != "")
                 this.txtInfo.Text += "\r\n";
-            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +" "+ text;
-
+            this.txtInfo.Text += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + text;
+            this.txtInfo.SelectionStart = txtInfo.Text.Length;
+            this.txtInfo.ScrollToCaret();
             //this.txtInfo.Text = text;
         }
 

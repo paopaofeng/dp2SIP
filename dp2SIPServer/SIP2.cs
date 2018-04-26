@@ -437,7 +437,7 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.AF_ScreenMessage_o = ex.Message;
                 LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
@@ -730,7 +730,7 @@ namespace dp2SIPServer
             {
                 if (failed_items != null && failed_items.Length > 0)
                 {
-                    strMessage= "有" + failed_items.Length.ToString() + "个事项交费未成功。";
+                    strMessage = "有" + failed_items.Length.ToString() + "个事项交费未成功。";
                     response.AF_ScreenMessage_o = strMessage;
                     response.AG_PrintLine_o = "交费成功";
                 }
@@ -791,7 +791,7 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.AF_ScreenMessage_o = ex.Message;
                 LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
@@ -1122,7 +1122,7 @@ namespace dp2SIPServer
                     string strReason = DomUtil.GetAttr(node, "reason");
                     string strPart = "";
                     if (strReason.Length > 2)
-                         strPart = strReason.Substring(0, 2);
+                        strPart = strReason.Substring(0, 2);
                     if (StringUtil.IsInList(strPart, strWords) && patronStatus[11] != 'Y')
                     {
                         patronStatus[11] = 'Y';
@@ -1139,18 +1139,18 @@ namespace dp2SIPServer
                 }
 
                 // 累计欠款金额
-                string totlePrice= PriceUtil.TotalPrice(prices);
+                string totlePrice = PriceUtil.TotalPrice(prices);
                 CurrencyItem currItem = null;
                 nRet = PriceUtil.ParseSinglePrice(totlePrice, out currItem, out strError);
                 if (nRet == -1)
                 {
-                    strMessage = "计算读者违约金额出错："+strError;
+                    strMessage = "计算读者违约金额出错：" + strError;
                     response.AF_ScreenMessage_o = strMessage;
                     response.AG_PrintLine_o = strMessage;
                     return response.ToText();
                 }
-                response.BV_feeAmount_o = "-"+currItem.Value.ToString(); //设为负值
-                response.BH_CurrencyType_3 = currItem.Prefix; 
+                response.BV_feeAmount_o = "-" + currItem.Value.ToString(); //设为负值
+                response.BH_CurrencyType_3 = currItem.Prefix;
             }
 
             response.AA_PatronIdentifier_r = strBarcode;
@@ -1158,6 +1158,7 @@ namespace dp2SIPServer
             response.BL_ValidPatron_o = "Y";
 
             string strTotal = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='可借总册数']", "value");
+            response.CB_ChargedItemsLimit_o = strTotal;
             string strBorrowsCount = DomUtil.GetElementAttr(dom.DocumentElement, "info/item[@name='当前还可借']", "value");
             response.BZ_HoldItemsLimit_o = strBorrowsCount.PadLeft(4, '0');
             string strState = DomUtil.GetElementText(dom.DocumentElement, "state");
@@ -1196,7 +1197,7 @@ namespace dp2SIPServer
         /// <param name="channel">ILS 通道</param>
         /// <param name="message">SIP消息</param>
         /// <returns></returns>
-        public string Login(LibraryChannel channel,string strClientIP, string message)
+        public string Login(LibraryChannel channel, string strClientIP, string message)
         {
             int nRet = 0;
             string strError = "";
@@ -1221,7 +1222,7 @@ namespace dp2SIPServer
                     return response.ToText();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
                 return response.ToText();
@@ -1318,7 +1319,7 @@ namespace dp2SIPServer
                     response.AG_PrintLine_o = "结束操作成功";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.AF_ScreenMessage_o = ex.Message;
                 LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));

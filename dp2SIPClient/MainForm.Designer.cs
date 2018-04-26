@@ -165,6 +165,8 @@
             this.label51 = new System.Windows.Forms.Label();
             this.tabPage_EndPatronSession35 = new System.Windows.Forms.TabPage();
             this.tabPage_FeePaid37 = new System.Windows.Forms.TabPage();
+            this.textBox_FeePaid37_transactionId_BK_o = new System.Windows.Forms.TextBox();
+            this.label62 = new System.Windows.Forms.Label();
             this.textBox_FeePaid37_feeIdentifier_CG_o = new System.Windows.Forms.TextBox();
             this.label52 = new System.Windows.Forms.Label();
             this.textBox_FeePaid37_patronPassword_AD_o = new System.Windows.Forms.TextBox();
@@ -185,8 +187,6 @@
             this.label60 = new System.Windows.Forms.Label();
             this.textBox_FeePaid37_transactionDate_18 = new System.Windows.Forms.TextBox();
             this.label61 = new System.Windows.Forms.Label();
-            this.textBox_FeePaid37_transactionId_BK_o = new System.Windows.Forms.TextBox();
-            this.label62 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -226,6 +226,7 @@
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
             this.txtInfo.ReadOnly = true;
+            this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtInfo.Size = new System.Drawing.Size(454, 502);
             this.txtInfo.TabIndex = 21;
             // 
@@ -1600,6 +1601,24 @@
             this.tabPage_FeePaid37.Text = "FeePaid37";
             this.tabPage_FeePaid37.UseVisualStyleBackColor = true;
             // 
+            // textBox_FeePaid37_transactionId_BK_o
+            // 
+            this.textBox_FeePaid37_transactionId_BK_o.Location = new System.Drawing.Point(208, 334);
+            this.textBox_FeePaid37_transactionId_BK_o.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_FeePaid37_transactionId_BK_o.Name = "textBox_FeePaid37_transactionId_BK_o";
+            this.textBox_FeePaid37_transactionId_BK_o.Size = new System.Drawing.Size(57, 25);
+            this.textBox_FeePaid37_transactionId_BK_o.TabIndex = 83;
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Location = new System.Drawing.Point(20, 334);
+            this.label62.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(159, 15);
+            this.label62.TabIndex = 82;
+            this.label62.Text = "transaction id_BK_o";
+            // 
             // textBox_FeePaid37_feeIdentifier_CG_o
             // 
             this.textBox_FeePaid37_feeIdentifier_CG_o.Location = new System.Drawing.Point(208, 300);
@@ -1779,24 +1798,6 @@
             this.label61.Size = new System.Drawing.Size(151, 15);
             this.label61.TabIndex = 62;
             this.label61.Text = "transactionDate_18";
-            // 
-            // textBox_FeePaid37_transactionId_BK_o
-            // 
-            this.textBox_FeePaid37_transactionId_BK_o.Location = new System.Drawing.Point(208, 334);
-            this.textBox_FeePaid37_transactionId_BK_o.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_FeePaid37_transactionId_BK_o.Name = "textBox_FeePaid37_transactionId_BK_o";
-            this.textBox_FeePaid37_transactionId_BK_o.Size = new System.Drawing.Size(57, 25);
-            this.textBox_FeePaid37_transactionId_BK_o.TabIndex = 83;
-            // 
-            // label62
-            // 
-            this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(20, 334);
-            this.label62.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(159, 15);
-            this.label62.TabIndex = 82;
-            this.label62.Text = "transaction id_BK_o";
             // 
             // MainForm
             // 
