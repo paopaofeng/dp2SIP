@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dp2SIPClient", "..\dp2SIPCl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalPlatform.SIP2", "..\DigitalPlatform.SIP2\DigitalPlatform.SIP2.csproj", "{B69729CE-4797-4706-8A2F-823ED24A0AEC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dp2SIPService", "..\dp2SIPService\dp2SIPService.csproj", "{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,14 @@ Global
 		{B69729CE-4797-4706-8A2F-823ED24A0AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B69729CE-4797-4706-8A2F-823ED24A0AEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B69729CE-4797-4706-8A2F-823ED24A0AEC}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC8F9756-DCEB-4E50-B9AA-80FBAC93EAC5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
