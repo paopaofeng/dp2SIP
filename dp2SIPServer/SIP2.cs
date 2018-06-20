@@ -802,6 +802,7 @@ namespace dp2SIPServer
             response.AB_ItemIdentifier_r = strItemIdentifier;
             string strItemXml = "";
             string strBiblio = "";
+            REDO:
             long lRet = channel.GetItemInfo(null,
                 strItemIdentifier,
                 "xml",
@@ -811,6 +812,9 @@ namespace dp2SIPServer
                 out strError);
             if (-1 >= lRet)
             {
+                if (channel.ErrorCode == ErrorCode.ChannelReleased)
+                    goto REDO;
+
                 response.CirculationStatus_2 = "01";
 
                 strError = "获得'" + strItemIdentifier + "'发生错误: " + strError;
