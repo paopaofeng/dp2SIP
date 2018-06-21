@@ -12,16 +12,16 @@ using DigitalPlatform.Xml;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Xml;
 
-namespace dp2SIPServer
+namespace dp2SIPService
 {
     public class Session : IDisposable //不清楚去掉IDisposable可以吗？jane 20170808
     {
@@ -137,9 +137,9 @@ namespace dp2SIPServer
                 e.ErrorInfo = "尚未登录";
             }
 
-            e.LibraryServerUrl = Properties.Settings.Default.LibraryServerUrl;
+            e.LibraryServerUrl = ConfigurationManager.AppSettings["LibraryServerUrl"];
             e.UserName = this._dp2username;
-            e.Parameters = "type=worker,client=dp2SIPServer|0.01";
+            e.Parameters = "type=worker,client=SIPServer|0.01";
             e.Password = this._dp2password;
             e.SavePasswordLong = true;
         }
@@ -152,7 +152,7 @@ namespace dp2SIPServer
         {
             get
             {
-                return Properties.Settings.Default.Username;
+                return ConfigurationManager.AppSettings["Username"];
             }
         }
 
@@ -160,7 +160,7 @@ namespace dp2SIPServer
         {
             get
             {
-                return Properties.Settings.Default.LibraryServerUrl;
+                return ConfigurationManager.AppSettings["LibraryServerUrl"];
             }
         }
 
@@ -182,7 +182,7 @@ namespace dp2SIPServer
 
         void channel_Idle(object sender, IdleEventArgs e)
         {
-            Application.DoEvents();
+            //Application.DoEvents();
         }
 
         public void ReturnChannel(LibraryChannel channel)
@@ -280,6 +280,7 @@ namespace dp2SIPServer
         public delegate void CloseEventHandle(object sender,
         EventArgs e);
 
+        string strLastBackMsg;
         // 处理一条消息
         private int HandleOneMessage(string strPackage, out string strBackMsg, out string strError)
         {
@@ -454,7 +455,6 @@ namespace dp2SIPServer
                 case "99":
                     {
                         LibraryChannel channel = this.GetChannel(this._dp2username);
-
                         try
                         {
                             strBackMsg = this._sip.SCStatus(channel, strPackage);
@@ -465,11 +465,17 @@ namespace dp2SIPServer
                         }
                         break;
                     }
+                case "96":
+                    {
+                        strBackMsg = this.strLastBackMsg;
+                        break;
+                    }
                 default:
                     strBackMsg = "无法识别的命令'" + strMessageIdentifiers + "'";
                     break;
             }
 
+            strLastBackMsg = strBackMsg;
             // 加校验码
             strBackMsg = this.AddChecksumForMessage(strBackMsg);
             return 0;
@@ -484,7 +490,7 @@ namespace dp2SIPServer
         {
             get
             {
-                string strEndodingName = Properties.Settings.Default.EncodingName;
+                string strEndodingName = ConfigurationManager.AppSettings["EncodingName"];
                 if (string.IsNullOrEmpty(strEndodingName))
                     strEndodingName = "UTF-8";
 
@@ -497,7 +503,7 @@ namespace dp2SIPServer
         {
             get
             {
-                string strTerminator = Properties.Settings.Default.Terminator;
+                string strTerminator = ConfigurationManager.AppSettings["Terminator"];
                 if (strTerminator == "LF")
                     return (char)10;
                 else // if(strTerminator == "CR")
@@ -509,7 +515,7 @@ namespace dp2SIPServer
         {
             get
             {
-                string strDateFormat = Properties.Settings.Default.DateFormat;
+                string strDateFormat = ConfigurationManager.AppSettings["DateFormat"];
                 if (string.IsNullOrEmpty(strDateFormat) || strDateFormat.Length < 8)
                     strDateFormat = "yyyy-MM-dd";
                 return strDateFormat;

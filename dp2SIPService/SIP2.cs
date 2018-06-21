@@ -16,9 +16,9 @@ using DigitalPlatform.Marc;
 using DigitalPlatform.Text;
 using DigitalPlatform.LibraryClient;
 using DigitalPlatform.LibraryClient.localhost;
+using System.Configuration;
 
-
-namespace dp2SIPServer
+namespace dp2SIPService
 {
     public class SIP
     {
@@ -44,10 +44,21 @@ namespace dp2SIPServer
         {
             get
             {
-                string strDateFormat = Properties.Settings.Default.DateFormat;
+                string strDateFormat = ConfigurationManager.AppSettings["DateFormat"];
                 if (string.IsNullOrEmpty(strDateFormat) || strDateFormat.Length < 8)
                     strDateFormat = "yyyy-MM-dd";
                 return strDateFormat;
+            }
+        }
+
+        string DispLang
+        {
+            get
+            {
+                string strLang = ConfigurationManager.AppSettings["DispLang"];
+                if (string.IsNullOrEmpty(strLang) || strLang.Length < 8)
+                    strLang = "zh-CN";
+                return strLang;
             }
         }
 
@@ -802,7 +813,6 @@ namespace dp2SIPServer
             response.AB_ItemIdentifier_r = strItemIdentifier;
             string strItemXml = "";
             string strBiblio = "";
-            REDO:
             long lRet = channel.GetItemInfo(null,
                 strItemIdentifier,
                 "xml",
@@ -812,9 +822,6 @@ namespace dp2SIPServer
                 out strError);
             if (-1 >= lRet)
             {
-                if (channel.ErrorCode == ErrorCode.ChannelReleased)
-                    goto REDO;
-
                 response.CirculationStatus_2 = "01";
 
                 strError = "获得'" + strItemIdentifier + "'发生错误: " + strError;
@@ -1237,7 +1244,7 @@ namespace dp2SIPServer
             strLocationCode = request.CP_LocationCode_o;
             long lRet = channel.Login(strUserID,
                 strPassword,
-                "type=worker,client=dp2SIPServer|0.01,location=#SIP@" + strClientIP,
+                "type=worker,client=SIPServer|0.01,location=#SIP@" + strClientIP,
                 out strError);
             if (lRet == -1)
             {
@@ -1256,6 +1263,9 @@ namespace dp2SIPServer
                 this.LoginPassword = strPassword;
 
                 LogManager.Logger.Info("终端 " + strLocationCode + " : " + strUserID + " 接入");
+
+                string oldLang = "";
+                channel.SetLang(null, DispLang, out oldLang, out strError);
             }
 
             return response.ToText();
@@ -1264,14 +1274,12 @@ namespace dp2SIPServer
         /// <summary>
         /// 状态查询
         /// </summary>
-        /// <param name="channel">ILS 通道</param>
         /// <param name="message">SIP消息</param>
         /// <returns></returns>
         public string SCStatus(LibraryChannel channel, string message)
         {
-            string strValue = "", strError = "";
-
-            //2018/06/19 check system for acs status
+            string strValue = "";
+            string strError = "";
             long lRet = channel.GetSystemParameter(null, "system", "hangup", out strValue, out strError);
 
             ACSStatus_98 response = new ACSStatus_98()
@@ -1289,8 +1297,13 @@ namespace dp2SIPServer
                 AO_InstitutionId_r = "dp2Library",
                 AM_LibraryName_o = "dp2Library",
                 BX_SupportedMessages_r = "YYYYYYYYYYYYYYYY",
-                AF_ScreenMessage_o = (lRet == -1 ? strValue : ""),
+                AF_ScreenMessage_o = (lRet == -1 ? strValue : "")
             };
+
+            if (lRet == -1)
+            {
+                response.AF_ScreenMessage_o = strValue;
+            }
 
             return response.ToText();
         }
