@@ -22,6 +22,8 @@ namespace dp2SIPService
         private TcpListener Listener = null;
         private Thread _acceptThread = null;
 
+        private bool isRun = true;
+
         // 客户端连接Hashtable
         private Hashtable _clientTable = new Hashtable();
 
@@ -127,8 +129,11 @@ namespace dp2SIPService
         {
             try
             {
-                while (true)
+                while (isRun)
                 {
+                    if (!Listener.Pending())
+                        continue;
+
                     TcpClient client = Listener.AcceptTcpClient();
                     LogManager.Logger.Info("收到一个TcpClient请求：" + client.Client.RemoteEndPoint);
 
@@ -147,16 +152,13 @@ namespace dp2SIPService
                     this._clientTable[session] = session;
                 }
             }
-            catch (ThreadInterruptedException)
+            catch (ThreadInterruptedException ex)
             {
-                Thread.CurrentThread.Abort();
-                LogManager.Logger.Info("ThreadInterruptedException：.....Thread.CurrentThread.Abort()");
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
             }
             catch (SocketException ex)
             {
-                LogManager.Logger.Info(ExceptionUtil.GetDebugText(ex));
-                Thread.CurrentThread.Abort();
-                LogManager.Logger.Info("SocketException：.....Thread.CurrentThread.Abort()");
+                LogManager.Logger.Error(ExceptionUtil.GetDebugText(ex));
             }
         }
 
@@ -169,24 +171,20 @@ namespace dp2SIPService
         private void DoStop()
         {
             LogManager.Logger.Info("开始停止监听...");
+
+            isRun = false;
+
             try
             {
-                // 中止接收线程
-                if (_acceptThread != null)
-                {
-                    _acceptThread.Abort();
-                    LogManager.Logger.Info("接收线程_acceptThread.Abort()");
-                }
-
-                // 关闭TcpClient，在里面记日志
-                this.CloseClients();
-
                 // 停止Listener
                 if (Listener != null)
                 {
                     Listener.Stop();
                     LogManager.Logger.Info("监听对象Listener.Stop()");
                 }
+
+                // 关闭TcpClient，在里面记日志
+                this.CloseClients();
             }
             catch (Exception ex)
             {

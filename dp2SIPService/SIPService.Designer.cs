@@ -31,7 +31,6 @@
             // 
             // SIPService
             // 
-            this.CanShutdown = true;
             this.ServiceName = "SIPService";
 
         }
